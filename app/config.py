@@ -39,6 +39,33 @@ class ProxyConfig(BaseModel):
 class TrafficConfig(BaseModel):
     monthly_limit_gb: float = 1000
     reset_day: int = 1
+    warning_percent: float = 70
+    degraded_percent: float = 85
+    critical_percent: float = 95
+    interfaces: list[str] = Field(default_factory=lambda: ["auto"])
+    data_file: str = "data/traffic_state.json"
+    note: str = "Local traffic is an estimate and may differ from provider billing."
+
+
+class DomainConfig(BaseModel):
+    enabled: bool = False
+    names: list[str] = Field(default_factory=lambda: ["example.com"])
+    expected_ips: list[str] = Field(default_factory=lambda: ["203.0.113.10"])
+    timeout_seconds: float = 3
+
+
+class TLSTargetConfig(BaseModel):
+    host: str = "example.com"
+    port: int = 443
+    server_name: str = "example.com"
+    warning_days: int = 21
+    critical_days: int = 7
+    timeout_seconds: float = 5
+
+
+class TLSConfig(BaseModel):
+    enabled: bool = False
+    targets: list[TLSTargetConfig] = Field(default_factory=lambda: [TLSTargetConfig()])
 
 
 class AppConfig(BaseModel):
@@ -47,6 +74,8 @@ class AppConfig(BaseModel):
     system: SystemConfig = Field(default_factory=SystemConfig)
     proxy: ProxyConfig = Field(default_factory=ProxyConfig)
     traffic: TrafficConfig = Field(default_factory=TrafficConfig)
+    domain: DomainConfig = Field(default_factory=DomainConfig)
+    tls: TLSConfig = Field(default_factory=TLSConfig)
 
 
 def _deep_merge(base: dict[str, Any], override: dict[str, Any]) -> dict[str, Any]:

@@ -32,9 +32,12 @@ Every checker should return a structure similar to:
   "status": "healthy",
   "message": "Proxy core process is running",
   "checked_at": "ISO8601",
-  "details": {}
+  "details": {},
+  "ignored": false
 }
 ```
+
+Optional checks such as Domain / DNS and TLS Certificate can be disabled. Disabled checks return `status: "unknown"` with `ignored: true`, remain visible in API/UI output, and do not affect `overall_status`.
 
 ## Aggregation Rule
 
@@ -45,3 +48,5 @@ critical > degraded > warning > unknown > healthy
 ```
 
 `unknown` is treated as visible risk, but not worse than a known warning, degraded state, or critical failure.
+
+Ignored optional checks are excluded from this aggregation rule.

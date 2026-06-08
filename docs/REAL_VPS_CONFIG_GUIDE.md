@@ -14,7 +14,7 @@ server:
   port: 3001
 ```
 
-Do not use `0.0.0.0` in Phase 1A.2. Do not use `80` or `443` for this dashboard.
+Do not use `0.0.0.0`. Do not use `80` or `443` for this dashboard.
 
 ## checks
 
@@ -112,15 +112,56 @@ curl -I --max-time 3 http://127.0.0.1:YOUR_3XUI_PANEL_PORT || true
 
 ## traffic
 
-For Phase 1A.2, keep traffic configuration manual:
+For Phase 1B, traffic configuration is still local and manual:
 
 ```yaml
 traffic:
   monthly_limit_gb: 1000
   reset_day: 1
+  warning_percent: 70
+  degraded_percent: 85
+  critical_percent: 95
+  interfaces:
+    - "auto"
+  data_file: "data/traffic_state.json"
+  note: "Local traffic is an estimate and may differ from provider billing."
 ```
 
-`monthly_limit_gb` can be set to your VPS package limit. `reset_day` should match the package reset day. Traffic checking currently uses system network counters since boot and is not exact billing data.
+`monthly_limit_gb` can be set to your VPS package limit. `reset_day` should match the package reset day. Traffic checking uses local Linux interface counters and is not exact provider billing data.
+
+## domain
+
+Domain checks are optional and disabled by default:
+
+```yaml
+domain:
+  enabled: false
+  names:
+    - "example.com"
+  expected_ips:
+    - "203.0.113.10"
+  timeout_seconds: 3
+```
+
+Use `YOUR_DOMAIN` in private notes and avoid committing real domains. If enabled, set `names` to the domain you want to resolve and `expected_ips` to expected public IPs only when you want mismatch detection.
+
+## tls
+
+TLS checks are optional and disabled by default:
+
+```yaml
+tls:
+  enabled: false
+  targets:
+    - host: "example.com"
+      port: 443
+      server_name: "example.com"
+      warning_days: 21
+      critical_days: 7
+      timeout_seconds: 5
+```
+
+If enabled, set `host` and `server_name` to the certificate target. Do not include tokens, credentials, subscription links, or private paths.
 
 ## Sensitive Data Rule
 

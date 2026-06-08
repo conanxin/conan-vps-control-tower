@@ -2,13 +2,16 @@
 
 A lightweight, read-only health dashboard for personal VPS proxy nodes.
 
-Conan VPS Control Tower 是一个面向个人 VPS / 代理节点用户的轻量健康控制塔。它默认只在本机监听，用于观察 VPS 状态、代理核心状态、3X-UI 面板状态、代理端口状态和基础流量状态，并给出人能理解的健康判断与风险摘要。
+Conan VPS Control Tower is a lightweight health control tower for personal VPS and proxy node users. It listens locally by default and helps observe VPS resources, proxy core state, 3X-UI panel reachability, proxy ports, DNS risk, TLS certificate risk, and local traffic estimate risk.
 
-当前阶段：Phase 1A MVP ready / v0.1.0-alpha
+Conan VPS Control Tower 是一个面向个人 VPS / 代理节点用户的轻量健康控制塔。它默认只在本机监听，用于观察 VPS 状态、代理核心状态、3X-UI 面板状态、代理端口状态、DNS 风险、TLS 证书风险和本地流量估算风险。
+
+Current stage: Phase 1B implemented on main / v0.1.0-alpha released
 
 ## Status
 
-- Project stage: v0.1.0-alpha
+- Project stage: Phase 1B implemented on `main`
+- Latest prerelease: `v0.1.0-alpha`
 - Runtime mode: local-only by default
 - Default bind: `127.0.0.1:3001`
 - Target users: personal VPS / proxy node users
@@ -23,7 +26,9 @@ Conan VPS Control Tower is a read-only health observation layer. It does not rep
 - Proxy core process
 - 3X-UI panel reachability
 - Proxy port status
-- Basic traffic counters
+- Domain / DNS resolution
+- TLS certificate expiry
+- Local traffic estimate
 
 ## Core Features
 
@@ -31,9 +36,13 @@ Conan VPS Control Tower is a read-only health observation layer. It does not rep
 - Proxy core process and service visibility
 - 3X-UI panel reachability check
 - Proxy port availability check
-- Basic traffic usage overview
+- Optional Domain / DNS risk check
+- Optional TLS certificate expiry risk check
+- Local traffic estimate with warning, degraded, and critical thresholds
 - Human-readable status summary and risk hints
 - Local-only dashboard by default: `127.0.0.1:3001`
+
+See [Domain / TLS / Traffic Risk](docs/DOMAIN_TLS_TRAFFIC_RISK.md) for configuration examples.
 
 ## What It Does Not Do
 
@@ -42,6 +51,7 @@ Conan VPS Control Tower is a read-only health observation layer. It does not rep
 - Does not restart proxy services
 - Does not collect proxy credentials
 - Does not expose the dashboard publicly by default
+- Does not call VPS provider billing APIs
 
 ## Non-Goals
 
@@ -60,7 +70,7 @@ Dashboard screenshots will be added after validation on a real VPS. See [dashboa
 
 ## Alpha Notice
 
-This is an early alpha release for a personal VPS health control tower. Use it locally or through an SSH tunnel first. Direct public exposure is not recommended.
+This is an early alpha project for a personal VPS health control tower. Use it locally or through an SSH tunnel first. Direct public exposure is not recommended.
 
 ## Quick Start
 
@@ -81,13 +91,13 @@ http://127.0.0.1:3001
 For VPS usage, prefer an SSH tunnel:
 
 ```bash
-ssh -L 3001:127.0.0.1:3001 user@your-vps
+ssh -L 3001:127.0.0.1:3001 user@YOUR_VPS_HOST
 ```
 
 ## Roadmap
 
 - Phase 1A: Read-only health detection MVP
-- Phase 1B: Traffic, domain, TLS, and expiration reminders
+- Phase 1B: Domain / TLS / Traffic Risk Enhancement
 - Phase 1C: Telegram and Email alerts
 - Phase 1D: Diagnostic suggestions and common commands
 - Phase 2: Project control tower

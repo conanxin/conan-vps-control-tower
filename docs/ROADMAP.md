@@ -10,15 +10,17 @@
 - Basic traffic status
 - Local-only dashboard
 
-## Phase 1B: Traffic, Domain, TLS, and Expiration Reminders
+## Phase 1B: Domain / TLS / Traffic Risk Enhancement
 
-- More accurate monthly traffic tracking
-- Domain resolution checks
-- TLS certificate checks
-- Expiration reminders for domains, certificates, and VPS billing
+- Status: implemented on `main`
+- Optional Domain / DNS risk checks
+- Optional TLS certificate expiry risk checks
+- Local traffic estimate with warning, degraded, and critical thresholds
+- No provider billing API integration
 
 ## Phase 1C: Telegram / Email Alerts
 
+- Status: next recommended phase
 - Optional Telegram alerts
 - Optional Email alerts
 - Alert cooldowns and severity filters

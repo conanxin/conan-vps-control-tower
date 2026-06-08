@@ -18,6 +18,7 @@ class CheckResult(BaseModel):
     message: str
     checked_at: str = Field(default_factory=utc_now_iso)
     details: dict[str, Any] = Field(default_factory=dict)
+    ignored: bool = False
 
 
 class HealthResponse(BaseModel):

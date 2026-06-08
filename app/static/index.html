@@ -46,9 +46,33 @@
           <p class="message">Not checked yet.</p>
         </article>
         <article class="card" data-check="traffic">
-          <p class="label">Traffic Status</p>
+          <p class="label">Traffic Risk</p>
           <h3>Unknown</h3>
           <p class="message">Not checked yet.</p>
+          <dl class="metrics">
+            <div><dt>Used</dt><dd data-detail="estimated_used_gb">--</dd></div>
+            <div><dt>Limit</dt><dd data-detail="monthly_limit_gb">--</dd></div>
+            <div><dt>Usage</dt><dd data-detail="usage_percent">--</dd></div>
+          </dl>
+          <p class="note">Local estimate, may differ from provider billing.</p>
+        </article>
+        <article class="card" data-check="domain_dns">
+          <p class="label">Domain / DNS</p>
+          <h3>Not configured</h3>
+          <p class="message">Not checked yet.</p>
+          <dl class="metrics">
+            <div><dt>Resolved IPs</dt><dd data-detail="resolved_ip_count">--</dd></div>
+            <div><dt>Expected match</dt><dd data-detail="expected_match">--</dd></div>
+          </dl>
+        </article>
+        <article class="card" data-check="tls_certificate">
+          <p class="label">TLS Certificate</p>
+          <h3>Not configured</h3>
+          <p class="message">Not checked yet.</p>
+          <dl class="metrics">
+            <div><dt>Days left</dt><dd data-detail="days_remaining">--</dd></div>
+            <div><dt>Expiry</dt><dd data-detail="not_after">--</dd></div>
+          </dl>
         </article>
       </section>
 

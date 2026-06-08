@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased
+
+### Phase 1B Domain / TLS / Traffic Risk Enhancement
+
+- Added optional Domain / DNS checker.
+- Added optional TLS certificate expiry checker.
+- Enhanced traffic checking with local interface baseline estimates and warning/degraded/critical thresholds.
+- Added `/api/domain`, `/api/tls`, and `/api/traffic`.
+- Updated dashboard cards for Domain / DNS, TLS Certificate, and Traffic Risk.
+- Added documentation for Domain / TLS / Traffic risk configuration and limitations.
+- Kept checks read-only, local-only, and disabled by default where optional.
+
 ## v0.1.0-alpha
 
 ### Phase 0 Bootstrap

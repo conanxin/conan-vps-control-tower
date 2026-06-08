@@ -27,3 +27,28 @@ proxy:
 traffic:
   monthly_limit_gb: 1000
   reset_day: 1
+  warning_percent: 70
+  degraded_percent: 85
+  critical_percent: 95
+  interfaces:
+    - "auto"
+  data_file: "data/traffic_state.json"
+  note: "Local traffic is an estimate and may differ from provider billing."
+
+domain:
+  enabled: false
+  names:
+    - "example.com"
+  expected_ips:
+    - "203.0.113.10"
+  timeout_seconds: 3
+
+tls:
+  enabled: false
+  targets:
+    - host: "example.com"
+      port: 443
+      server_name: "example.com"
+      warning_days: 21
+      critical_days: 7
+      timeout_seconds: 5

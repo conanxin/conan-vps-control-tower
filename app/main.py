@@ -8,11 +8,13 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.config import AppConfig, load_config
+from app.health.domain_checker import check_domain
 from app.health.evaluator import evaluate
 from app.health.http_checker import check_panel
 from app.health.port_checker import check_ports
 from app.health.process_checker import check_proxy_processes, check_proxy_services
 from app.health.system_checker import check_system
+from app.health.tls_checker import check_tls
 from app.health.traffic_checker import check_traffic
 from app.models import CheckResult, HealthResponse
 
@@ -35,6 +37,8 @@ def run_all_checks(config: AppConfig) -> list[CheckResult]:
         check_proxy_services(config.proxy),
         check_panel(config.proxy.panel),
         check_ports(config.proxy.ports),
+        check_domain(config.domain),
+        check_tls(config.tls),
         check_traffic(config.traffic),
     ]
 
@@ -74,3 +78,21 @@ def api_system() -> HealthResponse:
 def api_proxy() -> HealthResponse:
     config = get_config()
     return evaluate(run_proxy_checks(config))
+
+
+@app.get("/api/domain", response_model=HealthResponse)
+def api_domain() -> HealthResponse:
+    config = get_config()
+    return evaluate([check_domain(config.domain)])
+
+
+@app.get("/api/tls", response_model=HealthResponse)
+def api_tls() -> HealthResponse:
+    config = get_config()
+    return evaluate([check_tls(config.tls)])
+
+
+@app.get("/api/traffic", response_model=HealthResponse)
+def api_traffic() -> HealthResponse:
+    config = get_config()
+    return evaluate([check_traffic(config.traffic)])
