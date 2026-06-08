@@ -62,3 +62,33 @@ traffic:
     assert config.tls.targets[0].server_name == "example.com"
     assert config.traffic.warning_percent == 60
     assert config.traffic.interfaces == ["eth0"]
+
+
+def test_alerts_default_disabled(tmp_path):
+    config = load_config(tmp_path / "missing.yaml")
+
+    assert config.alerts.enabled is False
+    assert config.alerts.telegram.enabled is False
+    assert config.alerts.email.enabled is False
+    assert config.alerts.state_file == "data/alert_state.json"
+
+
+def test_env_placeholder_loading_does_not_crash_and_expands_when_available(tmp_path, monkeypatch):
+    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "env-token")
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        """
+alerts:
+  enabled: true
+  telegram:
+    enabled: true
+    bot_token: "${TELEGRAM_BOT_TOKEN}"
+    chat_id: "${TELEGRAM_CHAT_ID}"
+""",
+        encoding="utf-8",
+    )
+
+    config = load_config(config_path)
+
+    assert config.alerts.telegram.bot_token == "env-token"
+    assert config.alerts.telegram.chat_id == "${TELEGRAM_CHAT_ID}"

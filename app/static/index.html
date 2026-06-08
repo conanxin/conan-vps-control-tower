@@ -74,6 +74,21 @@
             <div><dt>Expiry</dt><dd data-detail="not_after">--</dd></div>
           </dl>
         </article>
+        <article class="card alerting-card">
+          <p class="label">Alerting</p>
+          <h3 id="alerts-enabled">Unknown</h3>
+          <p id="alerts-message" class="message">Loading alert status...</p>
+          <dl class="metrics">
+            <div><dt>Min severity</dt><dd id="alerts-min-severity">--</dd></div>
+            <div><dt>Cooldown</dt><dd id="alerts-cooldown">--</dd></div>
+            <div><dt>Telegram</dt><dd id="alerts-telegram">--</dd></div>
+            <div><dt>Email</dt><dd id="alerts-email">--</dd></div>
+            <div><dt>Active</dt><dd id="alerts-active">--</dd></div>
+            <div><dt>Last sent</dt><dd id="alerts-last-sent">--</dd></div>
+          </dl>
+          <button id="test-alert-button" class="action-button" type="button">Test Alert</button>
+          <p id="test-alert-result" class="note">Test notification is disabled until alerts are configured.</p>
+        </article>
       </section>
 
       <section class="risk-panel">

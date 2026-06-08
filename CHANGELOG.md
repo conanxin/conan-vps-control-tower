@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+### Phase 1C Telegram / Email Alerting
+
+- Added optional alerting configuration, disabled by default.
+- Added Telegram and Email / SMTP channels using lightweight standard-library clients.
+- Added alert severity filtering, cooldown, fingerprint dedupe, recovery notifications, and test notifications.
+- Added `/api/alerts/status`, `/api/alerts/test`, and `/api/alerts/evaluate`.
+- Added Dashboard alerting card without exposing tokens, passwords, or chat IDs.
+- Added alerting documentation and tests.
+
 ### Phase 1B Domain / TLS / Traffic Risk Enhancement
 
 - Added optional Domain / DNS checker.

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import re
 from copy import deepcopy
 from pathlib import Path
 from typing import Any
@@ -68,6 +69,35 @@ class TLSConfig(BaseModel):
     targets: list[TLSTargetConfig] = Field(default_factory=lambda: [TLSTargetConfig()])
 
 
+class TelegramAlertConfig(BaseModel):
+    enabled: bool = False
+    bot_token: str = "${TELEGRAM_BOT_TOKEN}"
+    chat_id: str = "${TELEGRAM_CHAT_ID}"
+    timeout_seconds: float = 5
+
+
+class EmailAlertConfig(BaseModel):
+    enabled: bool = False
+    smtp_host: str = "smtp.example.com"
+    smtp_port: int = 587
+    username: str = "${SMTP_USERNAME}"
+    password: str = "${SMTP_PASSWORD}"
+    from_addr: str = "alerts@example.com"
+    to_addrs: list[str] = Field(default_factory=lambda: ["you@example.com"])
+    use_tls: bool = True
+    timeout_seconds: float = 10
+
+
+class AlertsConfig(BaseModel):
+    enabled: bool = False
+    min_severity: str = "warning"
+    cooldown_seconds: int = 1800
+    send_recovery: bool = True
+    state_file: str = "data/alert_state.json"
+    telegram: TelegramAlertConfig = Field(default_factory=TelegramAlertConfig)
+    email: EmailAlertConfig = Field(default_factory=EmailAlertConfig)
+
+
 class AppConfig(BaseModel):
     server: ServerConfig = Field(default_factory=ServerConfig)
     checks: ChecksConfig = Field(default_factory=ChecksConfig)
@@ -76,6 +106,10 @@ class AppConfig(BaseModel):
     traffic: TrafficConfig = Field(default_factory=TrafficConfig)
     domain: DomainConfig = Field(default_factory=DomainConfig)
     tls: TLSConfig = Field(default_factory=TLSConfig)
+    alerts: AlertsConfig = Field(default_factory=AlertsConfig)
+
+
+ENV_PATTERN = re.compile(r"^\$\{([A-Za-z_][A-Za-z0-9_]*)\}$")
 
 
 def _deep_merge(base: dict[str, Any], override: dict[str, Any]) -> dict[str, Any]:
@@ -86,6 +120,18 @@ def _deep_merge(base: dict[str, Any], override: dict[str, Any]) -> dict[str, Any
         else:
             merged[key] = value
     return merged
+
+
+def _expand_env_placeholders(value: Any) -> Any:
+    if isinstance(value, dict):
+        return {key: _expand_env_placeholders(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_expand_env_placeholders(item) for item in value]
+    if isinstance(value, str):
+        match = ENV_PATTERN.match(value)
+        if match:
+            return os.getenv(match.group(1), value)
+    return value
 
 
 def load_config(path: str | Path | None = None) -> AppConfig:
@@ -101,4 +147,4 @@ def load_config(path: str | Path | None = None) -> AppConfig:
     if not isinstance(loaded, dict):
         raise ValueError(f"Config file must contain a YAML mapping: {config_path}")
 
-    return AppConfig.model_validate(_deep_merge(defaults, loaded))
+    return AppConfig.model_validate(_expand_env_placeholders(_deep_merge(defaults, loaded)))

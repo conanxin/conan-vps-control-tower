@@ -52,3 +52,26 @@ tls:
       warning_days: 21
       critical_days: 7
       timeout_seconds: 5
+
+alerts:
+  enabled: false
+  min_severity: "warning"
+  cooldown_seconds: 1800
+  send_recovery: true
+  state_file: "data/alert_state.json"
+  telegram:
+    enabled: false
+    bot_token: "${TELEGRAM_BOT_TOKEN}"
+    chat_id: "${TELEGRAM_CHAT_ID}"
+    timeout_seconds: 5
+  email:
+    enabled: false
+    smtp_host: "smtp.example.com"
+    smtp_port: 587
+    username: "${SMTP_USERNAME}"
+    password: "${SMTP_PASSWORD}"
+    from_addr: "alerts@example.com"
+    to_addrs:
+      - "you@example.com"
+    use_tls: true
+    timeout_seconds: 10

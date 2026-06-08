@@ -47,3 +47,19 @@ sudo systemctl enable conan-vps-control-tower
 ```
 
 This script stops and disables the service if systemd is available. It does not remove proxy services, proxy configuration, firewall rules, or 3X-UI data.
+
+## Optional Alert Evaluation Cron
+
+If alerting is enabled, you can trigger evaluation through the local API:
+
+```bash
+curl -X POST http://127.0.0.1:3001/api/alerts/evaluate
+```
+
+Example crontab:
+
+```text
+*/5 * * * * curl -s -X POST http://127.0.0.1:3001/api/alerts/evaluate >/dev/null 2>&1
+```
+
+This does not require opening a public port, changing firewall rules, or exposing the Dashboard.

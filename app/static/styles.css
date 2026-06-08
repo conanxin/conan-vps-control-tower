@@ -180,6 +180,22 @@ h1 {
   line-height: 1.4;
 }
 
+.action-button {
+  width: 100%;
+  min-height: 34px;
+  margin-top: 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #eef2f7;
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.action-button:hover {
+  background: #e2e8f0;
+}
+
 .card.warning {
   border-color: rgba(161, 98, 7, 0.55);
 }

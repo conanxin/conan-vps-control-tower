@@ -100,6 +100,50 @@ function renderHealth(data) {
   });
 }
 
+function renderAlertStatus(data) {
+  const alerts = data.alerts || {};
+  const telegram = data.telegram || {};
+  const email = data.email || {};
+  const state = data.state || {};
+  document.getElementById("alerts-enabled").textContent = alerts.enabled ? "Enabled" : "Disabled";
+  document.getElementById("alerts-message").textContent = alerts.enabled
+    ? "Alerts can send notifications when health reaches the configured severity."
+    : "Alerts are disabled; no notifications will be sent.";
+  document.getElementById("alerts-min-severity").textContent = alerts.min_severity || "--";
+  document.getElementById("alerts-cooldown").textContent = `${alerts.cooldown_seconds ?? "--"}s`;
+  document.getElementById("alerts-telegram").textContent = telegram.enabled ? "Enabled" : "Disabled";
+  document.getElementById("alerts-email").textContent = email.enabled ? "Enabled" : "Disabled";
+  document.getElementById("alerts-active").textContent = state.active_alert_count ?? "--";
+  document.getElementById("alerts-last-sent").textContent = state.last_sent_at
+    ? new Date(state.last_sent_at).toLocaleString()
+    : "--";
+}
+
+async function refreshAlertStatus() {
+  try {
+    const response = await fetch("/api/alerts/status", { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    renderAlertStatus(await response.json());
+  } catch (error) {
+    document.getElementById("alerts-message").textContent = `Alert status unavailable: ${error.message}`;
+  }
+}
+
+async function sendTestAlert() {
+  const output = document.getElementById("test-alert-result");
+  output.textContent = "Sending test alert...";
+  try {
+    const response = await fetch("/api/alerts/test", { method: "POST" });
+    const data = await response.json();
+    output.textContent = data.sent ? "Test alert sent." : data.message || "Test alert skipped.";
+    await refreshAlertStatus();
+  } catch (error) {
+    output.textContent = `Test alert failed: ${error.message}`;
+  }
+}
+
 async function refreshHealth() {
   try {
     const response = await fetch("/api/health", { cache: "no-store" });
@@ -119,4 +163,7 @@ async function refreshHealth() {
 }
 
 refreshHealth();
+refreshAlertStatus();
+document.getElementById("test-alert-button").addEventListener("click", sendTestAlert);
 window.setInterval(refreshHealth, 30000);
+window.setInterval(refreshAlertStatus, 30000);

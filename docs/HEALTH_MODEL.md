@@ -50,3 +50,13 @@ critical > degraded > warning > unknown > healthy
 `unknown` is treated as visible risk, but not worse than a known warning, degraded state, or critical failure.
 
 Ignored optional checks are excluded from this aggregation rule.
+
+## Alerting Severity
+
+Phase 1C alerting can trigger for:
+
+```text
+warning, degraded, critical
+```
+
+`unknown` does not trigger alerts in Phase 1C. Alerting is disabled by default and only sends when `alerts.enabled=true`, at least one channel is configured, and status is at or above `alerts.min_severity`.

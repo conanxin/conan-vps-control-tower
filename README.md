@@ -39,10 +39,12 @@ Conan VPS Control Tower is a read-only health observation layer. It does not rep
 - Optional Domain / DNS risk check
 - Optional TLS certificate expiry risk check
 - Local traffic estimate with warning, degraded, and critical thresholds
+- Optional Telegram / Email alerting with cooldown, dedupe, recovery, and test notifications
 - Human-readable status summary and risk hints
 - Local-only dashboard by default: `127.0.0.1:3001`
 
 See [Domain / TLS / Traffic Risk](docs/DOMAIN_TLS_TRAFFIC_RISK.md) for configuration examples.
+See [Alerting](docs/ALERTING.md) for Telegram and Email notification setup.
 
 ## What It Does Not Do
 
@@ -52,6 +54,7 @@ See [Domain / TLS / Traffic Risk](docs/DOMAIN_TLS_TRAFFIC_RISK.md) for configura
 - Does not collect proxy credentials
 - Does not expose the dashboard publicly by default
 - Does not call VPS provider billing APIs
+- Does not enable alerting by default
 
 ## Non-Goals
 

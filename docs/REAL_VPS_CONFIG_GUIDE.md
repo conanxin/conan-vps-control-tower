@@ -173,3 +173,34 @@ Do not store or commit:
 - Subscription links
 - 3X-UI panel passwords
 - Proxy node plaintext configuration
+
+## alerts
+
+Alerting is optional and disabled by default:
+
+```yaml
+alerts:
+  enabled: false
+  min_severity: "warning"
+  cooldown_seconds: 1800
+  send_recovery: true
+  state_file: "data/alert_state.json"
+  telegram:
+    enabled: false
+    bot_token: "${TELEGRAM_BOT_TOKEN}"
+    chat_id: "${TELEGRAM_CHAT_ID}"
+    timeout_seconds: 5
+  email:
+    enabled: false
+    smtp_host: "smtp.example.com"
+    smtp_port: 587
+    username: "${SMTP_USERNAME}"
+    password: "${SMTP_PASSWORD}"
+    from_addr: "alerts@example.com"
+    to_addrs:
+      - "you@example.com"
+    use_tls: true
+    timeout_seconds: 10
+```
+
+Use environment variables for secrets. Do not commit real Telegram tokens, chat IDs, SMTP passwords, private domains, or proxy credentials.

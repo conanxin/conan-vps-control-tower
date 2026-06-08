@@ -20,13 +20,15 @@
 
 ## Phase 1C: Telegram / Email Alerts
 
-- Status: next recommended phase
+- Status: implemented on `main`
 - Optional Telegram alerts
 - Optional Email alerts
 - Alert cooldowns and severity filters
+- Recovery notifications and test notifications
 
 ## Phase 1D: Diagnostic Suggestions and Common Commands
 
+- Status: next recommended phase
 - Human-readable diagnosis
 - Suggested read-only commands
 - Safe troubleshooting playbooks
