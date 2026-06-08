@@ -52,15 +52,25 @@
 
 ## Git commit hash
 
-本报告包含在 Phase 1A.1 发布提交中。最终提交 hash 在发布完成后的最终输出中记录。
+Phase 1A.1 主提交：
+
+```text
+99ff748
+```
+
+发布元信息补充提交和最终 tag 指向的提交以最终输出为准。
 
 ## tag 状态
 
-计划创建并推送 annotated tag：`v0.1.0-alpha`。
+`v0.1.0-alpha` annotated tag 已创建并推送到 GitHub。
 
 ## GitHub release 状态
 
-计划使用 `docs/release/RELEASE_NOTES_v0.1.0-alpha.md` 创建 GitHub prerelease。
+GitHub prerelease 已创建成功：
+
+```text
+https://github.com/conanxin/conan-vps-control-tower/releases/tag/v0.1.0-alpha
+```
 
 ## GitHub repo description / topics 是否设置成功
 
