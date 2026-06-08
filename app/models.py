@@ -1,0 +1,28 @@
+from __future__ import annotations
+
+from datetime import UTC, datetime
+from typing import Any, Literal
+
+from pydantic import BaseModel, Field
+
+HealthStatus = Literal["healthy", "warning", "degraded", "critical", "unknown"]
+
+
+def utc_now_iso() -> str:
+    return datetime.now(UTC).isoformat()
+
+
+class CheckResult(BaseModel):
+    name: str
+    status: HealthStatus
+    message: str
+    checked_at: str = Field(default_factory=utc_now_iso)
+    details: dict[str, Any] = Field(default_factory=dict)
+
+
+class HealthResponse(BaseModel):
+    overall_status: HealthStatus
+    readable_summary: str
+    risk_summary: list[str]
+    checked_at: str = Field(default_factory=utc_now_iso)
+    checks: list[CheckResult]

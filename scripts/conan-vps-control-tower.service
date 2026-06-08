@@ -1,0 +1,15 @@
+[Unit]
+Description=Conan VPS Control Tower
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/conan-vps-control-tower
+Environment=CONAN_CONFIG_PATH=/opt/conan-vps-control-tower/config.yaml
+ExecStart=/opt/conan-vps-control-tower/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 3001
+Restart=on-failure
+RestartSec=5
+User=root
+
+[Install]
+WantedBy=multi-user.target

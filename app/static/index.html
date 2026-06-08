@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Conan VPS Control Tower</title>
+    <link rel="stylesheet" href="/static/styles.css">
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Personal VPS Proxy Health</p>
+          <h1>Conan VPS Control Tower</h1>
+        </div>
+        <div id="last-checked" class="timestamp">Last Checked: --</div>
+      </header>
+
+      <section class="overview">
+        <div>
+          <span id="overall-badge" class="status-badge unknown">unknown</span>
+          <h2 id="overall-status">Overall Status</h2>
+          <p id="readable-summary">Waiting for health data...</p>
+        </div>
+      </section>
+
+      <section class="grid" aria-label="Health checks">
+        <article class="card" data-check="vps_system">
+          <p class="label">VPS Status</p>
+          <h3>Unknown</h3>
+          <p class="message">Not checked yet.</p>
+        </article>
+        <article class="card" data-check="proxy_core">
+          <p class="label">Proxy Core Status</p>
+          <h3>Unknown</h3>
+          <p class="message">Not checked yet.</p>
+        </article>
+        <article class="card" data-check="xui_panel">
+          <p class="label">3X-UI Panel Status</p>
+          <h3>Unknown</h3>
+          <p class="message">Not checked yet.</p>
+        </article>
+        <article class="card" data-check="proxy_ports">
+          <p class="label">Port Status</p>
+          <h3>Unknown</h3>
+          <p class="message">Not checked yet.</p>
+        </article>
+        <article class="card" data-check="traffic">
+          <p class="label">Traffic Status</p>
+          <h3>Unknown</h3>
+          <p class="message">Not checked yet.</p>
+        </article>
+      </section>
+
+      <section class="risk-panel">
+        <h2>Risk Summary</h2>
+        <ul id="risk-summary">
+          <li>No data yet.</li>
+        </ul>
+      </section>
+    </main>
+    <script src="/static/app.js"></script>
+  </body>
+</html>

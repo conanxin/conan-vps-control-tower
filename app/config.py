@@ -1,0 +1,75 @@
+from __future__ import annotations
+
+import os
+from copy import deepcopy
+from pathlib import Path
+from typing import Any
+
+import yaml
+from pydantic import BaseModel, Field
+
+
+class ServerConfig(BaseModel):
+    host: str = "127.0.0.1"
+    port: int = 3001
+
+
+class ChecksConfig(BaseModel):
+    interval_seconds: int = 30
+
+
+class SystemConfig(BaseModel):
+    disk_warning_percent: float = 80
+    ram_warning_percent: float = 80
+    load_warning_1m: float = 1.5
+
+
+class PanelConfig(BaseModel):
+    url: str = "http://127.0.0.1:2053"
+    timeout_seconds: float = 3
+
+
+class ProxyConfig(BaseModel):
+    process_names: list[str] = Field(default_factory=lambda: ["x-ui", "3x-ui", "xray"])
+    service_names: list[str] = Field(default_factory=lambda: ["x-ui", "3x-ui"])
+    ports: list[int] = Field(default_factory=lambda: [443])
+    panel: PanelConfig = Field(default_factory=PanelConfig)
+
+
+class TrafficConfig(BaseModel):
+    monthly_limit_gb: float = 1000
+    reset_day: int = 1
+
+
+class AppConfig(BaseModel):
+    server: ServerConfig = Field(default_factory=ServerConfig)
+    checks: ChecksConfig = Field(default_factory=ChecksConfig)
+    system: SystemConfig = Field(default_factory=SystemConfig)
+    proxy: ProxyConfig = Field(default_factory=ProxyConfig)
+    traffic: TrafficConfig = Field(default_factory=TrafficConfig)
+
+
+def _deep_merge(base: dict[str, Any], override: dict[str, Any]) -> dict[str, Any]:
+    merged = deepcopy(base)
+    for key, value in override.items():
+        if isinstance(value, dict) and isinstance(merged.get(key), dict):
+            merged[key] = _deep_merge(merged[key], value)
+        else:
+            merged[key] = value
+    return merged
+
+
+def load_config(path: str | Path | None = None) -> AppConfig:
+    config_path = Path(path or os.getenv("CONAN_CONFIG_PATH", "config.yaml"))
+    defaults = AppConfig().model_dump()
+
+    if not config_path.exists():
+        return AppConfig.model_validate(defaults)
+
+    with config_path.open("r", encoding="utf-8") as file:
+        loaded = yaml.safe_load(file) or {}
+
+    if not isinstance(loaded, dict):
+        raise ValueError(f"Config file must contain a YAML mapping: {config_path}")
+
+    return AppConfig.model_validate(_deep_merge(defaults, loaded))
