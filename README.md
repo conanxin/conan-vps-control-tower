@@ -2,9 +2,28 @@
 
 A lightweight, read-only health dashboard for personal VPS proxy nodes.
 
-Conan VPS Control Tower 是一个面向个人 VPS 的轻量控制塔，用于只读监控代理节点健康状态。它关注 VPS 基础状态、代理核心进程、3X-UI 面板、代理端口和基础流量信息，并把检测结果转换成人能理解的健康判断与诊断建议。
+Conan VPS Control Tower 是一个面向个人 VPS / 代理节点用户的轻量健康控制塔。它默认只在本机监听，用于观察 VPS 状态、代理核心状态、3X-UI 面板状态、代理端口状态和基础流量状态，并给出人能理解的健康判断与风险摘要。
 
-当前阶段：Phase 1A planned
+当前阶段：Phase 1A MVP ready / v0.1.0-alpha
+
+## Status
+
+- Project stage: v0.1.0-alpha
+- Runtime mode: local-only by default
+- Default bind: `127.0.0.1:3001`
+- Target users: personal VPS / proxy node users
+
+## Why This Exists
+
+3X-UI is a configuration and management panel for proxy services.
+
+Conan VPS Control Tower is a read-only health observation layer. It does not replace the panel. It helps users quickly understand which layer may be risky:
+
+- VPS resources
+- Proxy core process
+- 3X-UI panel reachability
+- Proxy port status
+- Basic traffic counters
 
 ## Core Features
 
@@ -16,6 +35,14 @@ Conan VPS Control Tower 是一个面向个人 VPS 的轻量控制塔，用于只
 - Human-readable status summary and risk hints
 - Local-only dashboard by default: `127.0.0.1:3001`
 
+## What It Does Not Do
+
+- Does not replace 3X-UI
+- Does not modify proxy configuration
+- Does not restart proxy services
+- Does not collect proxy credentials
+- Does not expose the dashboard publicly by default
+
 ## Non-Goals
 
 - 不替代 3X-UI
@@ -26,6 +53,14 @@ Conan VPS Control Tower 是一个面向个人 VPS 的轻量控制塔，用于只
 - 不重启代理服务
 - 不修改防火墙
 - 不默认暴露公网访问
+
+## Screenshot
+
+Dashboard screenshots will be added after validation on a real VPS. See [dashboard placeholder](docs/media/dashboard-placeholder.md).
+
+## Alpha Notice
+
+This is an early alpha release for a personal VPS health control tower. Use it locally or through an SSH tunnel first. Direct public exposure is not recommended.
 
 ## Quick Start
 
@@ -41,6 +76,12 @@ Then open:
 
 ```text
 http://127.0.0.1:3001
+```
+
+For VPS usage, prefer an SSH tunnel:
+
+```bash
+ssh -L 3001:127.0.0.1:3001 user@your-vps
 ```
 
 ## Roadmap

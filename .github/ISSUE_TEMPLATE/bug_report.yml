@@ -1,0 +1,56 @@
+name: Bug report
+description: Report a reproducible problem.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please do not paste real IPs, tokens, UUIDs, subscription links, panel passwords, or proxy plaintext configuration.
+  - type: input
+    id: os
+    attributes:
+      label: OS
+      description: Example: Ubuntu 22.04
+    validations:
+      required: true
+  - type: input
+    id: python-version
+    attributes:
+      label: Python version
+      description: Example: Python 3.11.9
+    validations:
+      required: true
+  - type: dropdown
+    id: run-mode
+    attributes:
+      label: Run mode
+      options:
+        - Local dev command
+        - systemd
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: proxy-stack
+    attributes:
+      label: Proxy stack
+      description: Mention whether you use 3X-UI, Xray, sing-box, or another stack. Do not paste sensitive config.
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened?
+      description: Describe the error or unexpected behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Non-sensitive logs
+      description: Remove IPs, domains, tokens, UUIDs, passwords, and subscription links before posting.
