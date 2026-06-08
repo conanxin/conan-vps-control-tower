@@ -9,6 +9,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.alerts.manager import AlertManager
 from app.config import AppConfig, load_config
+from app.diagnostics.engine import diagnose
 from app.health.domain_checker import check_domain
 from app.health.evaluator import evaluate
 from app.health.http_checker import check_panel
@@ -119,3 +120,10 @@ def api_alerts_evaluate() -> dict:
     config = get_config()
     health = evaluate(run_all_checks(config))
     return AlertManager(config.alerts).evaluate(health).to_dict()
+
+
+@app.get("/api/diagnostics")
+def api_diagnostics() -> dict:
+    config = get_config()
+    health = evaluate(run_all_checks(config))
+    return diagnose(health).to_dict()

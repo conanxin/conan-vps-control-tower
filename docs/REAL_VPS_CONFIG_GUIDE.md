@@ -204,3 +204,14 @@ alerts:
 ```
 
 Use environment variables for secrets. Do not commit real Telegram tokens, chat IDs, SMTP passwords, private domains, or proxy credentials.
+
+## diagnostics command placeholders
+
+Diagnostics displays read-only command templates. Replace placeholders locally before running them:
+
+- `SERVICE_NAME`: your local service name, such as a 3X-UI or proxy service.
+- `YOUR_PROXY_PORT`: your proxy inbound port.
+- `YOUR_PANEL_PORT`: your local 3X-UI panel port.
+- `YOUR_DOMAIN`: the domain you want to check.
+
+Do not paste real domains, IPs, tokens, UUIDs, passwords, or subscription links into public reports.

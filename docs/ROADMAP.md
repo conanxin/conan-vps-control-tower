@@ -28,10 +28,17 @@
 
 ## Phase 1D: Diagnostic Suggestions and Common Commands
 
-- Status: next recommended phase
+- Status: implemented on `main`
 - Human-readable diagnosis
 - Suggested read-only commands
 - Safe troubleshooting playbooks
+
+## Phase 1E: Local-Only Hardening and Real VPS Validation
+
+- Status: next recommended phase
+- Validate diagnostics on a real VPS
+- Improve local-only safety checks
+- Prepare a possible `v0.2.0-alpha`
 
 ## Phase 2: Project Control Tower
 

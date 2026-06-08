@@ -229,6 +229,41 @@ h1 {
   line-height: 1.55;
 }
 
+.diagnostics-summary {
+  margin: 10px 0;
+  color: var(--muted);
+}
+
+.diagnosis {
+  margin-top: 12px;
+}
+
+.diagnosis h3 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+.diagnosis p {
+  margin: 6px 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+pre {
+  max-width: 100%;
+  overflow-x: auto;
+  margin: 12px 0 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #f8fafc;
+}
+
+code {
+  font-family: Consolas, Monaco, monospace;
+  font-size: 13px;
+}
+
 @media (max-width: 900px) {
   .grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));

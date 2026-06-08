@@ -12,7 +12,7 @@ def telegram_text(event: AlertEvent) -> str:
         f"Overall status: {event.status}\n"
         f"Module: {event.module}\n"
         f"Message: {event.message}\n"
-        f"Suggested first check: open Dashboard or SSH into VPS and inspect service status."
+        f"Suggested first check: {event.suggested_first_check}"
     )
 
 

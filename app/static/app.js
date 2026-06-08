@@ -131,6 +131,32 @@ async function refreshAlertStatus() {
   }
 }
 
+function renderDiagnostics(data) {
+  document.getElementById("diagnostics-summary").textContent = data.summary || "No diagnostics summary available.";
+  const item = Array.isArray(data.items) ? data.items[0] : null;
+  if (!item) {
+    return;
+  }
+  document.querySelector("#top-diagnosis h3").textContent = `${item.title} (${item.severity})`;
+  document.getElementById("diagnosis-impact").textContent = `Impact: ${item.impact}`;
+  document.getElementById("diagnosis-first-check").textContent = `Suggested first check: ${item.suggested_first_check}`;
+  document.getElementById("diagnosis-related").textContent = `Related modules: ${(item.related_modules || []).join(", ") || "--"}`;
+  document.getElementById("diagnosis-confidence").textContent = `Confidence: ${item.confidence}`;
+  document.getElementById("diagnosis-commands").textContent = (item.read_only_commands || []).join("\n") || "No command needed.";
+}
+
+async function refreshDiagnostics() {
+  try {
+    const response = await fetch("/api/diagnostics", { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    renderDiagnostics(await response.json());
+  } catch (error) {
+    document.getElementById("diagnostics-summary").textContent = `Diagnostics unavailable: ${error.message}`;
+  }
+}
+
 async function sendTestAlert() {
   const output = document.getElementById("test-alert-result");
   output.textContent = "Sending test alert...";
@@ -164,6 +190,8 @@ async function refreshHealth() {
 
 refreshHealth();
 refreshAlertStatus();
+refreshDiagnostics();
 document.getElementById("test-alert-button").addEventListener("click", sendTestAlert);
 window.setInterval(refreshHealth, 30000);
 window.setInterval(refreshAlertStatus, 30000);
+window.setInterval(refreshDiagnostics, 30000);

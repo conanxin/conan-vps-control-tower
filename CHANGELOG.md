@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Phase 1D Diagnostics and Suggested Actions
+
+- Added read-only diagnostics engine and rule set.
+- Added `/api/diagnostics`.
+- Added Dashboard Diagnostics section with impact, likely first check, related modules, confidence, and read-only commands.
+- Added safety documentation for allowed and disallowed diagnostic commands.
+- Alert formatter now supports a concise suggested first check line.
+
 ### Phase 1C Telegram / Email Alerting
 
 - Added optional alerting configuration, disabled by default.

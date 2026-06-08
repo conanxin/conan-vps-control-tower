@@ -15,6 +15,7 @@ class AlertEvent:
     summary: str
     checked_at: str
     is_recovery: bool = False
+    suggested_first_check: str = "Open Dashboard or SSH into VPS and inspect service status."
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

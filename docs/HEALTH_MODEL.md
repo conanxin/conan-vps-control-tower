@@ -60,3 +60,9 @@ warning, degraded, critical
 ```
 
 `unknown` does not trigger alerts in Phase 1C. Alerting is disabled by default and only sends when `alerts.enabled=true`, at least one channel is configured, and status is at or above `alerts.min_severity`.
+
+## Diagnostics
+
+Diagnostics uses health status and severity as input, but it does not change health status. It is an explanation layer that generates likely cause, impact, suggested first check, and read-only command templates.
+
+Disabled optional checks are treated as not configured, not as diagnostic failures.

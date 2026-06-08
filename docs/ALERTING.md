@@ -107,6 +107,10 @@ curl -X POST http://127.0.0.1:3001/api/alerts/test
 
 The test notification says it is not a failure.
 
+## Diagnostics Context
+
+Alerts include a concise `Suggested first check` line. They do not include long command lists, and Conan VPS Control Tower never executes diagnostic commands automatically.
+
 ## Manual Evaluation
 
 ```bash

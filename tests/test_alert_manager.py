@@ -66,3 +66,22 @@ def test_alert_manager_sends_recovery(monkeypatch, tmp_path):
 
     assert recovery.sent is True
     assert calls == [False, True]
+
+
+def test_alert_event_supports_suggested_first_check():
+    from app.alerts.formatters import telegram_text
+    from app.alerts.models import AlertEvent
+
+    event = AlertEvent(
+        fingerprint="test",
+        title="Proxy risk detected",
+        severity="critical",
+        status="critical",
+        module="proxy_core",
+        message="down",
+        summary="summary",
+        checked_at="2026-06-08T00:00:00+00:00",
+        suggested_first_check="Inspect proxy core process and listening ports.",
+    )
+
+    assert "Inspect proxy core process" in telegram_text(event)
