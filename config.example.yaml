@@ -1,0 +1,29 @@
+server:
+  host: "127.0.0.1"
+  port: 3001
+
+checks:
+  interval_seconds: 30
+
+system:
+  disk_warning_percent: 80
+  ram_warning_percent: 80
+  load_warning_1m: 1.5
+
+proxy:
+  process_names:
+    - "x-ui"
+    - "3x-ui"
+    - "xray"
+  service_names:
+    - "x-ui"
+    - "3x-ui"
+  ports:
+    - 443
+  panel:
+    url: "http://127.0.0.1:2053"
+    timeout_seconds: 3
+
+traffic:
+  monthly_limit_gb: 1000
+  reset_day: 1
