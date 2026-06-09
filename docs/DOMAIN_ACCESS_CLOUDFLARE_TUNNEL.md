@@ -66,6 +66,14 @@ https://panel.example.com
 
 Cloudflare Access should challenge first. After that, the user still needs to log in to 3X-UI. Do not disable the 3X-UI login page.
 
+After a 3X-UI upgrade, confirm the current local panel `webPort` and hidden `webBasePath` before editing Cloudflare Tunnel routes. The tunnel target should point to the confirmed local HTTPS origin, for example:
+
+```text
+panel.example.com -> https://127.0.0.1:YOUR_PANEL_PORT
+```
+
+If the browser also needs a hidden path, keep that path private. Do not commit it to GitHub. Dashboard display should show only a masked value such as `https://panel.example.com/隐藏路径`.
+
 The local target should be:
 
 ```text

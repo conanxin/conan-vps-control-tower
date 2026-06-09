@@ -1,5 +1,14 @@
 ﻿# Changelog`r`n## Unreleased
 
+### Phase 1L.3 Panel Health Check Repair and Diagnostics Polish
+
+- Repaired local HTTPS 3X-UI panel health checks for self-signed localhost origins.
+- Treated `200`, `301`, `302`, `307`, `401`, and `403` as reachable panel responses.
+- Kept `404` as a path warning instead of a healthy result.
+- Masked hidden panel paths in health check details.
+- Replaced panel diagnostics placeholders with real local panel ports when available.
+- Added guidance for 3X-UI upgrades that change `webPort` or `webBasePath`.
+
 ### Phase 1K Domain Access via Cloudflare Tunnel
 
 - Added Cloudflare Tunnel domain access guide for phone/browser access.

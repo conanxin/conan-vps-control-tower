@@ -55,6 +55,28 @@ If 3X-UI uses a hidden path, do not commit that path to this repository. Keep it
 
 `panel.conanxin.com` may need the 3X-UI hidden path when accessed in a browser.
 
+## After 3X-UI upgrades
+
+3X-UI upgrades can change the effective local panel port or hidden `webBasePath`. If the proxy network still works but Control Tower reports `xui_panel` as abnormal, verify the current 3X-UI panel settings with read-only checks before changing Control Tower's own `config.yaml`.
+
+The current `webPort` and `webBasePath` may be read from `/etc/x-ui/x-ui.db`. Do not print or commit the full hidden path. In reports, show only a masked value such as `/p-2...3f2/ len=52`.
+
+For local HTTPS panel checks:
+
+- `200`, `301`, `302`, `307`, `401`, and `403` mean the panel endpoint is reachable.
+- `404` means the HTTPS protocol is reachable but the configured path may be wrong.
+- HTTP failure does not necessarily mean the panel is down.
+
+If the hidden path is required, configure only the private VPS `config.yaml`, for example:
+
+```yaml
+proxy:
+  panel:
+    url: "https://127.0.0.1:YOUR_PANEL_PORT/<hidden>/"
+```
+
+Do not commit the real hidden path to GitHub.
+
 ## What Control Tower detects
 
 `/api/management` returns:

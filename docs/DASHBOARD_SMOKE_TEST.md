@@ -76,6 +76,13 @@ Expected:
 
 If HTTPS returns `404`, treat it as protocol reachable. It may mean the root path is not the 3X-UI login path. Do not commit hidden paths.
 
+Panel health repair check:
+
+- If `xui_panel` is abnormal after a 3X-UI upgrade but proxy core and proxy ports are healthy, do not restart the proxy first.
+- Confirm the current panel port and hidden path with read-only checks.
+- The Dashboard diagnostics should not show `YOUR_PANEL_PORT`; it should either show the confirmed port or ask the user to confirm the 3X-UI panel port.
+- Health check details should show masked URLs such as `https://127.0.0.1:YOUR_PANEL_PORT/<hidden>/`, not the real hidden path.
+
 Also run:
 
 ```bash

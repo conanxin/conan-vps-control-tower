@@ -89,6 +89,28 @@ Confirm:
 - `panel_public_url` may include the hidden path in private VPS config, but the Dashboard should display `panel_public_display_url`.
 - The button uses the full `panel_public_url`; visible text uses the masked display URL.
 
+### Repair panel health after a 3X-UI upgrade
+
+If proxy traffic still works but `xui_panel` becomes critical after a 3X-UI upgrade, do not restart proxy services first. Read the current panel settings and update only Control Tower's private `config.yaml`.
+
+Read-only checks:
+
+```bash
+ps -eo pid,comm,args,%cpu,%mem --sort=-%mem | grep -Ei 'x-ui|3x-ui|xray|sing-box|v2ray' | grep -v grep || true
+systemctl list-units --type=service --state=running | grep -Ei 'x-ui|3x-ui|xray|sing-box|v2ray' || true
+ss -lntup | grep -Ei ':3001|:YOUR_PANEL_PORT|:80|:443' || true
+```
+
+The 3X-UI `webBasePath` can be read from `/etc/x-ui/x-ui.db`, but the full hidden path must not be printed in reports or committed to GitHub. Use a masked value such as `/p-2...3f2/ len=52`.
+
+For Control Tower health checks, prefer the confirmed local HTTPS target:
+
+```text
+https://127.0.0.1:YOUR_PANEL_PORT/<hidden>/
+```
+
+`curl -k` is appropriate for local self-signed HTTPS panel checks. `404` means the configured path is probably wrong; it is not the same as a proxy outage.
+
 ## Logs
 
 ```bash

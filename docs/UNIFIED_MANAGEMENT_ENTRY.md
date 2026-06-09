@@ -72,6 +72,22 @@ https://panel.conanxin.com/隐藏路径
 
 The `进入 3X-UI 面板` button still uses the full `panel_public_url` so the entry remains usable. The masked display value is only for UI presentation.
 
+## Health check URL and hidden path
+
+The management entry and the health checker have different jobs:
+
+- `management.panel_public_url` is used by the Dashboard button.
+- `proxy.panel.url` is used by the read-only `xui_panel` health check.
+
+After a 3X-UI upgrade, the panel `webPort` or hidden `webBasePath` may change. Update only Control Tower's private VPS `config.yaml` after confirming the current value from `/etc/x-ui/x-ui.db`.
+
+Do not commit the real hidden path. In documentation or reports, write only masked examples such as:
+
+```text
+https://127.0.0.1:YOUR_PANEL_PORT/<hidden>/
+https://panel.conanxin.com/隐藏路径
+```
+
 Recommended protection:
 
 ```text
