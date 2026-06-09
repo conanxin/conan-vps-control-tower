@@ -90,6 +90,14 @@
 - Add read-only readiness and discovery scripts
 - Do not create tunnels or write real domains/tokens in the repository
 
+## Phase 1L: Unified Management Entry
+
+- Status: implemented on main
+- Add read-only 3X-UI management entry in Dashboard
+- Add `/api/management`
+- Keep Control Tower as health/diagnosis layer and 3X-UI as configuration layer
+- Do not iframe 3X-UI, store credentials, or call 3X-UI write APIs
+
 ## Project Direction (focused)
 
 - This project intentionally stays focused on personal VPS / proxy health monitoring.
@@ -99,3 +107,4 @@
 
 - Phase 1I: Real screenshot and v0.2.1-alpha
 - Phase 1K-Live: Configure Cloudflare Tunnel with user-provided domain
+- Phase 1L-Live: Verify unified management entry with Cloudflare Access domain

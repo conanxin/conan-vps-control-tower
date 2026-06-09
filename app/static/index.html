@@ -58,6 +58,21 @@
       </section>
 
       <section class="grid" aria-label="健康检查卡片">
+        <article class="card ops-card management-card">
+          <p class="label">管理入口</p>
+          <h3 id="management-status">未知</h3>
+          <p id="management-message" class="message">正在检查 3X-UI 面板入口...</p>
+          <p class="note">需要修改代理配置时，请进入 3X-UI 面板。Control Tower 只做健康监测和诊断建议，不直接修改代理配置。</p>
+          <dl class="metrics">
+            <div><dt>面板名称</dt><dd id="management-panel-name">--</dd></div>
+            <div><dt>本地入口</dt><dd id="management-local-url">--</dd></div>
+            <div><dt>公开入口</dt><dd id="management-public-url">--</dd></div>
+            <div><dt>保护方式</dt><dd id="management-access-note">Cloudflare Access + 3X-UI 登录</dd></div>
+          </dl>
+          <p id="management-readonly-note" class="note">Control Tower 不读取或修改 3X-UI 配置。</p>
+          <a id="management-open-button" class="action-button management-link" href="#" target="_blank" rel="noopener noreferrer">进入 3X-UI 面板</a>
+        </article>
+
         <article class="card core-card" data-check="vps_system">
           <p class="label">VPS 状态</p>
           <h3>未知</h3>

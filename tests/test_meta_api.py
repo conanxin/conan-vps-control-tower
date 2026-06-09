@@ -31,6 +31,7 @@ server:
     assert payload["history_enabled"] is True
     assert payload["event_log"] is True
     assert payload["alert_config_check"] is True
+    assert payload["management_entry"] is True
     assert "bot_token" not in payload
     assert "password" not in payload
     assert "chat_id" not in payload

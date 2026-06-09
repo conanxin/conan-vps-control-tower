@@ -86,6 +86,22 @@ See:
 - [Domain access via Cloudflare Tunnel](docs/DOMAIN_ACCESS_CLOUDFLARE_TUNNEL.md)
 - [Cloudflare Access policy](docs/CLOUDFLARE_ACCESS_POLICY.md)
 
+## 3X-UI 管理入口
+
+Control Tower is the health and diagnosis layer. 3X-UI remains the configuration layer.
+
+中文理解：Control Tower 负责看状态，3X-UI 负责改配置。Dashboard 提供 `进入 3X-UI 面板` 的统一入口，但不会读取或修改 3X-UI 配置，也不会保存 3X-UI 账号、密码、cookie 或 token。
+
+Recommended domain split:
+
+- `tower.conanxin.com` -> Control Tower
+- `panel.conanxin.com` -> 3X-UI panel
+
+See:
+
+- [Unified Management Entry](docs/UNIFIED_MANAGEMENT_ENTRY.md)
+- [Control Tower and 3X-UI relationship](docs/CONTROL_TOWER_AND_3XUI_RELATIONSHIP.md)
+
 ## Real VPS validation
 
 Phase 1E-Live validation passed in de-identified form:
@@ -118,6 +134,7 @@ Phase 1E-Live validation passed in de-identified form:
 - Read-only diagnostics and suggested checks
 - Health history and event log
 - Cloudflare Tunnel domain access guide
+- Unified 3X-UI management entry
 - Local-only systemd helper scripts
 
 See:
@@ -134,6 +151,7 @@ See:
 - [Demo walkthrough](docs/DEMO_WALKTHROUGH.md)
 - [Showcase notes](docs/README_SHOWCASE_NOTES.md)
 - [Domain access via Cloudflare Tunnel](docs/DOMAIN_ACCESS_CLOUDFLARE_TUNNEL.md)
+- [Unified Management Entry](docs/UNIFIED_MANAGEMENT_ENTRY.md)
 
 ## What It Does Not Do
 
@@ -146,6 +164,7 @@ See:
 - Does not execute diagnostic commands automatically
 - Does not enable alerting by default
 - Does not build project registry or project control plane
+- Does not merge 3X-UI code or call 3X-UI write APIs
 
 ## Quick Start
 
@@ -186,6 +205,7 @@ This is an alpha project for personal VPS health control. Keep traffic local and
 - Phase 1F.3: README screenshot and demo docs
 - Phase 1G: Health history and event log
 - Phase 1K: Domain access via Cloudflare Tunnel
+- Phase 1L: Unified 3X-UI management entry
 - This project intentionally stays focused on personal VPS / proxy health monitoring.
 
 ## License

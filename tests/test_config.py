@@ -16,6 +16,9 @@ def test_load_config_uses_defaults_when_file_missing(tmp_path):
     assert config.history.max_snapshots == 2880
     assert config.history.max_events == 500
     assert config.history.summary_window_hours == 24
+    assert config.management.enabled is True
+    assert config.management.panel_local_url == "http://127.0.0.1:2096"
+    assert config.management.panel_public_url == "https://panel.conanxin.com"
 
 
 def test_load_config_merges_partial_yaml(tmp_path):
@@ -124,3 +127,26 @@ history:
     assert config.history.max_events == 50
     assert config.history.min_record_interval_seconds == 120
     assert config.history.summary_window_hours == 12
+
+
+def test_load_config_supports_management(tmp_path):
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        """
+management:
+  enabled: false
+  panel_name: "Custom Panel"
+  panel_local_url: "http://127.0.0.1:2096"
+  panel_public_url: "https://panel.conanxin.com"
+  open_in_new_tab: false
+""",
+        encoding="utf-8",
+    )
+
+    config = load_config(config_path)
+
+    assert config.management.enabled is False
+    assert config.management.panel_name == "Custom Panel"
+    assert config.management.panel_local_url == "http://127.0.0.1:2096"
+    assert config.management.panel_public_url == "https://panel.conanxin.com"
+    assert config.management.open_in_new_tab is False

@@ -23,6 +23,7 @@ from app.health.process_checker import check_proxy_processes, check_proxy_servic
 from app.health.system_checker import check_system
 from app.health.tls_checker import check_tls
 from app.health.traffic_checker import check_traffic
+from app.management.panel import check_management_panel
 from app.models import CheckResult, HealthResponse, MetaResponse
 from app.alerts.config_check import check_alert_config
 
@@ -204,6 +205,27 @@ def api_traffic() -> HealthResponse:
     return evaluate([check_traffic(config.traffic)])
 
 
+@app.get("/api/management")
+def api_management() -> dict:
+    config = get_config()
+    try:
+        return check_management_panel(config.management).to_dict()
+    except Exception as exc:
+        return {
+            "enabled": bool(config.management.enabled),
+            "panel_name": config.management.panel_name,
+            "panel_local_url": config.management.panel_local_url,
+            "panel_public_url": config.management.panel_public_url,
+            "local_reachable": False,
+            "status": "unknown",
+            "message": f"管理入口检查失败，已安全回退：{type(exc).__name__}",
+            "access_note": config.management.access_note,
+            "readonly_note": config.management.readonly_note,
+            "open_in_new_tab": config.management.open_in_new_tab,
+            "checked_at": "",
+        }
+
+
 @app.get("/api/alerts/status")
 def api_alerts_status() -> dict:
     config = get_config()
@@ -269,6 +291,7 @@ def api_meta() -> MetaResponse:
         history_enabled=config.history.enabled,
         event_log=config.history.enabled,
         alert_config_check=True,
+        management_entry=True,
     )
 
 

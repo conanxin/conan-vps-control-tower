@@ -86,6 +86,15 @@ curl -s http://127.0.0.1:3001/api/alerts/config-check | python3 -m json.tool | h
 如果通道开启但未完整配置，页面会提示“缺少必要配置”。
 `safe_to_test` 为 `false` 表示不能直接发测试通知。
 
+## 从 Dashboard 进入 3X-UI
+
+`管理入口` 区块提供 `进入 3X-UI 面板` 按钮。
+
+- Control Tower 负责看状态、风险、诊断和告警。
+- 3X-UI 负责修改代理配置。
+- 点击按钮会打开 `panel_public_url`，例如 `https://panel.conanxin.com`。
+- Control Tower 不 iframe 嵌入 3X-UI，不自动登录，不保存 3X-UI 密码。
+
 ## 如何确认没有公网暴露
 
 ```bash

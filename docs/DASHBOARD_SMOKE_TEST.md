@@ -27,6 +27,7 @@ http://127.0.0.1:3001
 - Domain / DNS
 - TLS Certificate
 - Alerting
+- 管理入口
 - Diagnostics
 - 健康历史
 
@@ -55,6 +56,19 @@ Expected:
 - `/api/alerts/status` returns `enabled: false` unless configured.
 - `/api/meta` returns local-only runtime info and history flags.
 - `/api/history/*` returns JSON payload (or disabled/empty states when configured off).
+
+Management entry:
+
+```bash
+curl -s http://127.0.0.1:3001/api/management | python3 -m json.tool
+```
+
+Expected:
+
+- `panel_public_url` points to the configured panel domain.
+- No `password`, `token`, or `cookie` appears.
+- Dashboard contains no iframe for 3X-UI.
+- Button opens the configured `panel_public_url`.
 
 Also run:
 

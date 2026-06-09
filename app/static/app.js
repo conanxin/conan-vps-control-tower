@@ -262,6 +262,58 @@ function renderHealth(data) {
   renderRiskAndOptional(checks);
 }
 
+function renderManagement(data) {
+  const status = data.enabled === false ? "not-configured" : normalizeStatus(data.status);
+  const title = document.getElementById("management-status");
+  const button = document.getElementById("management-open-button");
+  const publicUrl = data.panel_public_url || "";
+
+  title.textContent = data.enabled === false ? "已关闭" : toDisplayStatus(status);
+  document.getElementById("management-message").textContent = data.message || "管理入口状态暂不可用。";
+  document.getElementById("management-panel-name").textContent = data.panel_name || "3X-UI 面板";
+  document.getElementById("management-local-url").textContent = data.panel_local_url || "--";
+  document.getElementById("management-public-url").textContent = publicUrl || "未配置";
+  document.getElementById("management-access-note").textContent =
+    data.access_note || "建议通过 Cloudflare Access + 3X-UI 登录双层保护访问。";
+  document.getElementById("management-readonly-note").textContent =
+    data.readonly_note || "Control Tower 不读取或修改 3X-UI 配置。";
+
+  if (publicUrl) {
+    button.href = publicUrl;
+    button.setAttribute("aria-disabled", "false");
+    button.classList.remove("disabled");
+    button.textContent = "进入 3X-UI 面板";
+    button.target = data.open_in_new_tab === false ? "_self" : "_blank";
+  } else {
+    button.removeAttribute("href");
+    button.setAttribute("aria-disabled", "true");
+    button.classList.add("disabled");
+    button.textContent = "请先配置 panel_public_url";
+  }
+}
+
+async function refreshManagement() {
+  try {
+    const response = await fetch("/api/management", { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    renderManagement(await response.json());
+  } catch (error) {
+    renderManagement({
+      enabled: true,
+      status: "unknown",
+      message: `管理入口不可用：${error.message}`,
+      panel_name: "3X-UI 面板",
+      panel_local_url: "--",
+      panel_public_url: "",
+      access_note: "建议通过 Cloudflare Access + 3X-UI 登录双层保护访问。",
+      readonly_note: "Control Tower 不读取或修改 3X-UI 配置。",
+      open_in_new_tab: true,
+    });
+  }
+}
+
 function renderAlertStatus(data) {
   const alerts = data.alerts || {};
   const telegram = data.telegram || {};
@@ -382,7 +434,7 @@ function setDiagnosticsVisibility(item, dataSummary) {
   confidenceEl.textContent = `置信度：${item.confidence || "--"}`;
   const commands = Array.isArray(item.read_only_commands) ? item.read_only_commands : [];
   if (commands.length) {
-    commandsEl.textContent = `${readOnlyDiagnosticsNotice}\n${commands.join("\n")}`;
+    commandsEl.textContent = `${readOnlyDiagnosticsNotice}\n如需修改代理配置，可通过“管理入口”进入 3X-UI 面板。\n${commands.join("\n")}`;
   } else {
     commandsEl.textContent = `${readOnlyDiagnosticsNotice}\n暂无命令。`;
   }
@@ -562,12 +614,14 @@ async function refreshAlertConfigCheck() {
 
 refreshMeta();
 refreshHealth();
+refreshManagement();
 refreshAlertStatus();
 refreshAlertConfigCheck();
 refreshDiagnostics();
 refreshHistory();
 document.getElementById("test-alert-button").addEventListener("click", sendTestAlert);
 window.setInterval(refreshHealth, 30000);
+window.setInterval(refreshManagement, 60000);
 window.setInterval(refreshAlertStatus, 30000);
 window.setInterval(refreshAlertConfigCheck, 60000);
 window.setInterval(refreshDiagnostics, 30000);

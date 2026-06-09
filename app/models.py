@@ -41,3 +41,4 @@ class MetaResponse(BaseModel):
     history_enabled: bool
     event_log: bool
     alert_config_check: bool
+    management_entry: bool

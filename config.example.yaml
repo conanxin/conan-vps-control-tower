@@ -84,3 +84,13 @@ history:
   max_events: 500
   min_record_interval_seconds: 60
   summary_window_hours: 24
+
+management:
+  enabled: true
+  panel_name: "3X-UI 面板"
+  panel_local_url: "http://127.0.0.1:2096"
+  panel_public_url: "https://panel.conanxin.com"
+  access_note: "建议通过 Cloudflare Access + 3X-UI 登录双层保护访问。"
+  open_in_new_tab: true
+  show_local_target: true
+  readonly_note: "Control Tower 只提供健康监测和管理入口，不读取或修改 3X-UI 配置。"

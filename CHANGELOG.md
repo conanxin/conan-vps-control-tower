@@ -8,6 +8,14 @@
 - Added read-only local discovery and domain-access readiness scripts.
 - Kept the project local-only by default and did not create tunnels or store tokens.
 
+### Phase 1L Unified Management Entry
+
+- Added read-only 3X-UI management entry configuration.
+- Added `/api/management` for local panel reachability and safe entry metadata.
+- Added Dashboard `管理入口` card with `进入 3X-UI 面板` button.
+- Added docs explaining the Control Tower / 3X-UI responsibility boundary.
+- Kept 3X-UI configuration, credentials, cookies, and write APIs untouched.
+
 ### Phase 1H Alerting setup polish
 
 - Added non-intrusive alert config diagnostics endpoint `/api/alerts/config-check`.

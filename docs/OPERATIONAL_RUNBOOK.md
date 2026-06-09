@@ -71,6 +71,18 @@ curl -s http://127.0.0.1:3001/api/history/recent
 curl -s http://127.0.0.1:3001/api/events
 ```
 
+### Management entry API
+
+```bash
+curl -s http://127.0.0.1:3001/api/management
+```
+
+Confirm:
+
+- `panel_local_url` is the local 3X-UI target, for example `http://127.0.0.1:2096`.
+- `panel_public_url` is the protected public entry, for example `https://panel.conanxin.com`.
+- The response does not contain password, token, cookie, UUID, or subscription links.
+
 ## Logs
 
 ```bash

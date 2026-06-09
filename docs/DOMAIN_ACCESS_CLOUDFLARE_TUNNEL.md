@@ -72,6 +72,14 @@ The local target should be:
 http://127.0.0.1:YOUR_3XUI_PANEL_PORT
 ```
 
+After Cloudflare Tunnel and Cloudflare Access are configured, the Dashboard `管理入口` button can point to:
+
+```text
+https://panel.conanxin.com
+```
+
+Control Tower still does not iframe 3X-UI, automatically log in, or call any 3X-UI write API.
+
 ## Safety properties
 
 - Does not occupy VPS `80` or `443`.

@@ -108,6 +108,17 @@ class HistoryConfig(BaseModel):
     summary_window_hours: int = 24
 
 
+class ManagementConfig(BaseModel):
+    enabled: bool = True
+    panel_name: str = "3X-UI 面板"
+    panel_local_url: str = "http://127.0.0.1:2096"
+    panel_public_url: str = "https://panel.conanxin.com"
+    access_note: str = "建议通过 Cloudflare Access + 3X-UI 登录双层保护访问。"
+    open_in_new_tab: bool = True
+    show_local_target: bool = True
+    readonly_note: str = "Control Tower 只提供健康监测和管理入口，不读取或修改 3X-UI 配置。"
+
+
 class AppConfig(BaseModel):
     server: ServerConfig = Field(default_factory=ServerConfig)
     checks: ChecksConfig = Field(default_factory=ChecksConfig)
@@ -118,6 +129,7 @@ class AppConfig(BaseModel):
     tls: TLSConfig = Field(default_factory=TLSConfig)
     alerts: AlertsConfig = Field(default_factory=AlertsConfig)
     history: HistoryConfig = Field(default_factory=HistoryConfig)
+    management: ManagementConfig = Field(default_factory=ManagementConfig)
 
 
 ENV_PATTERN = re.compile(r"^\$\{([A-Za-z_][A-Za-z0-9_]*)\}$")
