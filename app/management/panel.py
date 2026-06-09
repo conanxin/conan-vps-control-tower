@@ -1,10 +1,10 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import socket
-import ssl
-from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse
 from urllib.request import Request, urlopen
+import ssl
+from urllib.error import HTTPError, URLError
 
 from app.config import ManagementConfig
 from app.management.models import ManagementPanelStatus, disabled_status
@@ -13,7 +13,7 @@ from app.models import utc_now_iso
 
 def _is_local_http_url(url: str) -> bool:
     parsed = urlparse(url)
-    return parsed.scheme in {"http", "https"} and parsed.hostname in {"127.0.0.1", "localhost"}
+    return parsed.scheme in {"http", "https"} and parsed.hostname in {"127.0.0.1", "localhost", "::1"}
 
 
 def _origin_url(url: str, scheme: str) -> str:
@@ -29,9 +29,11 @@ def public_display_url(url: str) -> str:
     parsed = urlparse(url)
     if not parsed.scheme or not parsed.netloc:
         return ""
-    base = f"{parsed.scheme}://{parsed.netloc}"
-    has_hidden_part = (parsed.path and parsed.path != "/") or parsed.query or parsed.fragment
-    return f"{base}/隐藏路径" if has_hidden_part else base
+    base = parsed.netloc
+    has_hidden = bool(parsed.path and parsed.path not in {"", "/"}) or bool(parsed.query or parsed.fragment)
+    if not has_hidden:
+        return f"{parsed.scheme}://{base}"
+    return f"{parsed.scheme}://{base}/隐藏路径"
 
 
 def _tcp_reachable(url: str, timeout: float = 3) -> bool:
@@ -47,20 +49,19 @@ def _tcp_reachable(url: str, timeout: float = 3) -> bool:
 
 def _probe_url(url: str, timeout: float = 3, skip_tls_verify: bool = False) -> tuple[bool, str | None]:
     if not _is_local_http_url(url):
-        return False, "panel_local_url must use localhost or 127.0.0.1"
+        return False, "panel_local_url 需要本地 HTTP/HTTPS 地址"
 
     request = Request(url, headers={"User-Agent": "conan-vps-control-tower/management-check"})
     context = ssl._create_unverified_context() if skip_tls_verify else None
     try:
         with urlopen(request, timeout=timeout, context=context) as response:
-            return response.status < 500, None
+            code = response.status
+            return (200 <= code < 500), f"HTTP {code}"
     except HTTPError as exc:
-        # Any HTTP response below 500 proves the local protocol endpoint answered.
-        if exc.code < 500:
-            return True, f"HTTP {exc.code}"
-        return False, f"HTTP {exc.code}"
+        # 4xx 表示端点可达，仅 5xx 视为错误。
+        return exc.code < 500, f"HTTP {exc.code}"
     except URLError as exc:
-        return False, type(exc.reason).__name__ if hasattr(exc, "reason") else type(exc).__name__
+        return False, str(getattr(exc, "reason", type(exc).__name__))
     except Exception as exc:
         return False, type(exc).__name__
 
@@ -73,17 +74,15 @@ def _detect_panel_protocol(url: str, timeout: float = 3) -> dict[str, object]:
     configured_ok, configured_error = _probe_url(
         url,
         timeout=timeout,
-        skip_tls_verify=configured_scheme == "https",
+        skip_tls_verify=(configured_scheme == "https"),
     )
     if configured_ok:
-        recommended = _origin_url(url, configured_scheme)
         return {
             "local_reachable": True,
             "tcp_reachable": tcp_reachable,
             "detected_scheme": configured_scheme,
-            "recommended_local_url": recommended,
+            "recommended_local_url": _origin_url(url, configured_scheme),
             "protocol_warning": False,
-            "http_ok": True,
             "error": configured_error,
         }
 
@@ -97,17 +96,15 @@ def _detect_panel_protocol(url: str, timeout: float = 3) -> dict[str, object]:
                 "detected_scheme": "https",
                 "recommended_local_url": https_url,
                 "protocol_warning": True,
-                "http_ok": False,
-                "error": https_error or configured_error,
+                "error": https_error,
             }
 
     return {
         "local_reachable": tcp_reachable,
         "tcp_reachable": tcp_reachable,
         "detected_scheme": configured_scheme if tcp_reachable else "unknown",
-        "recommended_local_url": _origin_url(url, configured_scheme),
+        "recommended_local_url": _origin_url(url, "https" if tcp_reachable else (configured_scheme or "http")),
         "protocol_warning": False,
-        "http_ok": False,
         "error": configured_error,
     }
 
@@ -135,19 +132,18 @@ def check_management_panel(config: ManagementConfig) -> ManagementPanelStatus:
     if reachable and protocol_warning:
         status = "warning"
         message = (
-            f"检测到{config.panel_name}端口更可能使用 HTTPS，"
-            f"建议将 panel_local_url 改为 {recommended_local_url}。"
+            f"检测到面板端口更可能使用 HTTPS，建议将 panel_local_url 改为 {recommended_local_url}。"
         )
     elif reachable and detected_scheme == "https":
         status = "healthy"
-        message = f"{config.panel_name}本地 HTTPS 协议可达。"
+        message = "管理面板本地入口可达。"
     elif reachable:
         status = "healthy"
-        message = f"{config.panel_name}本地入口可达。"
+        message = "管理面板本地入口可达。"
     else:
         status = "warning" if config.panel_local_url else "unknown"
-        extra = f"（{error}）" if error else ""
-        message = f"{config.panel_name}本地入口暂不可达{extra}；代理服务可能仍在运行，请结合代理核心和端口状态判断。"
+        suffix = f"（{error}）" if error else ""
+        message = f"管理面板本地入口暂不可达{suffix}，但不代表代理一定不可用。"
 
     return ManagementPanelStatus(
         enabled=True,

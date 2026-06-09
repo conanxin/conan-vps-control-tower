@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import os
 import re
@@ -45,7 +45,7 @@ class TrafficConfig(BaseModel):
     critical_percent: float = 95
     interfaces: list[str] = Field(default_factory=lambda: ["auto"])
     data_file: str = "data/traffic_state.json"
-    note: str = "Local traffic is an estimate and may differ from provider billing."
+    note: str = "本地流量估算可能与服务商计费口径存在差异。"
 
 
 class DomainConfig(BaseModel):
@@ -113,10 +113,10 @@ class ManagementConfig(BaseModel):
     panel_name: str = "3X-UI 面板"
     panel_local_url: str = "https://127.0.0.1:2096"
     panel_public_url: str = "https://panel.conanxin.com"
-    access_note: str = "建议通过 Cloudflare Access + 3X-UI 登录双层保护访问。"
+    access_note: str = "建议通过 Cloudflare Access + 双重校验进行保护后访问。"
     open_in_new_tab: bool = True
     show_local_target: bool = True
-    readonly_note: str = "Control Tower 只提供健康监测和管理入口，不读取或修改 3X-UI 配置。"
+    readonly_note: str = "Control Tower 不读取或修改 3X-UI 配置。"
 
 
 class AppConfig(BaseModel):

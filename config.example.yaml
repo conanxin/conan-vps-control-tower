@@ -1,4 +1,4 @@
-server:
+﻿server:
   host: "127.0.0.1"
   port: 3001
 
@@ -33,7 +33,7 @@ traffic:
   interfaces:
     - "auto"
   data_file: "data/traffic_state.json"
-  note: "Local traffic is an estimate and may differ from provider billing."
+  note: "本地流量估算可能与服务商计费口径存在差异。"
 
 domain:
   enabled: false
@@ -87,10 +87,10 @@ history:
 
 management:
   enabled: true
-  panel_name: "3X-UI 面板"
+  panel_name: "管理面板"
   panel_local_url: "https://127.0.0.1:2096"
   panel_public_url: "https://panel.conanxin.com"
-  access_note: "建议通过 Cloudflare Access + 3X-UI 登录双层保护访问。"
+  access_note: "建议通过 Cloudflare Access + 双重校验进行保护后访问。"
   open_in_new_tab: true
   show_local_target: true
-  readonly_note: "Control Tower 只提供健康监测和管理入口，不读取或修改 3X-UI 配置。"
+  readonly_note: "Control Tower 只负责健康监测和管理入口，不读取或修改管理配置。"

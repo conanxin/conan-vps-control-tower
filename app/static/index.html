@@ -1,10 +1,10 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="zh-CN">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Conan VPS Control Tower</title>
-    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="/static/styles.css" />
   </head>
   <body>
     <main class="shell">
@@ -14,15 +14,15 @@
           <h1>Conan VPS Control Tower</h1>
         </div>
         <div id="runtime-bar" class="runtime-bar">
-          本地只读 · 绑定：127.0.0.1:3001 · 访问方式：SSH Tunnel · 公网暴露：无
+          运行模式：本地只读 · 绑定：127.0.0.1:3001 · 外部入口：tower.conanxin.com · 访问态：Cloudflare Access / Tunnel · 公网直连：无
         </div>
       </header>
 
       <section class="overview">
         <div>
           <span id="overall-badge" class="status-badge unknown">unknown</span>
-          <h2 id="overall-status">总体状态</h2>
-          <p id="readable-summary">等待健康数据...</p>
+          <h2 id="overall-status">总体状态：加载中…</h2>
+          <p id="readable-summary">正在加载健康摘要…</p>
         </div>
       </section>
 
@@ -36,120 +36,163 @@
           <strong id="runtime-endpoint">127.0.0.1:3001</strong>
         </div>
         <div class="strip-item">
-          <span>访问方式</span>
-          <strong id="runtime-access">SSH Tunnel</strong>
+          <span>外部入口</span>
+          <strong id="runtime-public-entry">tower.conanxin.com</strong>
+        </div>
+        <div class="strip-item">
+          <span>访问保护</span>
+          <strong id="runtime-access-protection">Cloudflare Access / Tunnel</strong>
+        </div>
+        <div class="strip-item">
+          <span>公网直连</span>
+          <strong id="runtime-public-bind">无</strong>
         </div>
       </section>
 
-      <section class="pipeline" aria-label="代理链路">
+      <section class="external-access-card">
+        <p class="label">外部访问</p>
+        <div class="external-grid">
+          <div>
+            <span>Control Tower</span>
+            <strong id="external-tower-entry">tower.conanxin.com</strong>
+          </div>
+          <div>
+            <span>管理面板</span>
+            <strong id="external-panel-entry">panel.conanxin.com / 已配置隐藏路径</strong>
+          </div>
+          <div><span>保护方式</span><strong>Cloudflare Access / Tunnel</strong></div>
+          <div><span>访问态</span><strong>Cloudflare Access / Tunnel</strong></div>
+        </div>
+      </section>
+
+      <section class="pipeline" aria-label="监测链路">
         <h2>代理链路</h2>
         <div class="pipeline-steps">
           <div class="step-card" id="pipeline-vps">VPS 健康</div>
           <div class="step-divider">→</div>
-          <div class="step-card" id="pipeline-proxy-core">代理核心运行</div>
+          <div class="step-card" id="pipeline-proxy-core">代理核心</div>
           <div class="step-divider">→</div>
-          <div class="step-card" id="pipeline-panel">3X-UI 面板可达</div>
+          <div class="step-card" id="pipeline-panel">管理面板</div>
           <div class="step-divider">→</div>
-          <div class="step-card" id="pipeline-port">代理端口开放</div>
+          <div class="step-card" id="pipeline-port">代理端口</div>
         </div>
-        <p id="pipeline-summary" class="pipeline-summary">
-          正在加载代理链路状态...
-        </p>
+        <p id="pipeline-summary" class="pipeline-summary">正在计算代理链路状态…</p>
       </section>
 
-      <section class="grid" aria-label="健康检查卡片">
-        <article class="card ops-card management-card">
-          <p class="label">管理入口</p>
-          <h3 id="management-status">未知</h3>
-          <p id="management-message" class="message">正在检查 3X-UI 面板入口...</p>
-          <p class="note">需要修改代理配置时，请进入 3X-UI 面板。Control Tower 只做健康监测和诊断建议，不直接修改代理配置。</p>
-          <dl class="metrics">
-            <div><dt>面板名称</dt><dd id="management-panel-name">--</dd></div>
-            <div><dt>本地入口</dt><dd id="management-local-url">--</dd></div>
-            <div><dt>本地协议检测</dt><dd id="management-detected-scheme">--</dd></div>
-            <div><dt>推荐本地入口</dt><dd id="management-recommended-url">--</dd></div>
-            <div><dt>公开入口</dt><dd id="management-public-url" class="url-value">--</dd></div>
-            <div><dt>保护方式</dt><dd id="management-access-note">Cloudflare Access + 3X-UI 登录</dd></div>
-          </dl>
-          <p id="management-protocol-warning" class="note protocol-warning" hidden>当前配置的面板协议可能不匹配。绑定 panel.conanxin.com 前，建议使用 https://127.0.0.1:2096 作为 Tunnel target。</p>
-          <p class="note">为避免泄露 3X-UI 隐藏路径，界面仅显示脱敏后的公开入口。</p>
-          <p id="management-readonly-note" class="note">Control Tower 不读取或修改 3X-UI 配置。</p>
-          <a id="management-open-button" class="action-button management-link" href="#" target="_blank" rel="noopener noreferrer">进入 3X-UI 面板</a>
-        </article>
+      <article class="card management-entry-card management-card">
+        <p class="label">管理入口：面板入口</p>
+        <div class="management-main">
+          <div class="management-status-row">
+            <div>
+              <span>状态</span>
+              <h3 id="management-status">-</h3>
+            </div>
+            <div>
+              <span>本地入口</span>
+              <strong id="management-local-entry">--</strong>
+            </div>
+            <div>
+              <span>推荐本地入口</span>
+              <strong id="management-recommended-url">--</strong>
+            </div>
+            <div>
+              <span>公开入口</span>
+              <strong id="management-public-entry" class="url-value">--</strong>
+              <span id="management-public-mask" class="tag">已脱敏</span>
+            </div>
+            <div>
+              <span>保护方式</span>
+              <strong id="management-access-note">建议通过 Cloudflare Access + 双重校验保护后访问。</strong>
+            </div>
+          </div>
 
+          <div class="management-local-protocol">本地协议检测</div>
+
+          <p id="management-message" class="message">正在检查管理入口可达性…</p>
+          <p class="note mask-note" id="management-readonly-note">Control Tower 不读取或修改 3X-UI 配置。</p>
+          <p id="management-protocol-warning" class="note protocol-warning" hidden>当前配置的面板协议可能不匹配</p>
+          <a id="management-open-button" class="action-button management-link" href="#" target="_blank" rel="noopener noreferrer">
+            进入 3X-UI 面板
+          </a>
+          <p class="note url-note">为避免泄露 3X-UI 隐藏路径，界面仅显示脱敏入口。</p>
+        </div>
+      </article>
+
+      <section class="grid">
         <article class="card core-card" data-check="vps_system">
           <p class="label">VPS 状态</p>
-          <h3>未知</h3>
-          <p class="message">尚未检测。</p>
+          <h3>--</h3>
+          <p class="message">加载中…</p>
         </article>
         <article class="card core-card" data-check="proxy_core">
           <p class="label">代理核心状态</p>
-          <h3>未知</h3>
-          <p class="message">尚未检测。</p>
+          <h3>--</h3>
+          <p class="message">加载中…</p>
         </article>
         <article class="card core-card" data-check="xui_panel">
           <p class="label">3X-UI 面板状态</p>
-          <h3>未知</h3>
-          <p class="message">尚未检测。</p>
+          <h3>--</h3>
+          <p class="message">加载中…</p>
         </article>
         <article class="card core-card" data-check="proxy_ports">
           <p class="label">端口状态</p>
-          <h3>未知</h3>
-          <p class="message">尚未检测。</p>
+          <h3>--</h3>
+          <p class="message">加载中…</p>
         </article>
+      </section>
 
+      <section class="risk-grid">
         <article class="card risk-card" data-check="traffic">
           <p class="label">流量风险</p>
-          <h3>未知</h3>
-          <p class="message">尚未检测。</p>
+          <h3>--</h3>
+          <p class="message">加载中…</p>
           <dl class="metrics">
-            <div><dt>已用</dt><dd data-detail="estimated_used_gb">--</dd></div>
-            <div><dt>上限</dt><dd data-detail="monthly_limit_gb">--</dd></div>
-          </dl>
-          <dl class="metrics">
+            <div><dt>已用流量</dt><dd data-detail="estimated_used_gb">--</dd></div>
+            <div><dt>月限制</dt><dd data-detail="monthly_limit_gb">--</dd></div>
             <div><dt>使用率</dt><dd data-detail="usage_percent">--</dd></div>
           </dl>
           <p class="note">本地流量估算安全。服务商后台计费可能与本地估算不同。</p>
-          <p class="note">本地估算，仅供参考，可能与服务商账单不同。</p>
         </article>
+
         <article class="card risk-card" data-check="domain_dns">
           <p class="label">域名 / DNS</p>
-          <h3>未配置</h3>
-          <p class="message">尚未检测。</p>
+          <h3>--</h3>
+          <p class="message">加载中…</p>
           <dl class="metrics">
             <div><dt>解析 IP 数</dt><dd data-detail="resolved_ip_count">--</dd></div>
-            <div><dt>预期匹配</dt><dd data-detail="expected_match">--</dd></div>
+            <div><dt>期望匹配</dt><dd data-detail="expected_match">--</dd></div>
           </dl>
         </article>
+
         <article class="card risk-card" data-check="tls_certificate">
           <p class="label">TLS 证书</p>
-          <h3>未配置</h3>
-          <p class="message">尚未检测。</p>
+          <h3>--</h3>
+          <p class="message">加载中…</p>
           <dl class="metrics">
             <div><dt>剩余天数</dt><dd data-detail="days_remaining">--</dd></div>
-            <div><dt>过期时间</dt><dd data-detail="not_after">--</dd></div>
+            <div><dt>到期时间</dt><dd data-detail="not_after">--</dd></div>
           </dl>
         </article>
 
         <article class="card ops-card alerting-card">
           <p class="label">告警通知</p>
-          <h3 id="alerts-enabled">未知</h3>
-          <p id="alerts-message" class="message">正在读取告警配置...</p>
-          <p id="alerts-config-message" class="note">告警配置状态读取中...</p>
+          <h3 id="alerts-enabled">--</h3>
+          <p id="alerts-message" class="message">告警状态加载中…</p>
+          <p id="alerts-config-message" class="note">告警配置状态读取中…</p>
           <dl class="metrics">
-            <div><dt>告警总开关</dt><dd id="alerts-config-state">--</dd></div>
-            <div><dt>最低等级</dt><dd id="alerts-min-severity">--</dd></div>
-            <div><dt>冷却周期</dt><dd id="alerts-cooldown">--</dd></div>
+            <div><dt>告警配置状态</dt><dd id="alerts-config-state">--</dd></div>
+            <div><dt>最小告警等级</dt><dd id="alerts-min-severity">--</dd></div>
+            <div><dt>冷却时间</dt><dd id="alerts-cooldown">--</dd></div>
             <div><dt>恢复通知</dt><dd id="alerts-recovery">--</dd></div>
-            <div><dt>可发送测试</dt><dd id="alerts-safe-to-test">--</dd></div>
             <div><dt>Telegram</dt><dd id="alerts-telegram">--</dd></div>
             <div><dt>Email</dt><dd id="alerts-email">--</dd></div>
             <div><dt>活跃告警</dt><dd id="alerts-active">--</dd></div>
-            <div><dt>上次发送</dt><dd id="alerts-last-sent">--</dd></div>
-            <div><dt>配置状态</dt><dd id="alerts-config-state">--</dd></div>
+            <div><dt>最后发送</dt><dd id="alerts-last-sent">--</dd></div>
           </dl>
           <button id="test-alert-button" class="action-button" type="button">测试告警</button>
-          <p id="test-alert-result" class="note">告警未启用时将显示跳过。</p>
+          <p id="test-alert-result" class="note">可用“测试告警”验证通知链路，不代表真实故障。</p>
+            <div><dt>告警总开关</dt><dd id="alerts-config-total">--</dd></div>
+            <div><dt>测试可用状态</dt><dd id="alerts-safe-to-test">--</dd></div>
         </article>
       </section>
 
@@ -169,50 +212,54 @@
       </section>
 
       <section class="risk-panel diagnostics-summary-panel">
-        <h2>诊断摘要</h2>
-        <div id="diagnostics-summary" class="diagnostics-summary">正在加载诊断摘要...</div>
+        <h2>诊断建议</h2>
+        <p class="diagnostics-summary">正在加载诊断结果…</p>
       </section>
 
       <section class="risk-panel diagnostics-panel">
-        <h2>诊断建议</h2>
-        <p class="note">以下命令仅用于只读排查，不会自动执行。</p>
+        <h2>诊断详情</h2>
+        <p class="note">仅提供只读建议命令，不会自动执行。</p>
         <article id="top-diagnosis" class="diagnosis">
-          <h3>未发现需要处理的诊断问题。</h3>
+          <h3>当前无优先诊断</h3>
           <p id="diagnosis-impact">--</p>
           <p id="diagnosis-first-check">--</p>
           <p id="diagnosis-related">--</p>
           <p id="diagnosis-confidence">--</p>
-          <pre><code id="diagnosis-commands">--</code></pre>
+          <p id="diagnosis-health-note" class="note">可按优先级核对后再决定是否重启代理。</p>
+          <pre><code id="diagnosis-commands">未发现可执行的诊断命令</code></pre>
         </article>
       </section>
 
       <section class="risk-panel history-panel">
         <h2>健康历史</h2>
-        <div id="history-summary" class="history-summary">暂无历史数据。Dashboard 刷新后会自动开始记录。</div>
+        <p id="history-status" class="timestamp">当前状态：加载中…</p>
+        <p id="history-window-status" class="timestamp">最近 24 小时：加载中…</p>
+        <div id="history-summary" class="history-summary">历史数据加载中…</div>
         <div class="history-metrics">
           <dl class="metrics">
-            <div><dt>最近 24 小时状态</dt><dd id="history-status">--</dd></div>
             <div><dt>当前状态</dt><dd id="history-current-status">--</dd></div>
             <div><dt>最差状态</dt><dd id="history-worst-status">--</dd></div>
-            <div><dt>健康比例</dt><dd id="history-health-ratio">--</dd></div>
+            <div><dt>快照数</dt><dd id="history-snapshot-count">--</dd></div>
           </dl>
           <dl class="metrics">
-            <div><dt>快照数量</dt><dd id="history-snapshot-count">--</dd></div>
-            <div><dt>事件数量</dt><dd id="history-event-count">--</dd></div>
+            <div><dt>告警数</dt><dd id="history-event-count">--</dd></div>
+            <div><dt>健康比例</dt><dd id="history-health-ratio">--</dd></div>
             <div><dt>最近异常</dt><dd id="history-last-problem">--</dd></div>
             <div><dt>最近恢复</dt><dd id="history-last-recovery">--</dd></div>
           </dl>
         </div>
-        <div class="history-events">
-          <h3>最近事件</h3>
+          <div class="history-events">
+          <h3>最近事件（最近 24 小时）</h3>
+          <p class="note">当前状态健康；最近 24 小时若有告警会在此展示。</p>
           <ul id="history-events-list">
-            <li>暂无事件。</li>
+            <li>暂无历史事件</li>
           </ul>
         </div>
       </section>
 
-      <p id="last-checked" class="timestamp">最后检查：--</p>
+        <p id="last-checked" class="timestamp">最后检查：--</p>
     </main>
+
     <script src="/static/app.js"></script>
   </body>
 </html>

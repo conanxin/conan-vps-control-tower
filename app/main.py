@@ -1,31 +1,32 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import importlib.metadata
 import re
 from functools import lru_cache
 from pathlib import Path
+from urllib.parse import urlparse
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
+from app.alerts.config_check import check_alert_config
 from app.alerts.manager import AlertManager
 from app.config import AppConfig, load_config
 from app.diagnostics.engine import diagnose
 from app.health.domain_checker import check_domain
 from app.health.evaluator import evaluate
-from app.history.recorder import record_health_snapshot
-from app.history.store import load_events, load_snapshots
-from app.history.summary import build_summary
 from app.health.http_checker import check_panel
 from app.health.port_checker import check_ports
 from app.health.process_checker import check_proxy_processes, check_proxy_services
 from app.health.system_checker import check_system
 from app.health.tls_checker import check_tls
 from app.health.traffic_checker import check_traffic
-from app.management.panel import check_management_panel, public_display_url
-from app.models import CheckResult, HealthResponse, MetaResponse
-from app.alerts.config_check import check_alert_config
+from app.history.recorder import record_health_snapshot
+from app.history.store import load_events, load_snapshots
+from app.history.summary import build_summary
+from app.management.panel import check_management_panel
+from app.models import HealthResponse, MetaResponse
 
 APP_DIR = Path(__file__).resolve().parent
 STATIC_DIR = APP_DIR / "static"
@@ -54,7 +55,7 @@ def get_config() -> AppConfig:
     return load_config()
 
 
-def run_all_checks(config: AppConfig) -> list[CheckResult]:
+def run_all_checks(config: AppConfig):
     return [
         check_system(config.system),
         check_proxy_processes(config.proxy),
@@ -67,11 +68,11 @@ def run_all_checks(config: AppConfig) -> list[CheckResult]:
     ]
 
 
-def run_system_checks(config: AppConfig) -> list[CheckResult]:
+def run_system_checks(config: AppConfig):
     return [check_system(config.system)]
 
 
-def run_proxy_checks(config: AppConfig) -> list[CheckResult]:
+def run_proxy_checks(config: AppConfig):
     return [
         check_proxy_processes(config.proxy),
         check_proxy_services(config.proxy),
@@ -90,89 +91,14 @@ def dashboard() -> FileResponse:
 def api_health() -> HealthResponse:
     config = get_config()
     health = evaluate(run_all_checks(config))
-    history_result = {"recorded": False, "reason": "history disabled", "snapshot_id": None}
     if config.history.enabled:
         history_result = record_health_snapshot(health, config.history)
+    else:
+        history_result = {"recorded": False, "reason": "history disabled", "snapshot_id": None}
     health.history_recording = history_result
     if config.alerts.enabled:
         AlertManager(config.alerts).evaluate(health)
     return health
-
-
-@app.get("/api/history/summary")
-def api_history_summary() -> dict:
-    config = get_config()
-    if not config.history.enabled:
-        return {
-            "enabled": False,
-            "message": "history disabled",
-            "summary": None,
-        }
-
-    snapshots, snapshot_error = load_snapshots(config.history.data_file)
-    events, event_error = load_events(config.history.event_file)
-    summary = build_summary(
-        snapshots,
-        events,
-        window_hours=config.history.summary_window_hours,
-    )
-    payload = summary.to_dict()
-    payload["enabled"] = True
-    if snapshot_error:
-        payload["warning"] = snapshot_error
-    if event_error:
-        payload["warning"] = event_error
-    return payload
-
-
-@app.get("/api/history/recent")
-def api_history_recent(limit: int = 50) -> dict:
-    config = get_config()
-    if not config.history.enabled:
-        return {
-            "enabled": False,
-            "items": [],
-            "limit": limit,
-        }
-
-    safe_limit = max(1, min(limit, 500))
-    snapshots, snapshot_error = load_snapshots(config.history.data_file)
-    items = [item.to_dict() for item in snapshots[-safe_limit:]]
-    payload: dict[str, object] = {
-        "enabled": True,
-        "items": items,
-        "limit": safe_limit,
-        "window_hours": config.history.summary_window_hours,
-    }
-    if snapshot_error:
-        payload["warning"] = snapshot_error
-    return payload
-
-
-@app.get("/api/events")
-def api_events(limit: int = 50, severity: str | None = None) -> dict:
-    config = get_config()
-    if not config.history.enabled:
-        return {
-            "enabled": False,
-            "items": [],
-            "limit": max(1, min(limit, 500)),
-            "severity": severity,
-        }
-
-    safe_limit = max(1, min(limit, 500))
-    events, event_error = load_events(config.history.event_file)
-    items = [item.to_dict() for item in events if severity is None or item.severity == severity]
-    items = items[-safe_limit:]
-    payload: dict[str, object] = {
-        "enabled": True,
-        "items": items,
-        "limit": safe_limit,
-        "severity": severity,
-    }
-    if event_error:
-        payload["warning"] = event_error
-    return payload
 
 
 @app.get("/api/system", response_model=HealthResponse)
@@ -208,27 +134,7 @@ def api_traffic() -> HealthResponse:
 @app.get("/api/management")
 def api_management() -> dict:
     config = get_config()
-    try:
-        return check_management_panel(config.management).to_dict()
-    except Exception as exc:
-        return {
-            "enabled": bool(config.management.enabled),
-            "panel_name": config.management.panel_name,
-            "panel_local_url": config.management.panel_local_url,
-            "panel_public_url": config.management.panel_public_url,
-            "panel_public_display_url": public_display_url(config.management.panel_public_url),
-            "local_reachable": False,
-            "status": "unknown",
-            "message": f"管理入口检查失败，已安全回退：{type(exc).__name__}",
-            "access_note": config.management.access_note,
-            "readonly_note": config.management.readonly_note,
-            "open_in_new_tab": config.management.open_in_new_tab,
-            "checked_at": "",
-            "detected_scheme": "unknown",
-            "recommended_local_url": config.management.panel_local_url,
-            "protocol_warning": False,
-            "tcp_reachable": False,
-        }
+    return check_management_panel(config.management).to_dict()
 
 
 @app.get("/api/alerts/status")
@@ -240,33 +146,7 @@ def api_alerts_status() -> dict:
 @app.get("/api/alerts/config-check")
 def api_alerts_config_check() -> dict:
     config = get_config()
-    try:
-        return check_alert_config(config.alerts)
-    except Exception as exc:
-        return {
-            "status": "warning",
-            "enabled": False,
-            "message": f"告警配置检查失败，已安全回退：{type(exc).__name__}",
-            "min_severity": config.alerts.min_severity,
-            "cooldown_seconds": config.alerts.cooldown_seconds,
-            "send_recovery": config.alerts.send_recovery,
-            "state_file_ready": bool(config.alerts.state_file),
-            "channels": {
-                "telegram": {
-                    "enabled": False,
-                    "ready": False,
-                    "missing_fields": [],
-                    "message": "Telegram 告警未开启。",
-                },
-                "email": {
-                    "enabled": False,
-                    "ready": False,
-                    "missing_fields": [],
-                    "message": "Email 告警未开启。",
-                },
-            },
-            "safe_to_test": False,
-        }
+    return check_alert_config(config.alerts)
 
 
 @app.post("/api/alerts/test")
@@ -282,9 +162,85 @@ def api_alerts_evaluate() -> dict:
     return AlertManager(config.alerts).evaluate(health).to_dict()
 
 
-@app.get("/api/meta", response_model=MetaResponse)
-def api_meta() -> MetaResponse:
+@app.get("/api/diagnostics")
+def api_diagnostics() -> dict:
     config = get_config()
+    health = evaluate(run_all_checks(config))
+    return diagnose(health).to_dict()
+
+
+@app.get("/api/history/summary")
+def api_history_summary() -> dict:
+    config = get_config()
+    if not config.history.enabled:
+        return {"enabled": False, "message": "history disabled", "summary": None}
+
+    snapshots, snapshot_error = load_snapshots(config.history.data_file)
+    events, event_error = load_events(config.history.event_file)
+    summary = build_summary(
+        snapshots,
+        events,
+        window_hours=config.history.summary_window_hours,
+    )
+    payload = summary.to_dict()
+    payload["enabled"] = True
+    if snapshot_error:
+        payload["warning"] = snapshot_error
+    if event_error:
+        payload["warning"] = event_error
+    return payload
+
+
+@app.get("/api/history/recent")
+def api_history_recent(limit: int = 50) -> dict:
+    config = get_config()
+    safe_limit = max(1, min(limit, 500))
+    if not config.history.enabled:
+        return {"enabled": False, "items": [], "limit": safe_limit}
+
+    snapshots, snapshot_error = load_snapshots(config.history.data_file)
+    items = [item.to_dict() for item in snapshots[-safe_limit:]]
+    payload = {"enabled": True, "items": items, "limit": safe_limit, "window_hours": config.history.summary_window_hours}
+    if snapshot_error:
+        payload["warning"] = snapshot_error
+    return payload
+
+
+@app.get("/api/events")
+def api_events(limit: int = 50, severity: str | None = None) -> dict:
+    config = get_config()
+    safe_limit = max(1, min(limit, 500))
+    if not config.history.enabled:
+        return {
+            "enabled": False,
+            "items": [],
+            "limit": safe_limit,
+            "severity": severity,
+        }
+
+    events, event_error = load_events(config.history.event_file)
+    items = [item.to_dict() for item in events if severity is None or item.severity == severity]
+    items = items[-safe_limit:]
+    payload = {"enabled": True, "items": items, "limit": safe_limit, "severity": severity}
+    if event_error:
+        payload["warning"] = event_error
+    return payload
+
+
+def _safe_public_entry(hostname: str | None) -> str:
+    if not hostname or hostname in {"127.0.0.1", "localhost"}:
+        return "tower.conanxin.com"
+    return hostname
+
+
+@app.get("/api/meta", response_model=MetaResponse)
+def api_meta(request: Request) -> MetaResponse:
+    config = get_config()
+    request_host = request.url.hostname
+    request_scheme = request.url.scheme
+    local_access = request_host in {"127.0.0.1", "localhost", None}
+
+    public_entry = f"{request_scheme}://{_safe_public_entry(request_host)}"
     return MetaResponse(
         app_name="Conan VPS Control Tower",
         version=_project_version(),
@@ -292,16 +248,13 @@ def api_meta() -> MetaResponse:
         configured_host=config.server.host,
         configured_port=config.server.port,
         local_only=True,
-        access_hint="Use SSH tunnel to access the dashboard.",
+        access_hint="Cloudflare Access / Tunnel",
+        public_entry=public_entry,
+        external_access_mode="Cloudflare Access / Tunnel",
+        direct_public_bind=False,
+        access_protection="Cloudflare Access / Tunnel",
         history_enabled=config.history.enabled,
         event_log=config.history.enabled,
         alert_config_check=True,
         management_entry=True,
     )
-
-
-@app.get("/api/diagnostics")
-def api_diagnostics() -> dict:
-    config = get_config()
-    health = evaluate(run_all_checks(config))
-    return diagnose(health).to_dict()

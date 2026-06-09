@@ -38,6 +38,10 @@ class MetaResponse(BaseModel):
     configured_port: int
     local_only: bool
     access_hint: str
+    public_entry: str | None = None
+    external_access_mode: str | None = None
+    direct_public_bind: bool = False
+    access_protection: str | None = None
     history_enabled: bool
     event_log: bool
     alert_config_check: bool

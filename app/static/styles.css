@@ -229,6 +229,11 @@ h1 {
   margin-top: 16px;
 }
 
+.management-card {
+  grid-column: span 2;
+  overflow: hidden;
+}
+
 .card {
   min-height: 168px;
   padding: 16px;
@@ -289,6 +294,57 @@ h1 {
 
 .management-card {
   overflow: hidden;
+}
+
+.management-main {
+  display: grid;
+  gap: 10px;
+}
+
+.management-status-row {
+  display: grid;
+  gap: 12px 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.management-local-protocol {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.status-card-layout {
+  display: grid;
+}
+
+.tag {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.external-access-card {
+  margin-top: 16px;
+}
+
+.external-grid strong,
+.management-status-row strong {
+  display: inline-block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.url-surface {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.management-entry-card .action-button {
+  width: 100%;
+  max-width: 280px;
 }
 
 .note {
@@ -371,6 +427,12 @@ h1 {
   font-size: 14px;
 }
 
+#history-status {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
 pre {
   max-width: 100%;
   overflow-x: auto;
@@ -426,6 +488,10 @@ code {
   .grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .management-card {
+    grid-column: span 2;
+  }
 }
 
 @media (max-width: 560px) {
@@ -445,6 +511,10 @@ code {
 
   .grid {
     grid-template-columns: 1fr;
+  }
+
+  .management-card {
+    grid-column: span 1;
   }
 
   .step-card {
