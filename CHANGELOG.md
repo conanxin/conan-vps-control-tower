@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Phase 1F.1 Operational Polish
+
+- Added `scripts/tower-status.sh` for one-command local-only status and API checks.
+- Added `scripts/tower-logs.sh` for fast project log viewing and follow mode.
+- Added `scripts/tower-stop-temporary-uvicorn.sh` to stop only `uvicorn app.main:app --host 127.0.0.1 --port 3001`.
+- Updated operational runbook and persistence verification docs for operational clarity.
+
 ## v0.2.0-alpha
 
 ### Domain / TLS / Traffic Risk

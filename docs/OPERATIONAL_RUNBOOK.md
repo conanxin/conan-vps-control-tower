@@ -2,6 +2,26 @@
 
 This runbook summarizes stable local-only operation on a personal VPS.
 
+## Common Operations Cheatsheet
+
+```bash
+bash scripts/tower-status.sh
+bash scripts/tower-logs.sh
+bash scripts/tower-logs.sh follow
+bash scripts/tower-stop-temporary-uvicorn.sh
+sudo systemctl start conan-vps-control-tower
+sudo systemctl stop conan-vps-control-tower
+sudo systemctl disable conan-vps-control-tower
+bash scripts/uninstall-systemd-local-only.sh
+ssh -L 3001:127.0.0.1:3001 dmit-control-tower
+```
+
+Open locally:
+
+```text
+http://127.0.0.1:3001
+```
+
 ## Start
 
 ```bash
@@ -19,7 +39,7 @@ bash scripts/uninstall-systemd-local-only.sh
 To stop a temporary uvicorn process started by hand:
 
 ```bash
-pkill -f 'uvicorn app.main:app --host 127.0.0.1 --port 3001' || true
+bash scripts/tower-stop-temporary-uvicorn.sh
 ```
 
 ## Status
@@ -27,23 +47,28 @@ pkill -f 'uvicorn app.main:app --host 127.0.0.1 --port 3001' || true
 ```bash
 systemctl status conan-vps-control-tower --no-pager
 bash scripts/check-systemd-local-only.sh
+bash scripts/tower-status.sh
 ```
 
 ## Logs
 
 ```bash
 journalctl -u conan-vps-control-tower --no-pager -n 80
+bash scripts/tower-logs.sh
+bash scripts/tower-logs.sh follow
 ```
 
 ## Access Dashboard by SSH Tunnel
 
-From local machine:
-
 ```bash
-ssh -L 3001:127.0.0.1:3001 root@YOUR_VPS_HOST
+ssh -L 3001:127.0.0.1:3001 dmit-control-tower
 ```
 
-Then open `http://127.0.0.1:3001` locally.
+Then open:
+
+```text
+http://127.0.0.1:3001
+```
 
 Do not expose the dashboard publicly.
 
@@ -76,7 +101,7 @@ Keep existing `config.yaml` values aligned with your VPS (especially proxy ports
 
 ```bash
 bash scripts/uninstall-systemd-local-only.sh
-pkill -f 'uvicorn app.main:app --host 127.0.0.1 --port 3001' || true
+bash scripts/tower-stop-temporary-uvicorn.sh
 cd ~/apps/conan-vps-control-tower
 source .venv/bin/activate
 uvicorn app.main:app --host 127.0.0.1 --port 3001
@@ -124,6 +149,7 @@ Then reinstall service.
 
 ```bash
 bash scripts/check-systemd-local-only.sh
+bash scripts/tower-status.sh
 ```
 
 Check service status, listener binding, and logs.
@@ -133,7 +159,7 @@ Check service status, listener binding, and logs.
 Confirm SSH tunnel command and local-only port exposure:
 
 ```bash
-ssh -L 3001:127.0.0.1:3001 root@YOUR_VPS_HOST
+ssh -L 3001:127.0.0.1:3001 dmit-control-tower
 ss -lntup | grep 3001
 ```
 

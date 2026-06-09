@@ -68,6 +68,11 @@ See [Alerting](docs/ALERTING.md) for Telegram and Email notification setup.
 See [Diagnostics](docs/DIAGNOSTICS.md) for suggested read-only checks.
 See [systemd local-only](docs/SYSTEMD_LOCAL_ONLY.md), [real VPS validation checklist](docs/REAL_VPS_VALIDATION_CHECKLIST.md), and [dashboard smoke test](docs/DASHBOARD_SMOKE_TEST.md) before running on a real VPS.
 
+Operationally, we now provide:
+
+- [Operational runbook](docs/OPERATIONAL_RUNBOOK.md)
+- [systemd persistence verification](docs/SYSTEMD_PERSISTENCE_VERIFICATION.md)
+
 ## What It Does Not Do
 
 - Does not replace 3X-UI

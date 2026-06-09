@@ -63,6 +63,17 @@ No 80/443 port binding by the service should be performed.
 
 - `journalctl -u conan-vps-control-tower --no-pager -n 80`
 
+## Phase 1F real VPS result (summary)
+
+- Phase 1F has been executed and passed on a real VPS.
+- `conan-vps-control-tower` service: `installed`, `active`, `enabled`.
+- local-only listener verification: `127.0.0.1:3001` present, `0.0.0.0:3001` absent.
+- API smoke checks passed:
+  - `/api/health` -> 200
+  - `/api/diagnostics` -> 200
+  - `/api/alerts/status` -> 200
+- Proxy tooling impact: 3X-UI and proxy services remain unchanged, no restart actions executed.
+
 No 3X-UI configuration or firewall changes are expected for this phase.
 
 ## Reboot recovery notes
