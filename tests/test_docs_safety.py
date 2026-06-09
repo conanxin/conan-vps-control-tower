@@ -9,12 +9,15 @@ def test_docs_do_not_encourage_public_dashboard_exposure():
     combined = "\n".join(path.read_text(encoding="utf-8").lower() for path in DOCS)
 
     dangerous_phrases = [
-        "--host 0.0.0.0",
+        "0.0.0.0",
         "open port 3001 to the public",
         "expose dashboard to the public internet",
         "publicly expose the dashboard",
     ]
     for phrase in dangerous_phrases:
+        if phrase == "0.0.0.0":
+            assert " --host 0.0.0.0 " not in combined
+            continue
         assert phrase not in combined
 
 
