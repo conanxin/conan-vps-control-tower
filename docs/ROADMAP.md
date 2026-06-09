@@ -63,6 +63,14 @@
 - Active risk split from optional not-configured checks
 - Local runtime header and traffic percent formatting polish
 
+## Phase 1F.3: README screenshot and demo docs
+
+- Status: implemented on main
+- Added screenshot placeholder and capture guide
+- Added demo walkthrough and README showcase notes
+- Updated docs to emphasize local-only access and SSH tunnel flow
+- Added tests for showcase/doc presence and redaction safety
+
 ## Phase 2: Project Control Tower
 
 - Track personal projects

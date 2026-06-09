@@ -1,10 +1,8 @@
 # Conan VPS Control Tower Operational Runbook
 
-This runbook summarizes stable local-only operation on a personal VPS.
+This runbook focuses on local-only operation for personal VPS usage.
 
-Dashboard default is Simplified Chinese. API field names remain English for compatibility.
-
-## Common Operations Cheatsheet
+## Common Commands
 
 ```bash
 bash scripts/tower-status.sh
@@ -18,13 +16,23 @@ bash scripts/uninstall-systemd-local-only.sh
 ssh -L 3001:127.0.0.1:3001 dmit-control-tower
 ```
 
-Open locally:
+## Open Dashboard
+
+```bash
+ssh -L 3001:127.0.0.1:3001 dmit-control-tower
+```
+
+Then open:
 
 ```text
 http://127.0.0.1:3001
 ```
 
-## Start
+Dashboard is simplified Chinese by default; API fields remain English for compatibility.
+
+## Start / Stop
+
+### Start as service
 
 ```bash
 cd ~/apps/conan-vps-control-tower
@@ -32,19 +40,19 @@ bash scripts/deploy-local-only.sh
 bash scripts/install-systemd-local-only.sh
 ```
 
-## Stop
+### Stop service
 
 ```bash
-bash scripts/uninstall-systemd-local-only.sh
+sudo systemctl stop conan-vps-control-tower
 ```
 
-To stop a temporary uvicorn process started by hand:
+To stop temporary uvicorn only:
 
 ```bash
 bash scripts/tower-stop-temporary-uvicorn.sh
 ```
 
-## Status
+## Status and Health Checks
 
 ```bash
 systemctl status conan-vps-control-tower --no-pager
@@ -60,36 +68,27 @@ bash scripts/tower-logs.sh
 bash scripts/tower-logs.sh follow
 ```
 
-## Access Dashboard by SSH Tunnel
-
-```bash
-ssh -L 3001:127.0.0.1:3001 dmit-control-tower
-```
-
-Then open:
-
-```text
-http://127.0.0.1:3001
-```
-
-Do not expose the dashboard publicly.
-The default dashboard header also shows: 本地只读 · 绑定地址 · 访问方式 SSH Tunnel · 无公网暴露.
-
-## Verify local-only behavior
+## Verify local-only
 
 ```bash
 ss -lntup | grep 3001
 ```
 
-Expected result:
+Expected:
 
 ```text
 127.0.0.1:3001
 ```
 
-There should be no `0.0.0.0:3001` listener.
+Forbidden:
 
-## Upgrade code
+```text
+0.0.0.0:3001
+```
+
+Do not expose dashboard publicly. Keep local-only.
+
+## Upgrade
 
 ```bash
 cd ~/apps/conan-vps-control-tower
@@ -98,19 +97,12 @@ bash scripts/deploy-local-only.sh
 sudo systemctl restart conan-vps-control-tower
 ```
 
-Keep existing `config.yaml` values aligned with your VPS (especially proxy ports and check targets).
+## Showcasing / Screenshot
 
-## Roll back to temporary uvicorn
+- Screenshot guidance: `docs/media/DASHBOARD_SCREENSHOT_GUIDE.md`
+- Demo walk-through: `docs/DEMO_WALKTHROUGH.md`
 
-```bash
-bash scripts/uninstall-systemd-local-only.sh
-bash scripts/tower-stop-temporary-uvicorn.sh
-cd ~/apps/conan-vps-control-tower
-source .venv/bin/activate
-uvicorn app.main:app --host 127.0.0.1 --port 3001
-```
-
-## Uninstall service
+## Uninstall
 
 ```bash
 bash scripts/uninstall-systemd-local-only.sh
@@ -118,27 +110,23 @@ bash scripts/uninstall-systemd-local-only.sh
 
 This only touches `conan-vps-control-tower.service`.
 
-## Common troubleshooting
+## Troubleshooting
 
-### 1) Port 3001 already in use
+### 1) 3001 is occupied
 
 ```bash
 ss -lntup | grep -E ':3001'
 ```
 
-Stop the process using that port or choose another port in `config.yaml` for non-production tests.
-
-### 2) .venv does not exist
-
-Run:
+### 2) .venv missing
 
 ```bash
 bash scripts/deploy-local-only.sh
 ```
 
-### 3) config.yaml host is not 127.0.0.1
+### 3) config host not local
 
-Edit `config.yaml` and set:
+Edit `config.yaml`:
 
 ```yaml
 server:
@@ -146,26 +134,18 @@ server:
   port: 3001
 ```
 
-Then reinstall service.
-
-### 4) API is not accessible
+### 4) API not reachable
 
 ```bash
 bash scripts/check-systemd-local-only.sh
 bash scripts/tower-status.sh
 ```
 
-Check service status, listener binding, and logs.
+### 5) Dashboard not open
 
-### 5) Dashboard cannot open
-
-Confirm SSH tunnel command and local-only port exposure:
+Confirm SSH tunnel + local-only bind:
 
 ```bash
 ssh -L 3001:127.0.0.1:3001 dmit-control-tower
 ss -lntup | grep 3001
 ```
-
-Confirm `http://127.0.0.1:3001` is opened from local machine.
-
-Do not change firewall rules as part of troubleshooting.

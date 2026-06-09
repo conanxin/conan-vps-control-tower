@@ -11,6 +11,14 @@
 - Added neutral styling for not-configured / disabled checks.
 - Added lightweight `/api/meta` for local-only runtime display.
 
+### Phase 1F.3 README screenshot and demo docs
+
+- Added screenshot guidance for SSH-tunnel based local-only display.
+- Added README screenshot placeholder and media documentation workflow.
+- Added demo walkthrough for first-run interpretation.
+- Added README showcase note for display strategy and 30-second onboarding.
+- Added documentation tests for screenshot links, placeholder safety, local-only wording, and redaction rules.
+
 ### Phase 1F.1 Operational Polish
 
 - Added `scripts/tower-status.sh` for one-command local-only status and API checks.
