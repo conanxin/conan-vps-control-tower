@@ -70,6 +70,22 @@ See:
 - [Health History](docs/HEALTH_HISTORY.md)
 - [Event Log](docs/EVENT_LOG.md)
 
+## Domain access / 手机访问
+
+SSH Tunnel remains the recommended default access path. If you want to check the dashboard from a phone browser, use Cloudflare Tunnel + Access instead of exposing raw ports.
+
+Recommended split:
+
+- `tower.example.com` -> Conan VPS Control Tower at `http://127.0.0.1:3001`
+- `panel.example.com` -> 3X-UI panel at `http://127.0.0.1:YOUR_3XUI_PANEL_PORT`
+
+Keep these hostnames separate from your proxy main domain. Do not expose port `3001` publicly, and do not use Caddy/Nginx to take over VPS `80/443` for this project.
+
+See:
+
+- [Domain access via Cloudflare Tunnel](docs/DOMAIN_ACCESS_CLOUDFLARE_TUNNEL.md)
+- [Cloudflare Access policy](docs/CLOUDFLARE_ACCESS_POLICY.md)
+
 ## Real VPS validation
 
 Phase 1E-Live validation passed in de-identified form:
@@ -101,6 +117,7 @@ Phase 1E-Live validation passed in de-identified form:
 - Optional Telegram / Email alerting
 - Read-only diagnostics and suggested checks
 - Health history and event log
+- Cloudflare Tunnel domain access guide
 - Local-only systemd helper scripts
 
 See:
@@ -116,6 +133,7 @@ See:
 - [Dashboard screenshot guide](docs/media/DASHBOARD_SCREENSHOT_GUIDE.md)
 - [Demo walkthrough](docs/DEMO_WALKTHROUGH.md)
 - [Showcase notes](docs/README_SHOWCASE_NOTES.md)
+- [Domain access via Cloudflare Tunnel](docs/DOMAIN_ACCESS_CLOUDFLARE_TUNNEL.md)
 
 ## What It Does Not Do
 
@@ -167,6 +185,7 @@ This is an alpha project for personal VPS health control. Keep traffic local and
 - Phase 1F.2: Chinese dashboard UX polish
 - Phase 1F.3: README screenshot and demo docs
 - Phase 1G: Health history and event log
+- Phase 1K: Domain access via Cloudflare Tunnel
 - This project intentionally stays focused on personal VPS / proxy health monitoring.
 
 ## License

@@ -14,6 +14,8 @@ sudo systemctl stop conan-vps-control-tower
 sudo systemctl disable conan-vps-control-tower
 bash scripts/uninstall-systemd-local-only.sh
 bash scripts/check-alert-config.sh
+bash scripts/discover-panel-and-tower-local.sh
+bash scripts/check-domain-access-readiness.sh
 ssh -L 3001:127.0.0.1:3001 dmit-control-tower
 ```
 
@@ -96,6 +98,31 @@ Forbidden:
 ```
 
 Do not expose dashboard publicly. Keep local-only.
+
+## Domain access readiness
+
+Domain access is optional. The safer default remains SSH Tunnel. If you want mobile browser access, use Cloudflare Tunnel + Cloudflare Access.
+
+Run read-only discovery:
+
+```bash
+bash scripts/discover-panel-and-tower-local.sh
+```
+
+Confirm targets:
+
+```text
+tower target: http://127.0.0.1:3001
+panel target: http://127.0.0.1:YOUR_3XUI_PANEL_PORT
+```
+
+Check readiness:
+
+```bash
+bash scripts/check-domain-access-readiness.sh
+```
+
+Confirm `80/443` are only shown for awareness and are not modified by these scripts. Do not expose `3001` directly, and do not mix `tower.example.com` / `panel.example.com` with the proxy main domain.
 
 ## Upgrade
 

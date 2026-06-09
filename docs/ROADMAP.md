@@ -81,6 +81,15 @@
 - Add systemd environment guidance and alert config check script
 - Improve dashboard alert setup visibility for Telegram / Email readiness
 
+## Phase 1K: Domain Access via Cloudflare Tunnel
+
+- Status: implemented on main
+- Add Cloudflare Tunnel domain access guide
+- Add Cloudflare Access policy guide
+- Add tunnel config template for `tower.example.com` and `panel.example.com`
+- Add read-only readiness and discovery scripts
+- Do not create tunnels or write real domains/tokens in the repository
+
 ## Project Direction (focused)
 
 - This project intentionally stays focused on personal VPS / proxy health monitoring.
@@ -88,5 +97,5 @@
 
 ## Next
 
-- Phase 1H: Alerting setup polish and Telegram guide
 - Phase 1I: Real screenshot and v0.2.1-alpha
+- Phase 1K-Live: Configure Cloudflare Tunnel with user-provided domain

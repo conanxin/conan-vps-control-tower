@@ -1,5 +1,13 @@
 ﻿# Changelog`r`n## Unreleased
 
+### Phase 1K Domain Access via Cloudflare Tunnel
+
+- Added Cloudflare Tunnel domain access guide for phone/browser access.
+- Added Cloudflare Access policy guide for `tower.example.com` and `panel.example.com`.
+- Added tunnel config template under `deploy/cloudflare-tunnel/`.
+- Added read-only local discovery and domain-access readiness scripts.
+- Kept the project local-only by default and did not create tunnels or store tokens.
+
 ### Phase 1H Alerting setup polish
 
 - Added non-intrusive alert config diagnostics endpoint `/api/alerts/config-check`.
