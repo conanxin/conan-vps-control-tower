@@ -274,7 +274,8 @@ function renderManagement(data) {
   document.getElementById("management-local-url").textContent = data.panel_local_url || "--";
   document.getElementById("management-detected-scheme").textContent = data.detected_scheme || "--";
   document.getElementById("management-recommended-url").textContent = data.recommended_local_url || "--";
-  document.getElementById("management-public-url").textContent = publicUrl || "未配置";
+  document.getElementById("management-public-url").textContent =
+    data.panel_public_display_url || (publicUrl ? "已配置（已脱敏）" : "未配置");
   document.getElementById("management-access-note").textContent =
     data.access_note || "建议通过 Cloudflare Access + 3X-UI 登录双层保护访问。";
   document.getElementById("management-readonly-note").textContent =

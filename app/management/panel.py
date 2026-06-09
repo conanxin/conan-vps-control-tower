@@ -23,6 +23,17 @@ def _origin_url(url: str, scheme: str) -> str:
     return f"{scheme}://{host}{port}"
 
 
+def public_display_url(url: str) -> str:
+    if not url:
+        return ""
+    parsed = urlparse(url)
+    if not parsed.scheme or not parsed.netloc:
+        return ""
+    base = f"{parsed.scheme}://{parsed.netloc}"
+    has_hidden_part = (parsed.path and parsed.path != "/") or parsed.query or parsed.fragment
+    return f"{base}/隐藏路径" if has_hidden_part else base
+
+
 def _tcp_reachable(url: str, timeout: float = 3) -> bool:
     parsed = urlparse(url)
     if not parsed.hostname or not parsed.port:
@@ -107,6 +118,7 @@ def check_management_panel(config: ManagementConfig) -> ManagementPanelStatus:
             config.panel_name,
             config.panel_local_url,
             config.panel_public_url,
+            public_display_url(config.panel_public_url),
             config.access_note,
             config.readonly_note,
             config.open_in_new_tab,
@@ -142,6 +154,7 @@ def check_management_panel(config: ManagementConfig) -> ManagementPanelStatus:
         panel_name=config.panel_name,
         panel_local_url=config.panel_local_url,
         panel_public_url=config.panel_public_url,
+        panel_public_display_url=public_display_url(config.panel_public_url),
         local_reachable=reachable,
         status=status,
         message=message,

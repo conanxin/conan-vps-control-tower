@@ -60,6 +60,18 @@ HTTP failure does not always mean the panel is unavailable. HTTPS returning `404
 
 If 3X-UI uses a hidden path, do not commit that path to this repository.
 
+## Public URL masking
+
+`management.panel_public_url` may include the full 3X-UI hidden path in a private `config.yaml` on the VPS. Do not commit that value to GitHub.
+
+The Dashboard uses `panel_public_display_url` for display:
+
+```text
+https://panel.conanxin.com/隐藏路径
+```
+
+The `进入 3X-UI 面板` button still uses the full `panel_public_url` so the entry remains usable. The masked display value is only for UI presentation.
+
 Recommended protection:
 
 ```text

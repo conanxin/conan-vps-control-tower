@@ -71,6 +71,8 @@ Expected:
 - No `password`, `token`, or `cookie` appears.
 - Dashboard contains no iframe for 3X-UI.
 - Button opens the configured `panel_public_url`.
+- If `panel_public_url` contains a hidden path, Dashboard displays `panel_public_display_url` such as `https://panel.conanxin.com/隐藏路径`.
+- The visible Dashboard text should not reveal the real hidden path.
 
 If HTTPS returns `404`, treat it as protocol reachable. It may mean the root path is not the 3X-UI login path. Do not commit hidden paths.
 

@@ -260,6 +260,7 @@ h1 {
   gap: 10px;
   border-top: 1px solid var(--line);
   padding-top: 6px;
+  min-width: 0;
 }
 
 .metrics dt,
@@ -276,6 +277,18 @@ h1 {
   color: var(--text);
   font-weight: 700;
   text-align: right;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.url-value {
+  max-width: 100%;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.management-card {
+  overflow: hidden;
 }
 
 .note {

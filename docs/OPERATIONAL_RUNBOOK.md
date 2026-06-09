@@ -86,6 +86,8 @@ Confirm:
 - `recommended_local_url` may be `https://127.0.0.1:2096`.
 - HTTP failure does not always mean the panel is unavailable; HTTPS `404` can still indicate protocol reachability.
 - If 3X-UI uses a hidden path, do not commit that path to the repository.
+- `panel_public_url` may include the hidden path in private VPS config, but the Dashboard should display `panel_public_display_url`.
+- The button uses the full `panel_public_url`; visible text uses the masked display URL.
 
 ## Logs
 

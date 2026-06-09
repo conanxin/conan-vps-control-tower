@@ -24,6 +24,14 @@
 - Updated Cloudflare Tunnel template to use HTTPS for the 3X-UI panel origin.
 - Added Dashboard protocol warning for mismatched local panel protocol.
 
+### Phase 1L.2 Management Entry URL Masking
+
+- Added `panel_public_display_url` for masked Dashboard display.
+- Kept `panel_public_url` for the management button target.
+- Masked hidden paths as `/隐藏路径` in the management entry card.
+- Added long URL overflow protection in the Dashboard management card.
+- Updated docs to keep 3X-UI hidden paths out of GitHub.
+
 ### Phase 1H Alerting setup polish
 
 - Added non-intrusive alert config diagnostics endpoint `/api/alerts/config-check`.

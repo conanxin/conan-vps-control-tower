@@ -23,7 +23,7 @@ from app.health.process_checker import check_proxy_processes, check_proxy_servic
 from app.health.system_checker import check_system
 from app.health.tls_checker import check_tls
 from app.health.traffic_checker import check_traffic
-from app.management.panel import check_management_panel
+from app.management.panel import check_management_panel, public_display_url
 from app.models import CheckResult, HealthResponse, MetaResponse
 from app.alerts.config_check import check_alert_config
 
@@ -216,6 +216,7 @@ def api_management() -> dict:
             "panel_name": config.management.panel_name,
             "panel_local_url": config.management.panel_local_url,
             "panel_public_url": config.management.panel_public_url,
+            "panel_public_display_url": public_display_url(config.management.panel_public_url),
             "local_reachable": False,
             "status": "unknown",
             "message": f"管理入口检查失败，已安全回退：{type(exc).__name__}",

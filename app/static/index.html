@@ -68,10 +68,11 @@
             <div><dt>本地入口</dt><dd id="management-local-url">--</dd></div>
             <div><dt>本地协议检测</dt><dd id="management-detected-scheme">--</dd></div>
             <div><dt>推荐本地入口</dt><dd id="management-recommended-url">--</dd></div>
-            <div><dt>公开入口</dt><dd id="management-public-url">--</dd></div>
+            <div><dt>公开入口</dt><dd id="management-public-url" class="url-value">--</dd></div>
             <div><dt>保护方式</dt><dd id="management-access-note">Cloudflare Access + 3X-UI 登录</dd></div>
           </dl>
           <p id="management-protocol-warning" class="note protocol-warning" hidden>当前配置的面板协议可能不匹配。绑定 panel.conanxin.com 前，建议使用 https://127.0.0.1:2096 作为 Tunnel target。</p>
+          <p class="note">为避免泄露 3X-UI 隐藏路径，界面仅显示脱敏后的公开入口。</p>
           <p id="management-readonly-note" class="note">Control Tower 不读取或修改 3X-UI 配置。</p>
           <a id="management-open-button" class="action-button management-link" href="#" target="_blank" rel="noopener noreferrer">进入 3X-UI 面板</a>
         </article>

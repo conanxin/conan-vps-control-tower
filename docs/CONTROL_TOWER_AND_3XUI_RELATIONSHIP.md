@@ -35,3 +35,9 @@ A jump entry keeps the product experience unified while preserving technical sep
 ## Future read-only integrations
 
 If future versions read 3X-UI data, that should be a separate phase, disabled by default, and limited to read-only APIs. It should not store 3X-UI passwords, cookies, tokens, UUIDs, subscription links, or panel secrets.
+
+## Hidden path handling
+
+3X-UI may use a hidden panel path. Control Tower can store the complete public URL only in the private VPS `config.yaml`, but the Dashboard should display the masked `panel_public_display_url` instead of the real path.
+
+Do not commit hidden paths to GitHub. The button can use the full URL, while the visible text should stay masked.

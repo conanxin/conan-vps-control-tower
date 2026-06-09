@@ -76,6 +76,14 @@ Port `2096` may be HTTPS locally. HTTP failure does not always mean the panel is
 
 If 3X-UI uses a hidden path, do not commit that path to the repository. `panel.conanxin.com` may need the hidden path in the browser after Cloudflare Access.
 
+Control Tower's management card masks hidden paths in the visible Dashboard text. It may show:
+
+```text
+https://panel.conanxin.com/隐藏路径
+```
+
+while the button still opens the full private `panel_public_url` from the VPS `config.yaml`.
+
 After Cloudflare Tunnel and Cloudflare Access are configured, the Dashboard `管理入口` button can point to:
 
 ```text

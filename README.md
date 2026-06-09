@@ -92,6 +92,8 @@ Control Tower is the health and diagnosis layer. 3X-UI remains the configuration
 
 中文理解：Control Tower 负责看状态，3X-UI 负责改配置。Dashboard 提供 `进入 3X-UI 面板` 的统一入口，但不会读取或修改 3X-UI 配置，也不会保存 3X-UI 账号、密码、cookie 或 token。
 
+If the 3X-UI panel uses a hidden path, keep the full URL only in the private VPS `config.yaml`. The Dashboard masks it as `https://panel.conanxin.com/隐藏路径` while the button still opens the full configured URL.
+
 Recommended domain split:
 
 - `tower.conanxin.com` -> Control Tower

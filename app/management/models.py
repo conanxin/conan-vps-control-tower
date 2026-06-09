@@ -11,6 +11,7 @@ class ManagementPanelStatus:
     panel_name: str
     panel_local_url: str
     panel_public_url: str
+    panel_public_display_url: str
     local_reachable: bool
     status: str
     message: str
@@ -31,6 +32,7 @@ def disabled_status(
     panel_name: str,
     panel_local_url: str,
     panel_public_url: str,
+    panel_public_display_url: str,
     access_note: str,
     readonly_note: str,
     open_in_new_tab: bool,
@@ -40,6 +42,7 @@ def disabled_status(
         panel_name=panel_name,
         panel_local_url=panel_local_url,
         panel_public_url=panel_public_url,
+        panel_public_display_url=panel_public_display_url,
         local_reachable=False,
         status="disabled",
         message="管理入口已关闭。",

@@ -22,3 +22,5 @@ def test_management_docs_describe_boundaries():
     assert "Not an iframe embed" in text or "iframe" in text
     assert "tower.conanxin.com" in text
     assert "panel.conanxin.com" in text
+    assert "hidden path" in text or "隐藏路径" in text
+    assert "do not commit" in text.lower() or "不要" in text

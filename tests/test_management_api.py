@@ -10,7 +10,7 @@ def test_management_api_returns_200_and_safe_payload(tmp_path, monkeypatch):
 management:
   enabled: false
   panel_local_url: "http://127.0.0.1:2096"
-  panel_public_url: "https://panel.conanxin.com"
+  panel_public_url: "https://panel.conanxin.com/secret-hidden-path"
 """,
         encoding="utf-8",
     )
@@ -24,7 +24,8 @@ management:
     assert response.status_code == 200
     assert payload["enabled"] is False
     assert payload["panel_local_url"] == "http://127.0.0.1:2096"
-    assert payload["panel_public_url"] == "https://panel.conanxin.com"
+    assert payload["panel_public_url"] == "https://panel.conanxin.com/secret-hidden-path"
+    assert payload["panel_public_display_url"] == "https://panel.conanxin.com/隐藏路径"
     assert "detected_scheme" in payload
     assert "recommended_local_url" in payload
     assert "protocol_warning" in payload
@@ -32,5 +33,6 @@ management:
     assert "password" not in str(payload).lower()
     assert "token" not in str(payload).lower()
     assert "cookie" not in str(payload).lower()
+    assert "secret-hidden-path" not in payload["panel_public_display_url"]
 
     get_config.cache_clear()
