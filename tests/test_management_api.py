@@ -25,7 +25,7 @@ management:
     assert payload["enabled"] is False
     assert payload["panel_local_url"] == "http://127.0.0.1:2096"
     assert payload["panel_public_url"] == "https://panel.conanxin.com/secret-hidden-path"
-    assert payload["panel_public_display_url"] == "https://panel.conanxin.com/隐藏路径"
+    assert payload["panel_public_display_url"] == "https://panel.conanxin.com / 已配置隐藏路径"
     assert "detected_scheme" in payload
     assert "recommended_local_url" in payload
     assert "protocol_warning" in payload

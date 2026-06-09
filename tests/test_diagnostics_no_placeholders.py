@@ -1,4 +1,4 @@
-from app.diagnostics.engine import diagnose
+﻿from app.diagnostics.engine import diagnose
 from app.health.evaluator import evaluate
 from app.models import CheckResult
 
@@ -30,7 +30,7 @@ def test_panel_diagnostics_use_real_panel_port_without_placeholder():
     assert "YOUR_PANEL_PORT" not in commands
     assert "https://127.0.0.1:2053/<hidden>" in commands
     assert "ss -lntup | grep -E ':2053\\b' || true" in commands
-    assert "优先不要重启代理" in item.impact
+    assert "请先确认 3X-UI 面板端口。" in item.impact
     assert "管理入口" in item.suggested_first_check
 
 
@@ -49,4 +49,4 @@ def test_panel_diagnostics_ask_for_port_when_missing():
     commands = "\n".join(item.read_only_commands)
 
     assert "YOUR_PANEL_PORT" not in commands
-    assert "请先确认 3X-UI 面板端口" in commands
+    assert "请先确认 3X-UI 面板端口。" in commands

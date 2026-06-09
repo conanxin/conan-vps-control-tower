@@ -1,4 +1,4 @@
-from app.config import ManagementConfig
+﻿from app.config import ManagementConfig
 from app.management.panel import check_management_panel
 
 
@@ -23,7 +23,7 @@ def test_http_config_with_https_fallback_returns_protocol_warning(monkeypatch):
     assert result.detected_scheme == "https"
     assert result.recommended_local_url == "https://127.0.0.1:2096"
     assert result.protocol_warning is True
-    assert "建议将 panel_local_url 改为 https://127.0.0.1:2096" in result.message
+    assert "检测到面板端口更可能使用 HTTPS，建议将 panel_local_url 改为" in result.message
 
 
 def test_https_config_with_404_is_protocol_reachable(monkeypatch):

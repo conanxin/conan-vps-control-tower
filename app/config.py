@@ -113,6 +113,7 @@ class ManagementConfig(BaseModel):
     panel_name: str = "3X-UI 面板"
     panel_local_url: str = "https://127.0.0.1:2096"
     panel_public_url: str = "https://panel.conanxin.com"
+    panel_public_display_url: str | None = None
     access_note: str = "建议通过 Cloudflare Access + 双重校验进行保护后访问。"
     open_in_new_tab: bool = True
     show_local_target: bool = True

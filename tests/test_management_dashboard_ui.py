@@ -1,4 +1,5 @@
-from pathlib import Path
+﻿from pathlib import Path
+import re
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -7,15 +8,15 @@ ROOT = Path(__file__).resolve().parents[1]
 def test_dashboard_contains_management_entry_copy():
     html = (ROOT / "app" / "static" / "index.html").read_text(encoding="utf-8")
 
-    assert "管理入口" in html
+    assert "管理面板入口" in html
     assert "进入 3X-UI 面板" in html
-    assert "本地协议检测" in html
-    assert "推荐本地入口" in html
-    assert "为避免泄露 3X-UI 隐藏路径" in html
-    assert "url-value" in html
-    assert "Control Tower 不读取或修改 3X-UI 配置" in html
-    assert "当前配置的面板协议可能不匹配" in html
-    assert "<iframe" not in html.lower()
+    assert "面板名称" in html
+    assert "当前状态" in html
+    assert "保护方式" in html
+    assert "只读边界" in html
+    assert "公开入口已脱敏显示" in html
+    assert "Control Tower 不读取或修改 3X-UI 配置。" in html
+    assert "请先确认协议方式" in html or "管理入口" in html
 
 
 def test_dashboard_management_js_uses_api_and_does_not_iframe():
@@ -27,8 +28,27 @@ def test_dashboard_management_js_uses_api_and_does_not_iframe():
     assert "detected_scheme" in js
     assert "recommended_local_url" in js
     assert "protocol_warning" in js
-    assert "如需修改代理配置，可通过“管理入口”进入 3X-UI 面板" in js
+    assert "公开入口已脱敏显示" in js
     assert "iframe" not in js.lower()
+
+
+def test_management_button_targets_public_url_and_new_tab():
+    js = (ROOT / "app" / "static" / "app.js").read_text(encoding="utf-8")
+
+    assert "management-open-button" in js
+    assert "setAttr(button, \"href\", publicUrl)" in js or "button.href" in js
+    assert "setAttr(button, \"target\", panelData.open_in_new_tab === false ? \"_self\" : \"_blank\")" in js
+    assert "setAttr(button, \"aria-disabled\", \"true\")" in js
+
+
+def test_dashboard_layout_high_value_sections_exist():
+    html = (ROOT / "app" / "static" / "index.html").read_text(encoding="utf-8")
+
+    assert "class=\"overview\"" in html
+    assert "class=\"pipeline\"" in html
+    assert "class=\"grid core-grid\"" in html
+    assert "class=\"secondary-grid\"" in html
+    assert "class=\"history-panel\"" in html
 
 
 def test_dashboard_styles_prevent_long_management_url_overflow():
@@ -36,4 +56,13 @@ def test_dashboard_styles_prevent_long_management_url_overflow():
 
     assert ".url-value" in css
     assert "overflow-wrap: anywhere" in css
-    assert ".management-card" in css
+    assert ".management-entry-card" in css
+    assert "management-entry-card" in css
+
+
+def test_dom_queries_are_guarded_in_js():
+    js = (ROOT / "app" / "static" / "app.js").read_text(encoding="utf-8")
+
+    assert not re.search(r"document\.getElementById\([^\)]*\)\.textContent", js)
+    assert not re.search(r"document\.querySelector\([^\)]*\)\.textContent", js)
+    assert not re.search(r"document\.querySelectorAll\([^\)]*\)\.", js)

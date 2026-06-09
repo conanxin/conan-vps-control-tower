@@ -90,7 +90,8 @@ management:
   panel_name: "管理面板"
   panel_local_url: "https://127.0.0.1:2096"
   panel_public_url: "https://panel.conanxin.com"
-  access_note: "建议通过 Cloudflare Access + 双重校验进行保护后访问。"
+  panel_public_display_url:
+  access_note: "建议通过 Cloudflare Access / Tunnel 进行保护后访问。"
   open_in_new_tab: true
   show_local_target: true
   readonly_note: "Control Tower 只负责健康监测和管理入口，不读取或修改管理配置。"

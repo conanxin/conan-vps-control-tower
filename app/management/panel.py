@@ -29,11 +29,11 @@ def public_display_url(url: str) -> str:
     parsed = urlparse(url)
     if not parsed.scheme or not parsed.netloc:
         return ""
-    base = parsed.netloc
+    base = parsed.scheme + "://" + parsed.netloc
     has_hidden = bool(parsed.path and parsed.path not in {"", "/"}) or bool(parsed.query or parsed.fragment)
     if not has_hidden:
-        return f"{parsed.scheme}://{base}"
-    return f"{parsed.scheme}://{base}/隐藏路径"
+        return base
+    return f"{base} / 已配置隐藏路径"
 
 
 def _tcp_reachable(url: str, timeout: float = 3) -> bool:
@@ -110,12 +110,14 @@ def _detect_panel_protocol(url: str, timeout: float = 3) -> dict[str, object]:
 
 
 def check_management_panel(config: ManagementConfig) -> ManagementPanelStatus:
+    public_url_display = config.panel_public_display_url or public_display_url(config.panel_public_url)
+
     if not config.enabled:
         return disabled_status(
             config.panel_name,
             config.panel_local_url,
             config.panel_public_url,
-            public_display_url(config.panel_public_url),
+            public_url_display,
             config.access_note,
             config.readonly_note,
             config.open_in_new_tab,
@@ -150,7 +152,7 @@ def check_management_panel(config: ManagementConfig) -> ManagementPanelStatus:
         panel_name=config.panel_name,
         panel_local_url=config.panel_local_url,
         panel_public_url=config.panel_public_url,
-        panel_public_display_url=public_display_url(config.panel_public_url),
+        panel_public_display_url=public_url_display,
         local_reachable=reachable,
         status=status,
         message=message,

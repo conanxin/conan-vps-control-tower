@@ -3,10 +3,20 @@
 const statusLabel = {
   healthy: "健康",
   warning: "警告",
-  degraded: "降级",
+  degraded: "警告",
   critical: "严重",
   unknown: "未知",
   "not-configured": "未配置",
+};
+
+const moduleLabels = {
+  vps_system: "VPS",
+  proxy_core: "代理核心",
+  xui_panel: "3X-UI 面板",
+  proxy_ports: "端口",
+  domain_dns: "域名 / DNS",
+  tls_certificate: "TLS 证书",
+  traffic: "流量风险",
 };
 
 const messageZhFallback = {
@@ -33,7 +43,7 @@ const messageZhFallback = {
   "Domain resolves, but results do not match expected IPs": "域名解析成功，但解析结果与预期 IP 不匹配",
   "DNS resolution failed for one or more domains": "一个或多个域名解析失败",
   "TLS check is not configured": "TLS 证书检查尚未配置",
-  "TLS check failed or certificate is critical": "TLS 证书检查失败或已到达临界状态",
+  "TLS certificate check failed or certificate is critical": "TLS 证书检查失败或已到达临界状态",
   "TLS certificate check failed or a certificate is near expiry": "TLS 证书检查失败或即将到期",
   "TLS certificate is approaching expiry": "TLS 证书即将到期",
   "TLS certificates look valid": "TLS 证书状态正常",
@@ -44,31 +54,43 @@ const messageZhFallback = {
   "Local traffic estimate is within the configured limit": "本地流量估算在配置上限内",
   "Local interface traffic statistics are not available": "本地接口流量统计不可用",
   "Unable to read local traffic estimate": "本地流量估算读取失败",
-  "Not enough data to estimate risk.": "当前数据不足，暂无法评估风险。",
-  "All configured health checks look healthy.": "已配置健康检查均正常。",
-  "All configured health checks look healthy. Not configured: domain_dns, tls_certificate.": "已启用的健康检查均正常。域名 / DNS 与 TLS 证书检查尚未配置。",
-  "All configured health checks look healthy. Not configured:": "已配置健康检查均正常，未配置：",
-  "All monitored VPS and proxy health checks look healthy.": "已监控的 VPS 与代理健康检查均正常。",
-  "Some checks could not determine a status. Review permissions, platform support, and configuration.": "部分检查无法判定状态，请确认权限、平台支持与配置。",
-  "Health status is unknown because no checks were executed.": "本次未执行检查，健康状态暂不明。",
-  "No visible risks from current checks.": "当前未发现可见风险。",
-  "No active diagnostic issues detected.": "未发现需要处理的诊断问题。",
   "No active diagnostic issues detected": "未发现需要处理的诊断问题。",
-  "No risk conditions detected from current checks.": "未发现当前活跃风险。",
+  "No active diagnostic issues detected.": "未发现需要处理的诊断问题。",
+  "No visible risks from current checks.": "当前无可见风险。",
   "No active risks": "当前没有活跃风险。",
-  "History recovered": "历史恢复记录已更新。",
-  "Could not load alert config": "告警配置检查失败。",
 };
 
-const moduleLabels = {
-  vps_system: "VPS 状态",
-  proxy_core: "代理核心",
-  xui_panel: "管理面板",
-  proxy_ports: "端口",
-  domain_dns: "域名 / DNS",
-  tls_certificate: "TLS 证书",
-  traffic: "流量风险",
-};
+const readOnlyDiagnosticsNotice = "以下命令仅用于只读排查，不会自动执行。";
+const managementPanelMissingText = "未配置公开入口";
+const managementDisabledHint = "请先在配置文件中设置 panel_public_url。";
+
+function el(id) {
+  return document.getElementById(id);
+}
+
+function qs(selector) {
+  return document.querySelector(selector);
+}
+
+function setText(target, value) {
+  const node = typeof target === "string" ? el(target) : target;
+  if (!node) {
+    return;
+  }
+  node.textContent = value ?? "--";
+}
+
+function setAttr(target, name, value) {
+  const node = typeof target === "string" ? el(target) : target;
+  if (!node) {
+    return;
+  }
+  if (value === null || value === undefined) {
+    node.removeAttribute(name);
+    return;
+  }
+  node.setAttribute(name, value);
+}
 
 function normalizeStatus(status) {
   return statusClassList.includes(status) ? status : "unknown";
@@ -107,31 +129,10 @@ function translateMessage(text) {
   return normalized;
 }
 
-function setCardState(card, status, isIgnored) {
-  card.classList.remove(...statusClassList);
-  if (isIgnored) {
-    card.classList.add("not-configured");
-    return;
-  }
-  card.classList.add(normalizeStatus(status));
-}
-
-function updateCard(check) {
-  const card = document.querySelector(`[data-check="${check.name}"]`);
+function setDetail(card, key, value) {
   if (!card) {
     return;
   }
-  const ignored = Boolean(check.ignored);
-  const status = normalizeStatus(check.status);
-
-  setCardState(card, status, ignored);
-  const message = translateMessage(check.message);
-  card.querySelector("h3").textContent = toDisplayStatus(ignored ? "not-configured" : status);
-  card.querySelector(".message").textContent = message;
-  updateDetails(card, check);
-}
-
-function setDetail(card, key, value) {
   const detail = card.querySelector(`[data-detail="${key}"]`);
   if (!detail) {
     return;
@@ -139,46 +140,20 @@ function setDetail(card, key, value) {
   detail.textContent = value ?? "--";
 }
 
-function updateDetails(card, check) {
-  const details = check.details || {};
-
-  if (check.name === "traffic") {
-    setDetail(card, "estimated_used_gb", formatGb(details.estimated_used_gb));
-    setDetail(card, "monthly_limit_gb", formatGb(details.monthly_limit_gb));
-    setDetail(card, "usage_percent", formatPercent(details.usage_percent));
+function setCardState(card, status, ignored) {
+  if (!card) {
+    return;
   }
-
-  if (check.name === "domain_dns") {
-    const resolved = details.resolved_ips || {};
-    const resolvedCount = Array.isArray(resolved) ? resolved.length : Object.values(resolved).reduce((count, ips) => {
-      if (Array.isArray(ips)) {
-        return count + ips.length;
-      }
-      return count;
-    }, 0);
-    const hasExpected = Array.isArray(details.expected_ips) && details.expected_ips.length > 0;
-    const hasMismatch = Array.isArray(details.mismatches) && details.mismatches.length > 0;
-
-    setDetail(card, "resolved_ip_count", check.ignored ? "未配置" : String(resolvedCount));
-    if (check.ignored || !hasExpected) {
-      setDetail(card, "expected_match", "未配置");
-    } else if (hasMismatch) {
-      setDetail(card, "expected_match", "否");
-    } else {
-      setDetail(card, "expected_match", "是");
-    }
+  card.classList.remove(...statusClassList, "not-configured");
+  if (ignored) {
+    card.classList.add("not-configured");
+    return;
   }
-
-  if (check.name === "tls_certificate") {
-    const targets = Array.isArray(details.targets) ? details.targets : [];
-    const target = targets[0] || {};
-    setDetail(card, "days_remaining", check.ignored ? "未配置" : formatInt(target.days_remaining, "--"));
-    setDetail(card, "not_after", check.ignored ? "未配置" : formatDate(target.not_after));
-  }
+  card.classList.add(normalizeStatus(status));
 }
 
 function formatGb(value) {
-  if (typeof value !== "number") {
+  if (typeof value !== "number" || Number.isNaN(value)) {
     return "--";
   }
   return `${value.toFixed(2)} GB`;
@@ -216,17 +191,68 @@ function findCheck(checks, name) {
   return checks.find((item) => item.name === name);
 }
 
-function getPipelineState(check) {
-  if (!check) {
-    return "unknown";
+function updateDetails(card, check) {
+  if (!card || !check) {
+    return;
   }
-  if (check.ignored) {
+  const details = check.details || {};
+
+  if (check.name === "traffic") {
+    setDetail(card, "estimated_used_gb", formatGb(details.estimated_used_gb));
+    setDetail(card, "monthly_limit_gb", formatGb(details.monthly_limit_gb));
+    setDetail(card, "usage_percent", formatPercent(details.usage_percent));
+  }
+
+  if (check.name === "domain_dns") {
+    const resolved = details.resolved_ips || {};
+    const resolvedCount = Array.isArray(resolved)
+      ? resolved.length
+      : Object.values(resolved).reduce((count, values) => (Array.isArray(values) ? count + values.length : count), 0);
+    const expectedIps = Array.isArray(details.expected_ips) ? details.expected_ips : [];
+    const mismatches = Array.isArray(details.mismatches) ? details.mismatches : [];
+    setDetail(card, "resolved_ip_count", check.ignored || expectedIps.length === 0 ? "未配置" : String(resolvedCount));
+    if (check.ignored || expectedIps.length === 0) {
+      setDetail(card, "expected_match", "未配置");
+    } else if (mismatches.length > 0) {
+      setDetail(card, "expected_match", "否");
+    } else {
+      setDetail(card, "expected_match", "是");
+    }
+  }
+
+  if (check.name === "tls_certificate") {
+    const targets = Array.isArray(details.targets) ? details.targets : [];
+    const target = targets[0] || {};
+    setDetail(card, "days_remaining", check.ignored ? "未配置" : formatInt(target.days_remaining, "--"));
+    setDetail(card, "not_after", check.ignored ? "未配置" : formatDate(target.not_after));
+  }
+}
+
+function updateCard(check) {
+  const card = qs(`[data-check="${check.name}"]`);
+  if (!card) {
+    return;
+  }
+
+  const ignored = Boolean(check.ignored);
+  const status = normalizeStatus(check.status);
+  setCardState(card, status, ignored);
+  const titleEl = card.querySelector("h3");
+  const messageEl = card.querySelector(".message");
+  setText(titleEl, ignored ? toDisplayStatus("not-configured") : toDisplayStatus(status));
+  setText(messageEl, translateMessage(check.message));
+  updateDetails(card, check);
+}
+
+function getPipelineState(check) {
+  if (!check || check.ignored) {
     return "ok";
   }
-  if (["warning", "degraded", "critical"].includes(normalizeStatus(check.status))) {
+  const status = normalizeStatus(check.status);
+  if (["warning", "degraded", "critical"].includes(status)) {
     return "risk";
   }
-  if (check.status === "healthy") {
+  if (status === "healthy") {
     return "ok";
   }
   return "unknown";
@@ -238,17 +264,15 @@ function renderPipeline(checks) {
   const panel = findCheck(checks, "xui_panel");
   const ports = findCheck(checks, "proxy_ports");
 
-  const stepMap = [
+  let hasRisk = false;
+  [
     { id: "pipeline-vps", check: vps },
     { id: "pipeline-proxy-core", check: proxyCore },
     { id: "pipeline-panel", check: panel },
     { id: "pipeline-port", check: ports },
-  ];
-
-  let hasRisk = false;
-  stepMap.forEach(({ id, check }) => {
-    const node = document.getElementById(id);
-    if (!node || !check) {
+  ].forEach(({ id, check }) => {
+    const node = el(id);
+    if (!node) {
       return;
     }
     const state = getPipelineState(check);
@@ -264,29 +288,25 @@ function renderPipeline(checks) {
     }
   });
 
-  const summary = document.getElementById("pipeline-summary");
+  const summary = el("pipeline-summary");
   if (!summary) {
     return;
   }
-  if (hasRisk) {
-    summary.textContent = "代理链路存在风险，请查看诊断建议。";
-  } else {
-    summary.textContent = "代理链路正常，当前未发现影响代理使用的风险。";
-  }
+  summary.textContent = hasRisk
+    ? "代理链路有风险，建议先看诊断建议。"
+    : "代理链路正常，当前未发现影响代理使用的异常。";
 }
 
 function renderRiskAndOptional(checks) {
   const activeRiskChecks = checks.filter(
-    (check) => !check.ignored && ["warning", "degraded", "critical"].includes(normalizeStatus(check.status)),
+    (item) => !item.ignored && ["warning", "degraded", "critical"].includes(normalizeStatus(item.status)),
   );
 
-  const riskSummary = document.getElementById("risk-summary");
+  const riskSummary = el("risk-summary");
   if (riskSummary) {
     riskSummary.replaceChildren();
     if (activeRiskChecks.length === 0) {
-      const li = document.createElement("li");
-      li.textContent = "当前没有活跃风险。";
-      riskSummary.appendChild(li);
+      riskSummary.appendChild(createNoDataLi("当前没有活跃风险。"));
     } else {
       activeRiskChecks.forEach((check) => {
         const li = document.createElement("li");
@@ -297,7 +317,7 @@ function renderRiskAndOptional(checks) {
     }
   }
 
-  const optionalChecks = document.getElementById("optional-checks");
+  const optionalChecks = el("optional-checks");
   if (optionalChecks) {
     optionalChecks.setAttribute("aria-label", "未配置的可选检查");
     optionalChecks.replaceChildren();
@@ -305,11 +325,7 @@ function renderRiskAndOptional(checks) {
       const check = checks.find((item) => item.name === name);
       const label = moduleLabels[name] || name;
       const li = document.createElement("li");
-      if (!check || check.ignored) {
-        li.textContent = `${label}：未配置`;
-      } else {
-        li.textContent = `${label}：已启用`;
-      }
+      li.textContent = (!check || check.ignored) ? `${label}：未配置` : `${label}：已启用`;
       optionalChecks.appendChild(li);
     });
   }
@@ -335,16 +351,22 @@ function parsePublicDisplay(url) {
   }
   try {
     const parsed = new URL(url);
-    const host = parsed.hostname || "";
-    if (!host) {
-      return url;
-    }
-    const hasHidden =
-      Boolean(parsed.pathname && parsed.pathname !== "/") ||
-      Boolean(parsed.search || parsed.hash);
-    return hasHidden ? `${host} / 已配置隐藏路径` : host;
+    const base = `${parsed.protocol}://${parsed.host}`;
+    const hasHidden = Boolean(parsed.pathname && parsed.pathname !== "/") || Boolean(parsed.search || parsed.hash);
+    return hasHidden ? `${base} / 已配置隐藏路径` : base;
   } catch {
     return url;
+  }
+}
+
+function getPanelHost(url) {
+  if (!url) {
+    return "";
+  }
+  try {
+    return new URL(url).hostname || "";
+  } catch {
+    return "";
   }
 }
 
@@ -360,114 +382,89 @@ function getPanelPort(url) {
   }
 }
 
-function parseHost(url) {
-  if (!url) {
-    return "";
+function resolveManagementDisplayUrl(panelPublicUrl, panelPublicDisplayUrl) {
+  if (panelPublicDisplayUrl && typeof panelPublicDisplayUrl === "string" && panelPublicDisplayUrl.trim()) {
+    return panelPublicDisplayUrl.trim();
   }
-  try {
-    return new URL(url).hostname || "";
-  } catch {
-    return "";
-  }
-}
-
-function maskPanelPathHint(url) {
-  const host = parseHost(url);
-  if (!host) {
-    return "--";
-  }
-  try {
-    const parsed = new URL(url);
-    const hasHidden =
-      Boolean(parsed.pathname && parsed.pathname !== "/") ||
-      Boolean(parsed.search || parsed.hash);
-    return hasHidden ? `${host} / 已配置隐藏路径` : host;
-  } catch {
-    return host;
-  }
-}
-
-function renderMaskedPanelEntry(url) {
-  const host = maskPanelPathHint(url);
-  if (!host || host === "--") {
-    return "--";
-  }
-  return host.includes("/已配置隐藏路径") ? host : `${host} / 已配置隐藏路径`;
+  return parsePublicDisplay(panelPublicUrl) || managementPanelMissingText;
 }
 
 function renderManagement(data) {
-  const status = data.enabled === false ? "not-configured" : normalizeStatus(data.status);
-  const button = document.getElementById("management-open-button");
-  const publicUrl = data.panel_public_url || "";
-  const publicDisplay = data.panel_public_display_url || parsePublicDisplay(publicUrl);
+  const button = el("management-open-button");
+  const card = el("management-entry-card");
+  const panelData = data || {};
+  const status = panelData.enabled === false ? "not-configured" : normalizeStatus(panelData.status);
+  const publicUrl = typeof panelData.panel_public_url === "string" ? panelData.panel_public_url.trim() : "";
+  const publicDisplay = resolveManagementDisplayUrl(publicUrl, panelData.panel_public_display_url);
+  const accessNote = panelData.access_note || "建议通过 Cloudflare Access / Tunnel 访问管理入口。";
 
-  const accessNote =
-    data.access_note || "建议通过 Cloudflare Access 与双重校验进行保护后访问管理入口。";
-  const readOnlyNote =
-    data.readonly_note || "Control Tower 不读取或修改 3X-UI 配置。";
+  card.classList.remove(...statusClassList, "not-configured");
+  card.classList.add(status === "not-configured" ? "not-configured" : status);
 
-  document.getElementById("management-status").textContent = toDisplayStatus(status);
-  document.getElementById("management-message").textContent = data.message || "未检测到管理入口信息。";
-  document.getElementById("management-status").closest(".card").classList.remove(...statusClassList);
-  document.getElementById("management-status").closest(".card").classList.add(status);
+  setText("management-panel-name", panelData.panel_name || "3X-UI 面板");
+  setText("management-current-state", status === "not-configured" ? "未配置" : toDisplayStatus(status));
+  setText("management-status", status === "not-configured" ? "未配置" : toDisplayStatus(status));
+  setText("management-public-entry", publicDisplay || managementPanelMissingText);
+  setText("management-access-note", accessNote);
+  setText("management-readonly-note", panelData.readonly_note || "Control Tower 不读取或修改 3X-UI 配置。");
+  setText("runtime-management-entry", publicDisplay || managementPanelMissingText);
 
-  const localEndpoint = data.recommended_local_url || data.panel_local_url || "";
-  document.getElementById("management-local-entry").textContent =
-    data.show_local_target !== false
-      ? parseManagementEndpoint(localEndpoint || data.panel_local_url)
-      : "暂未开启显示本地入口";
-  const recommendedUrl = data.recommended_local_url || data.panel_local_url || "";
-  document.getElementById("management-recommended-url").textContent =
-    data.show_local_target !== false && recommendedUrl
-      ? parseManagementEndpoint(recommendedUrl)
-      : "暂未开启显示本地入口";
+  const localEndpoint = panelData.recommended_local_url || panelData.panel_local_url || "";
+  const shouldShowLocal = panelData.show_local_target !== false;
+  setText("management-local-entry", shouldShowLocal && localEndpoint ? parseManagementEndpoint(localEndpoint) : "暂未开启显示本地入口");
+  setText("management-recommended-url", shouldShowLocal && localEndpoint ? parseManagementEndpoint(localEndpoint) : "暂未开启显示本地入口");
 
-  const publicDisplayText =
-    publicDisplay && publicDisplay.includes("/已配置隐藏路径")
-      ? renderMaskedPanelEntry(publicDisplay)
-      : renderMaskedPanelEntry(publicUrl);
-  document.getElementById("management-public-entry").textContent = publicDisplayText || "--";
-
-  const protocolWarningEl = document.getElementById("management-protocol-warning");
-  if (protocolWarningEl) {
-    protocolWarningEl.hidden = !Boolean(data.protocol_warning);
-    protocolWarningEl.textContent = data.protocol_warning
-      ? `检测到面板入口协议可能不匹配。建议使用 ${data.recommended_local_url || "https://127.0.0.1:2053"} 作为 Tunnel target。`
+  const protocolWarning = el("management-protocol-warning");
+  if (protocolWarning) {
+    protocolWarning.hidden = !Boolean(panelData.protocol_warning);
+    protocolWarning.textContent = panelData.protocol_warning
+      ? `检测到面板入口协议可能不匹配，建议使用 ${panelData.recommended_local_url || "https://127.0.0.1:2053"} 作为 Tunnel target。`
       : "";
   }
 
-  document.getElementById("management-access-note").textContent =
-    accessNote || "建议通过 Cloudflare Access 与双重校验进行保护后访问管理入口。";
-  document.getElementById("management-readonly-note").textContent = readOnlyNote;
+  const mask = el("management-public-mask");
+  if (mask) {
+    mask.textContent = publicUrl ? "公开入口已脱敏显示" : "未配置公开入口";
+  }
 
-  if (publicUrl) {
-    button.href = publicUrl;
-    button.setAttribute("aria-disabled", "false");
-    button.classList.remove("disabled");
-    button.textContent = "进入 3X-UI 面板";
-    button.target = data.open_in_new_tab === false ? "_self" : "_blank";
-  } else {
-    button.removeAttribute("href");
-    button.setAttribute("aria-disabled", "true");
-    button.classList.add("disabled");
-    button.textContent = "请先配置 panel_public_url";
-    button.target = "_self";
+  if (button) {
+    if (publicUrl) {
+      setAttr(button, "href", publicUrl);
+      setAttr(button, "target", panelData.open_in_new_tab === false ? "_self" : "_blank");
+      setAttr(button, "rel", "noopener noreferrer");
+      setAttr(button, "aria-disabled", "false");
+      button.classList.remove("disabled");
+      button.textContent = "进入 3X-UI 面板";
+      setText("management-message", panelData.message || "管理入口可用，可直接进入。");
+      setText("management-disabled-note", "公开入口可直接在新标签页打开。");
+    } else {
+      setAttr(button, "href", null);
+      setAttr(button, "target", "_self");
+      setAttr(button, "aria-disabled", "true");
+      setAttr(button, "rel", null);
+      button.classList.add("disabled");
+      button.textContent = managementPanelMissingText;
+      setText("management-message", managementPanelMissingText);
+      setText("management-disabled-note", managementDisabledHint);
+    }
   }
 }
 
 function renderHealth(data) {
-  const checks = Array.isArray(data.checks) ? data.checks : [];
-  const overallStatus = normalizeStatus(data.overall_status);
+  const payload = data || {};
+  const checks = Array.isArray(payload.checks) ? payload.checks : [];
+  const overallStatus = normalizeStatus(payload.overall_status);
 
-  const badge = document.getElementById("overall-badge");
-  badge.classList.remove(...statusClassList);
-  badge.classList.add(overallStatus);
-  badge.textContent = toDisplayStatus(overallStatus);
+  const badge = el("overall-badge");
+  if (badge) {
+    badge.classList.remove(...statusClassList);
+    badge.classList.add(overallStatus);
+    badge.textContent = toDisplayStatus(overallStatus);
+  }
 
-  document.getElementById("overall-status").textContent = `总体状态：${toDisplayStatus(overallStatus)}`;
-  document.getElementById("readable-summary").textContent =
-    translateMessage(data.readable_summary) || "健康状态读取中。";
-  document.getElementById("last-checked").textContent = `最后检查：${data.checked_at ? new Date(data.checked_at).toLocaleString() : "--"}`;
+  setText("overall-status", `总体状态：${toDisplayStatus(overallStatus)}`);
+  setText("readable-summary", translateMessage(payload.readable_summary));
+  setText("last-checked", `最后检查：${payload.checked_at ? new Date(payload.checked_at).toLocaleString() : "--"}`);
 
   checks.forEach(updateCard);
   renderPipeline(checks);
@@ -475,27 +472,36 @@ function renderHealth(data) {
 }
 
 function renderDiagnostics(data) {
-  const summary = document.getElementById("diagnostics-summary");
-  const item = Array.isArray(data.items) ? data.items[0] : null;
+  const payload = data || {};
+  const summary = el("diagnostics-summary");
+  const item = Array.isArray(payload.items) ? payload.items[0] : null;
+  const title = qs("#top-diagnosis h3");
+  const impact = el("diagnosis-impact");
+  const firstCheck = el("diagnosis-first-check");
+  const related = el("diagnosis-related");
+  const confidence = el("diagnosis-confidence");
+  const commands = el("diagnosis-commands");
+  const healthNote = el("diagnosis-health-note");
 
   if (!item) {
-    summary.textContent = "未发现需要处理的诊断问题。";
-    document.querySelector("#top-diagnosis h3").textContent = "当前无优先诊断";
-    document.getElementById("diagnosis-impact").textContent = "当前系统状态较稳。";
-    document.getElementById("diagnosis-first-check").textContent = "如有异常，优先确认代理核心与端口状态。";
-    document.getElementById("diagnosis-related").textContent = "相关模块：-";
-    document.getElementById("diagnosis-confidence").textContent = "置信度：高";
-    document.getElementById("diagnosis-commands").textContent = "当前无需执行命令。";
+    setText(summary, "暂无诊断问题。");
+    setText(title, "当前无优先诊断");
+    setText(impact, "当前系统状态较稳。");
+    setText(firstCheck, "如有异常，优先确认代理核心与端口状态。");
+    setText(related, "相关模块：-");
+    setText(confidence, "置信度：高");
+    setText(commands, "当前无需执行命令。");
+    setText(healthNote, "可按优先级核对后再确认是否需要重启。");
     return;
   }
 
   const panelPort = getPanelPort(currentManagement?.panel_local_url || currentManagement?.panel_public_url);
-  const host = parseHost(currentManagement?.panel_local_url || currentManagement?.panel_public_url) || "127.0.0.1";
+  const host = getPanelHost(currentManagement?.panel_local_url || currentManagement?.panel_public_url) || "127.0.0.1";
   const panelAddress = currentManagement?.panel_local_url || currentManagement?.panel_public_url || "";
   const panelPortText = panelPort || "（请先确认面板端口）";
-  const domainHost = parseHost(panelAddress) || "panel.conanxin.com";
-  const commands = Array.isArray(item.read_only_commands) ? item.read_only_commands : [];
-  const commandsText = commands
+  const domainHost = getPanelHost(panelAddress) || "panel.conanxin.com";
+  const commandList = Array.isArray(item.read_only_commands) ? item.read_only_commands : [];
+  const commandText = commandList
     .map((command) =>
       String(command)
         .replace(/YOUR_PROXY_PORT/g, panelPortText)
@@ -506,93 +512,24 @@ function renderDiagnostics(data) {
     )
     .join("\n");
 
-  const title = `${item.title || "诊断提示"}（${toDisplayStatus(item.status || "unknown")}）`;
-  const impact = item.impact || "请按优先级排查。";
-  const firstCheck = item.suggested_first_check || "请检查相关模块状态。";
+  const impactText = item.impact || "请按优先级排查。";
+  const firstCheckText = item.suggested_first_check || "请检查相关模块状态。";
   const relatedModules = (item.related_modules || []).join("、") || "-";
-  const confidence = item.confidence || "中";
+  const confidenceText = item.confidence || "中";
 
-  summary.textContent = `${data.summary || "诊断摘要："} ${item.title || ""}`;
-  document.querySelector("#top-diagnosis h3").textContent = title;
-  document.getElementById("diagnosis-impact").textContent = `影响：${impact}`;
-  document.getElementById("diagnosis-first-check").textContent = `建议第一检查：${firstCheck}`;
-  document.getElementById("diagnosis-related").textContent = `相关模块：${relatedModules}`;
-  document.getElementById("diagnosis-confidence").textContent = `置信度：${confidence}`;
-
-  const commandTextWithMask = `${readOnlyDiagnosticsNotice}\n${commandsText || "未提供只读诊断命令。"}`;
-  document.getElementById("diagnosis-commands").textContent = commandTextWithMask;
-
-  if (item.related_modules && item.related_modules.includes("xui_panel")) {
-    document.getElementById("diagnosis-health-note").textContent = "面板异常不一定影响代理转发，当前代理核心与端口仍正常时可先不重启代理。"
-  }
-}
-
-function renderHistory(summary, events) {
-  const statusEl = document.getElementById("history-status");
-  const windowStatusEl = document.getElementById("history-window-status");
-  const currentEl = document.getElementById("history-current-status");
-  const worstEl = document.getElementById("history-worst-status");
-  const ratioEl = document.getElementById("history-health-ratio");
-  const snapshotCountEl = document.getElementById("history-snapshot-count");
-  const eventCountEl = document.getElementById("history-event-count");
-  const lastProblemEl = document.getElementById("history-last-problem");
-  const lastRecoveryEl = document.getElementById("history-last-recovery");
-  const listEl = document.getElementById("history-events-list");
-  const summaryEl = document.getElementById("history-summary");
-
-  if (!summary || !summary.enabled) {
-    summaryEl.textContent = "健康历史功能未开启。";
-    if (windowStatusEl) {
-      windowStatusEl.textContent = "最近 24 小时：未开启";
-    }
-    [currentEl, worstEl, ratioEl, snapshotCountEl, eventCountEl, lastProblemEl, lastRecoveryEl].forEach((el) => {
-      if (el) el.textContent = "--";
-    });
-    if (listEl) {
-      listEl.replaceChildren(createNoDataLi("暂无历史事件。"));
-    }
-    return;
-  }
-
-  const currentStatus = summary.current_health_status || summary.latest_status || "--";
-  const warningCount = Number(summary.warning_count || 0) + Number(summary.degraded_count || 0) + Number(summary.critical_count || 0);
-  const warningLabel = warningCount > 0 ? `曾出现 ${warningCount} 次告警` : "无告警";
-  const recoveredLabel = currentStatus === "healthy" && warningCount > 0 ? "，当前已恢复。" : "。";
-
-  if (statusEl) {
-    statusEl.textContent = `当前状态：${toDisplayStatus(currentStatus === "--" ? summary.status || "unknown" : currentStatus)}`;
-  }
-  if (windowStatusEl) {
-    windowStatusEl.textContent = `最近 24 小时：${warningLabel}${recoveredLabel}`;
-  }
-  currentEl.textContent = currentStatus === "--" ? toDisplayStatus(summary.status || "unknown") : toDisplayStatus(currentStatus);
-  worstEl.textContent = toDisplayStatus(summary.worst_status || "unknown");
-  ratioEl.textContent = typeof summary.healthy_ratio === "number" ? `${summary.healthy_ratio.toFixed(1)}%` : "--";
-  snapshotCountEl.textContent = `${summary.snapshot_count || 0}`;
-  eventCountEl.textContent = `${summary.event_count || 0}`;
-  lastProblemEl.textContent = summary.last_problem_at || "--";
-  lastRecoveryEl.textContent = summary.last_recovery_at || "--";
-
-  const currentText =
-    toDisplayStatus(currentStatus === "--" ? summary.status || "unknown" : currentStatus) === "健康"
-      ? `当前状态健康，24 小时内${warningLabel}，并已恢复。`
-      : `当前状态${toDisplayStatus(currentStatus)}，24 小时内${warningLabel}。`;
-  summaryEl.textContent = currentText;
-
-  const visibleEvents = Array.isArray(events) ? events.slice(-5) : [];
-  listEl.replaceChildren();
-  if (visibleEvents.length === 0) {
-    listEl.appendChild(createNoDataLi("暂无历史事件。"));
-    return;
-  }
-
-  visibleEvents.forEach((item) => {
-    const li = document.createElement("li");
-    const time = item.occurred_at ? new Date(item.occurred_at).toLocaleString() : "--";
-    const title = item.title || item.message || "诊断事件";
-    li.textContent = `${time} ${title}`;
-    listEl.appendChild(li);
-  });
+  setText(summary, `${payload.summary || "诊断摘要："} ${item.title || ""}`);
+  setText(title, `${item.title || "诊断提示"}（${toDisplayStatus(item.status || "unknown")}）`);
+  setText(impact, `影响：${impactText}`);
+  setText(firstCheck, `建议第一检查：${firstCheckText}`);
+  setText(related, `相关模块：${relatedModules}`);
+  setText(confidence, `置信度：${confidenceText}`);
+  setText(commands, `${readOnlyDiagnosticsNotice}\n${commandText || "未提供只读诊断命令。"}`);
+  setText(
+    healthNote,
+    item.related_modules && item.related_modules.includes("xui_panel")
+      ? "面板异常不一定影响代理转发，当前代理核心与端口正常时可先暂停重启。"
+      : "按建议顺序执行，确认后再处理。",
+  );
 }
 
 function createNoDataLi(text) {
@@ -601,110 +538,134 @@ function createNoDataLi(text) {
   return li;
 }
 
-function renderMeta(meta) {
-  const host = meta.configured_host || "127.0.0.1";
-  const port = meta.configured_port || 3001;
+function renderHistory(summary, events) {
+  const historySummary = el("history-summary");
+  const status = el("history-status");
+  const windowStatus = el("history-window-status");
+  const current = el("history-current-status");
+  const worst = el("history-worst-status");
+  const ratio = el("history-health-ratio");
+  const snapshotCount = el("history-snapshot-count");
+  const eventCount = el("history-event-count");
+  const lastProblem = el("history-last-problem");
+  const lastRecovery = el("history-last-recovery");
+  const list = el("history-events-list");
 
-  const externalEntry =
-    meta.public_entry || "tower.conanxin.com";
-  const publicEntryDisplay = externalEntry.replace(/^https?:\/\//, "");
-  const accessMode = meta.external_access_mode || "Cloudflare Access / Tunnel";
-  const accessProtection = meta.access_protection || "Cloudflare Access / Tunnel";
+  const snapshot = summary || {};
 
-  document.getElementById("runtime-bar").textContent =
-    `本地只读 · 绑定：${host}:${port} · 外部入口：${publicEntryDisplay} · 访问态：${accessProtection} · 公网直连：${meta.direct_public_bind ? "有" : "无"}`;
-
-  document.getElementById("runtime-mode").textContent = "本地只读";
-  document.getElementById("runtime-endpoint").textContent = `${host}:${port}`;
-  document.getElementById("runtime-public-entry").textContent = publicEntryDisplay;
-  document.getElementById("runtime-access-protection").textContent = accessProtection;
-  document.getElementById("runtime-public-bind").textContent = meta.direct_public_bind ? "有" : "无";
-
-  const towerEntryEl = document.getElementById("external-tower-entry");
-  const panelEntryEl = document.getElementById("external-panel-entry");
-  if (towerEntryEl) {
-    towerEntryEl.textContent = publicEntryDisplay;
-  }
-  if (panelEntryEl) {
-    panelEntryEl.textContent =
-      currentManagement && currentManagement.panel_public_display_url
-      ? renderMaskedPanelEntry(currentManagement.panel_public_display_url)
-      : "panel.conanxin.com / 已配置隐藏路径";
+  if (!snapshot.enabled) {
+    setText(historySummary, "健康历史功能未开启。");
+    setText(windowStatus, "最近 24 小时：未开启");
+    [status, current, worst, ratio, snapshotCount, eventCount, lastProblem, lastRecovery].forEach((node) => {
+      setText(node, "--");
+    });
+    if (list) {
+      list.replaceChildren(createNoDataLi("暂无历史事件。"));
+    }
+    return;
   }
 
-  const tunnelNotes = document.querySelectorAll(".external-grid div");
-  if (tunnelNotes.length >= 4) {
-    tunnelNotes[3].querySelector("span").textContent = "访问态";
-    tunnelNotes[3].querySelector("strong").textContent = accessMode.includes("Tunnel") ? accessMode : "Cloudflare Access / Tunnel";
+  const currentStatus = snapshot.current_health_status || snapshot.latest_status || "--";
+  const warningCount = Number(snapshot.warning_count || 0) + Number(snapshot.degraded_count || 0) + Number(snapshot.critical_count || 0);
+  const warningLabel = warningCount > 0 ? `曾出现 ${warningCount} 次告警` : "无告警";
+  const recoveredLabel = currentStatus === "healthy" && warningCount > 0 ? "，当前已恢复。" : "。";
+  const currentDisplay = toDisplayStatus(currentStatus === "--" ? snapshot.status || "unknown" : currentStatus);
+
+  setText(status, `当前状态：${currentDisplay}`);
+  setText(windowStatus, `最近 24 小时：${warningLabel}${recoveredLabel}`);
+  setText(current, currentDisplay);
+  setText(worst, toDisplayStatus(snapshot.worst_status || "unknown"));
+  setText(ratio, typeof snapshot.healthy_ratio === "number" ? `${snapshot.healthy_ratio.toFixed(1)}%` : "--");
+  setText(snapshotCount, `${snapshot.snapshot_count || 0}`);
+  setText(eventCount, `${snapshot.event_count || 0}`);
+  setText(lastProblem, snapshot.last_problem_at || "--");
+  setText(lastRecovery, snapshot.last_recovery_at || "--");
+
+  const summaryText =
+    currentDisplay === "健康"
+      ? `当前状态健康，24 小时内${warningLabel}，并已恢复。`
+      : `当前状态${currentDisplay}，24 小时内${warningLabel}。`;
+  setText(historySummary, summaryText);
+
+  const recentEvents = Array.isArray(events) ? events.slice(-5) : [];
+  if (!list) {
+    return;
   }
+  list.replaceChildren();
+  if (recentEvents.length === 0) {
+    list.appendChild(createNoDataLi("暂无历史事件。"));
+    return;
+  }
+
+  recentEvents.forEach((item) => {
+    const li = document.createElement("li");
+    const time = item.occurred_at ? new Date(item.occurred_at).toLocaleString() : "--";
+    const title = item.title || item.message || "诊断事件";
+    li.textContent = `${time} ${title}`;
+    list.appendChild(li);
+  });
 }
 
 function renderAlertStatus(data) {
-  const alerts = data.alerts || {};
-  const telegram = data.telegram || {};
-  const email = data.email || {};
-  const state = data.state || {};
+  const payload = data || {};
+  const alerts = payload.alerts || {};
+  const telegram = payload.telegram || {};
+  const email = payload.email || {};
+  const state = payload.state || {};
 
-  const alertsEnabled = !!alerts.enabled;
-  document.getElementById("alerts-enabled").textContent = alertsEnabled ? "已开启" : "已关闭";
-  document.getElementById("alerts-message").textContent = alertsEnabled
-    ? "告警已开启，出现触发条件时将发送通知。"
-    : "告警已关闭，不会发送通知。";
-  document.getElementById("alerts-config-state").textContent = alertsEnabled ? "已开启" : "已关闭";
-  document.getElementById("alerts-min-severity").textContent = alerts.min_severity || "--";
-  document.getElementById("alerts-cooldown").textContent = `${alerts.cooldown_seconds ?? "--"}s`;
-  document.getElementById("alerts-recovery").textContent = String(alerts.send_recovery ?? "--");
-  document.getElementById("alerts-telegram").textContent = telegram.enabled
-    ? telegram.ready
-      ? "已开启且就绪"
-      : "已开启但配置不完整"
-    : "未开启";
-  document.getElementById("alerts-email").textContent = email.enabled
-    ? email.ready
-      ? "已开启且就绪"
-      : "已开启但配置不完整"
-    : "未开启";
-  document.getElementById("alerts-active").textContent = state.active_alert_count ?? "--";
-  document.getElementById("alerts-last-sent").textContent = state.last_sent_at
-    ? new Date(state.last_sent_at).toLocaleString()
-    : "--";
-
-  const result = document.getElementById("alerts-safe-to-test");
-  if (result) {
-    result.textContent = data.safe_to_test ? "可发送测试通知" : "不可发送测试通知";
-  }
+  const enabled = Boolean(alerts.enabled);
+  setText("alerts-enabled", enabled ? "已开启" : "未开启");
+  setText("alerts-message", enabled ? "告警已开启，出现触发条件时将发送通知。" : "告警已关闭，不会发送通知。");
+  setText("alerts-config-state", enabled ? "已开启" : "未开启");
+  setText("alerts-min-severity", alerts.min_severity || "--");
+  setText("alerts-cooldown", `${alerts.cooldown_seconds ?? "--"}s`);
+  setText("alerts-recovery", String(alerts.send_recovery ?? "--"));
+  setText("alerts-telegram", telegram.enabled ? (telegram.ready ? "已开启且就绪" : "已开启但配置不完整") : "未开启");
+  setText("alerts-email", email.enabled ? (email.ready ? "已开启且就绪" : "已开启但配置不完整") : "未开启");
+  setText("alerts-active", state.active_alert_count ?? "--");
+  setText("alerts-last-sent", state.last_sent_at ? new Date(state.last_sent_at).toLocaleString() : "--");
+  setText("alerts-safe-to-test", payload.safe_to_test ? "可发送测试通知" : "不可发送测试通知");
 }
 
 function renderAlertConfigCheck(data) {
-  const configMessageEl = document.getElementById("alerts-config-message");
-  const telegram = data.channels?.telegram || {};
-  const email = data.channels?.email || {};
-
-  configMessageEl.textContent = data.message || "告警配置读取失败";
-  document.getElementById("alerts-config-state").textContent = data.status === "healthy" ? "可用" : "未就绪";
-  document.getElementById("alerts-safe-to-test").textContent = data.safe_to_test ? "可发送测试通知" : "不可发送测试通知";
-  document.getElementById("alerts-telegram").textContent = telegram.enabled
-    ? telegram.ready
-      ? "已开启且就绪"
-      : "已开启但配置不完整"
-    : "未开启";
-  document.getElementById("alerts-email").textContent = email.enabled
-    ? email.ready
-      ? "已开启且就绪"
-      : "已开启但配置不完整"
-    : "未开启";
-}
-
-function renderManagementReadOnlyHint() {
-  const maskNote = document.getElementById("management-readonly-note");
-  if (!maskNote) {
-    return;
+  const payload = data || {};
+  const telegram = payload.channels?.telegram || {};
+  const email = payload.channels?.email || {};
+  const configMessage = el("alerts-config-message");
+  if (configMessage) {
+    configMessage.textContent = payload.message || "告警配置读取失败";
   }
-  maskNote.textContent = "Control Tower 不读取或修改 3X-UI 配置。";
+  setText("alerts-config-state", payload.status === "healthy" ? "可用" : "未就绪");
+  setText("alerts-safe-to-test", payload.safe_to_test ? "可发送测试通知" : "不可发送测试通知");
+  setText("alerts-telegram", telegram.enabled ? (telegram.ready ? "已开启且就绪" : "已开启但配置不完整") : "未开启");
+  setText("alerts-email", email.enabled ? (email.ready ? "已开启且就绪" : "已开启但配置不完整") : "未开启");
 }
 
-const readOnlyDiagnosticsNotice = "以下命令仅用于只读排查，不会自动执行。";
-const readOnlyManagementHint = "如需修改代理配置，可通过“管理入口”进入 3X-UI 面板。";
+function renderMeta(meta) {
+  const payload = meta || {};
+  const host = payload.configured_host || "127.0.0.1";
+  const port = payload.configured_port || 3001;
+  const publicEntry = String(payload.public_entry || "tower.conanxin.com").replace(/^https?:\/\//, "");
+  const accessProtection = payload.access_protection || "Cloudflare Access / Tunnel";
+  const accessMode = payload.external_access_mode || "Cloudflare Access / Tunnel";
+
+  setText("runtime-bar", `本地只读 · 绑定 ${host}:${port} · 保护方式 ${accessMode} · 外部入口 ${publicEntry}`);
+  setText("runtime-public-entry", publicEntry);
+  setText("runtime-access-protection", accessProtection);
+  setText("runtime-management-entry", resolveManagementDisplayUrl(currentManagement?.panel_public_url, currentManagement?.panel_public_display_url) || managementPanelMissingText);
+  setText("runtime-mode", "本地只读");
+  setText("runtime-endpoint", `${host}:${port}`);
+  setText("runtime-public-bind", payload.direct_public_bind ? "有" : "无");
+}
+
+const defaultMeta = {
+  configured_host: "127.0.0.1",
+  configured_port: 3001,
+  public_entry: "tower.conanxin.com",
+  direct_public_bind: false,
+  external_access_mode: "Cloudflare Access / Tunnel",
+  access_protection: "Cloudflare Access / Tunnel",
+};
 
 let currentManagement = {};
 
@@ -714,8 +675,7 @@ async function refreshHealth() {
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}`);
     }
-    const data = await response.json();
-    renderHealth(data);
+    renderHealth(await response.json());
   } catch (error) {
     renderHealth({
       overall_status: "unknown",
@@ -733,9 +693,8 @@ async function refreshManagement() {
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}`);
     }
-    const data = await response.json();
-    currentManagement = data;
-    renderManagement(data);
+    currentManagement = await response.json();
+    renderManagement(currentManagement);
   } catch (error) {
     currentManagement = {
       enabled: false,
@@ -743,13 +702,13 @@ async function refreshManagement() {
       message: `管理入口检查失败：${error.message}`,
       panel_local_url: "",
       panel_public_url: "",
-      panel_public_display_url: "--",
+      panel_public_display_url: "",
       detected_scheme: "unknown",
       recommended_local_url: "",
       protocol_warning: false,
       tcp_reachable: false,
       open_in_new_tab: true,
-      access_note: "建议通过 Cloudflare Access 与双重校验进行保护后访问管理入口。",
+      access_note: "建议通过 Cloudflare Access / Tunnel 访问管理入口。",
       readonly_note: "Control Tower 不读取或修改 3X-UI 配置。",
       show_local_target: true,
     };
@@ -765,7 +724,7 @@ async function refreshAlerts() {
     }
     renderAlertStatus(await response.json());
   } catch {
-    document.getElementById("alerts-message").textContent = "告警状态暂不可用。";
+    setText("alerts-message", "告警状态暂不可用。");
   }
 }
 
@@ -777,7 +736,7 @@ async function refreshAlertConfigCheck() {
     }
     renderAlertConfigCheck(await response.json());
   } catch {
-    document.getElementById("alerts-config-message").textContent = "告警配置校验暂不可用。";
+    setText("alerts-config-message", "告警配置校验暂不可用。");
   }
 }
 
@@ -815,42 +774,66 @@ async function refreshMeta() {
     }
     renderMeta(await response.json());
   } catch {
-  const fallback = {
-      configured_host: "127.0.0.1",
-      configured_port: 3001,
-      public_entry: "tower.conanxin.com",
-      external_access_mode: "Cloudflare Access / Tunnel",
-      direct_public_bind: false,
-      access_protection: "Cloudflare Access / Tunnel",
-    };
-    renderMeta(fallback);
+    renderMeta(defaultMeta);
   }
 }
 
 async function sendTestAlert() {
-  const output = document.getElementById("test-alert-result");
-  output.textContent = "正在发送测试告警…";
+  const output = el("test-alert-result");
+  if (output) {
+    output.textContent = "正在发送测试告警…";
+  }
   try {
     const response = await fetch("/api/alerts/test", { method: "POST" });
     const data = await response.json();
-    if (data.sent) {
-      output.textContent = "测试告警已触发。";
-    } else if (typeof data.message === "string") {
-      output.textContent = `测试告警结果：${data.message}`;
-    } else {
-      output.textContent = "测试告警已跳过。";
+    if (output) {
+      if (data.sent) {
+        output.textContent = "测试告警已触发。";
+      } else if (typeof data.message === "string") {
+        output.textContent = `测试告警结果：${data.message}`;
+      } else {
+        output.textContent = "测试告警已跳过。";
+      }
     }
     await refreshAlerts();
     await refreshAlertConfigCheck();
   } catch (error) {
-    output.textContent = `测试告警失败：${error.message}`;
+    if (output) {
+      output.textContent = `测试告警失败：${error.message}`;
+    }
   }
 }
 
+function bindNavigationGuards() {
+  const managementButton = el("management-open-button");
+  if (managementButton) {
+    managementButton.addEventListener("click", (event) => {
+      const disabled = managementButton.getAttribute("aria-disabled") === "true";
+      if (disabled || !managementButton.getAttribute("href")) {
+        event.preventDefault();
+        setText("management-disabled-note", managementDisabledHint);
+      }
+    });
+  }
+
+  const testAlertButton = el("test-alert-button");
+  if (testAlertButton) {
+    testAlertButton.addEventListener("click", sendTestAlert);
+  }
+}
+
+function renderManagementReadOnlyHint() {
+  const maskNote = el("management-readonly-note");
+  if (!maskNote) {
+    return;
+  }
+  maskNote.textContent = "Control Tower 不读取或修改 3X-UI 配置。";
+}
+
 function renderExternalAccessInfo() {
-  const panelEl = document.getElementById("external-panel-entry");
-  if (panelEl) {
-    panelEl.title = "为避免泄露管理入口隐藏路径，界面仅显示脱敏入口。";
+  const entry = el("runtime-management-entry");
+  if (entry) {
+    entry.title = "为避免泄露管理入口隐藏路径，界面仅显示脱敏入口。";
   }
 }
 
@@ -868,13 +851,8 @@ async function refreshAll() {
   renderExternalAccessInfo();
 }
 
-document.getElementById("test-alert-button").addEventListener("button", sendTestAlert);
-const btn = document.getElementById("test-alert-button");
-if (btn) {
-  btn.addEventListener("click", sendTestAlert);
-}
-
 refreshAll();
+bindNavigationGuards();
 window.setInterval(refreshMeta, 30000);
 window.setInterval(refreshHealth, 30000);
 window.setInterval(refreshManagement, 60000);
