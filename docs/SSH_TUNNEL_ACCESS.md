@@ -21,6 +21,7 @@ http://127.0.0.1:3001
 ## Notes
 
 - No public port needs to be opened.
+- Do not expose the dashboard directly to the public internet.
 - No firewall rule needs to be changed.
 - No reverse proxy is needed.
 - No Nginx, Caddy, Cloudflare Tunnel, or Docker is required for Phase 1A.2.

@@ -41,6 +41,12 @@ git pull
 bash scripts/deploy-local-only.sh
 ```
 
+Before starting the app, run:
+
+```bash
+bash scripts/preflight-local-only.sh
+```
+
 This creates `.venv`, installs dependencies, and copies `config.example.yaml` to `config.yaml` if needed. It does not start the dashboard, change 3X-UI, inspect secret config, or enable systemd.
 
 ## 3. Edit config.yaml

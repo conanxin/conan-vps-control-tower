@@ -86,3 +86,5 @@ Diagnostics must not suggest:
 ## Safety
 
 Commands are shown as text only. Conan VPS Control Tower does not execute them.
+
+Real VPS validation should use `scripts/preflight-local-only.sh` and `scripts/collect-redacted-vps-status.sh` for local-only checks and redacted summaries.

@@ -8,13 +8,23 @@ Conan VPS Control Tower defaults to:
 127.0.0.1:3001
 ```
 
-It should not bind to `0.0.0.0` unless the operator intentionally changes the configuration and understands the risk.
+It should not bind to `0.0.0.0`. Keep the dashboard local-only and use SSH tunnel access.
 
 ## Local Development
 
 ```bash
 ./scripts/run-dev.sh
 ```
+
+## Local-Only Preflight
+
+Before starting on a VPS:
+
+```bash
+bash scripts/preflight-local-only.sh
+```
+
+This checks local-only assumptions without starting services, changing firewall rules, or touching proxy tools.
 
 ## Install
 

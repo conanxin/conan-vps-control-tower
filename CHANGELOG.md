@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Phase 1E Local-Only Hardening and Real VPS Validation
+
+- Added local-only preflight script.
+- Added redacted live VPS status collection script.
+- Added systemd local-only documentation.
+- Added real VPS validation checklist and Dashboard smoke test guide.
+- Added tests for local-only safety defaults and documentation examples.
+
 ### Phase 1D Diagnostics and Suggested Actions
 
 - Added read-only diagnostics engine and rule set.

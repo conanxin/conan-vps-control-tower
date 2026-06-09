@@ -35,10 +35,17 @@
 
 ## Phase 1E: Local-Only Hardening and Real VPS Validation
 
-- Status: next recommended phase
+- Status: implemented on `main`
 - Validate diagnostics on a real VPS
 - Improve local-only safety checks
 - Prepare a possible `v0.2.0-alpha`
+
+## Phase 1E.1: v0.2.0-alpha Release Preparation
+
+- Status: next recommended phase if real VPS validation passes
+- Prepare release notes
+- Add redacted screenshots
+- Verify CI and docs
 
 ## Phase 2: Project Control Tower
 

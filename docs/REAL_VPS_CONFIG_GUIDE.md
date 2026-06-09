@@ -16,6 +16,8 @@ server:
 
 Do not use `0.0.0.0`. Do not use `80` or `443` for this dashboard.
 
+Run `bash scripts/preflight-local-only.sh` before starting on a VPS.
+
 ## checks
 
 ```yaml

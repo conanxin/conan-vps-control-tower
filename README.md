@@ -47,6 +47,7 @@ Conan VPS Control Tower is a read-only health observation layer. It does not rep
 See [Domain / TLS / Traffic Risk](docs/DOMAIN_TLS_TRAFFIC_RISK.md) for configuration examples.
 See [Alerting](docs/ALERTING.md) for Telegram and Email notification setup.
 See [Diagnostics](docs/DIAGNOSTICS.md) for suggested read-only checks.
+See [systemd local-only](docs/SYSTEMD_LOCAL_ONLY.md), [real VPS validation checklist](docs/REAL_VPS_VALIDATION_CHECKLIST.md), and [dashboard smoke test](docs/DASHBOARD_SMOKE_TEST.md) before running on a real VPS.
 
 ## What It Does Not Do
 

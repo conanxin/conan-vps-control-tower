@@ -127,6 +127,8 @@ Dashboard refreshes can also trigger evaluation through `/api/health` when `aler
 
 Only `alerts.enabled=true` with a fully configured channel sends notifications. No public port, firewall change, reverse proxy, or exposed Dashboard is required.
 
+Alerting does not require the Dashboard to be publicly exposed.
+
 ## Current Limits
 
 - Delivery is not guaranteed.

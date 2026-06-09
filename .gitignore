@@ -11,6 +11,7 @@ config.yaml
 data/*.json
 data/*.db
 data/*.sqlite
+reports/live-vps-redacted-status.txt
 dist/
 build/
 *.egg-info/
