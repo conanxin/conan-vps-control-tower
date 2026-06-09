@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+### Phase 1F.2 Dashboard UX polish
+
+- Chinese dashboard by default, with English API payload retained for compatibility.
+- Added dedicated optional-check and active-risk split.
+- Added proxy path summary and diagnostics summary placement above full diagnostics panel.
+- Improved traffic percent formatting for very low values.
+- Added neutral styling for not-configured / disabled checks.
+- Added lightweight `/api/meta` for local-only runtime display.
+
 ### Phase 1F.1 Operational Polish
 
 - Added `scripts/tower-status.sh` for one-command local-only status and API checks.

@@ -6,6 +6,8 @@ Conan VPS Control Tower is a local-only health control tower for personal VPS an
 
 Current stage: v0.2.0-alpha ready
 
+Dashboard language: Simplified Chinese by default (API fields remain English for compatibility).
+
 ## Status
 
 - Project stage: v0.2.0-alpha ready
@@ -62,10 +64,12 @@ Conan VPS Control Tower is a read-only health observation layer. It does not rep
 - Local-only preflight and redacted VPS validation scripts
 - Human-readable status summary and risk hints
 - Local-only dashboard by default: `127.0.0.1:3001`
+- 默认中文界面，API 字段维持英文兼容。
 
 See [Domain / TLS / Traffic Risk](docs/DOMAIN_TLS_TRAFFIC_RISK.md) for configuration examples.
 See [Alerting](docs/ALERTING.md) for Telegram and Email notification setup.
 See [Diagnostics](docs/DIAGNOSTICS.md) for suggested read-only checks.
+See [Dashboard UX polish](docs/DASHBOARD_UX_POLISH.md) for Chinese copy and diagnostics placement details.
 See [systemd local-only](docs/SYSTEMD_LOCAL_ONLY.md), [real VPS validation checklist](docs/REAL_VPS_VALIDATION_CHECKLIST.md), and [dashboard smoke test](docs/DASHBOARD_SMOKE_TEST.md) before running on a real VPS.
 
 Operationally, we now provide:
@@ -122,6 +126,7 @@ ssh -L 3001:127.0.0.1:3001 user@YOUR_VPS_HOST
 - Phase 1D: Diagnostic suggestions and common commands
 - Phase 1E: Local-only hardening and real VPS validation
 - Phase 1E.1: v0.2.0-alpha release preparation
+- Phase 1F.2: Chinese dashboard UX polish
 - Phase 2: Project control tower
 - Phase 3: Information radar and Agent command library
 

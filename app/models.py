@@ -27,3 +27,13 @@ class HealthResponse(BaseModel):
     risk_summary: list[str]
     checked_at: str = Field(default_factory=utc_now_iso)
     checks: list[CheckResult]
+
+
+class MetaResponse(BaseModel):
+    app_name: str
+    version: str
+    ui_language: str
+    configured_host: str
+    configured_port: int
+    local_only: bool
+    access_hint: str

@@ -1,15 +1,20 @@
 :root {
   color-scheme: light;
-  --bg: #f6f7f9;
+  --bg: #f5f7fb;
   --panel: #ffffff;
-  --text: #17202a;
-  --muted: #647083;
-  --line: #d9dee7;
-  --healthy: #18794e;
-  --warning: #a16207;
-  --degraded: #b45309;
-  --critical: #b42318;
-  --unknown: #526070;
+  --text: #1c2330;
+  --muted: #5b6575;
+  --line: #d8dfe9;
+  --healthy: #1f8f5d;
+  --healthy-bg: #eaf7ef;
+  --warning: #b67b03;
+  --warning-bg: #fff5df;
+  --degraded: #a35f00;
+  --degraded-bg: #fff0dd;
+  --critical: #bc2c21;
+  --critical-bg: #ffe7e5;
+  --unknown: #6b7788;
+  --neutral-bg: #f3f5f9;
 }
 
 * {
@@ -24,9 +29,9 @@ body {
 }
 
 .shell {
-  width: min(1120px, calc(100% - 32px));
+  width: min(1320px, calc(100% - 28px));
   margin: 0 auto;
-  padding: 28px 0;
+  padding: 24px 0 40px;
 }
 
 .topbar {
@@ -34,13 +39,16 @@ body {
   align-items: flex-end;
   justify-content: space-between;
   gap: 16px;
-  padding-bottom: 20px;
+  padding-bottom: 18px;
   border-bottom: 1px solid var(--line);
 }
 
 .eyebrow,
 .label,
-.timestamp {
+.timestamp,
+.strip-item span,
+.step-card,
+.pipeline-summary {
   margin: 0;
   color: var(--muted);
   font-size: 13px;
@@ -55,11 +63,18 @@ p {
 
 h1 {
   margin: 6px 0 0;
-  font-size: 28px;
+  font-size: 30px;
+}
+
+.runtime-bar {
+  color: var(--muted);
+  font-size: 13px;
 }
 
 .overview,
 .risk-panel,
+.pipeline,
+.status-strip,
 .card {
   background: var(--panel);
   border: 1px solid var(--line);
@@ -67,18 +82,22 @@ h1 {
 }
 
 .overview {
-  margin-top: 22px;
-  padding: 22px;
+  margin-top: 20px;
+  padding: 20px;
 }
 
 .overview h2 {
-  margin: 14px 0 8px;
+  margin: 10px 0 8px;
   font-size: 24px;
 }
 
 .overview p {
   margin: 0;
   color: var(--muted);
+}
+
+.timestamp {
+  margin-top: 10px;
 }
 
 .status-badge {
@@ -90,32 +109,117 @@ h1 {
   color: #ffffff;
   font-size: 13px;
   font-weight: 700;
-  text-transform: uppercase;
 }
 
 .status-badge.healthy,
 .card.healthy {
-  border-color: rgba(24, 121, 78, 0.45);
+  border-color: rgba(31, 143, 93, 0.32);
 }
 
-.status-badge.healthy {
-  background: var(--healthy);
+.card.healthy {
+  background: var(--healthy-bg);
 }
 
-.status-badge.warning {
-  background: var(--warning);
+.status-badge.healthy { background: var(--healthy); }
+
+.status-badge.warning,
+.card.warning {
+  border-color: rgba(182, 123, 3, 0.45);
+  background: var(--warning-bg);
 }
 
-.status-badge.degraded {
-  background: var(--degraded);
+.status-badge.warning { background: var(--warning); }
+
+.status-badge.degraded,
+.card.degraded {
+  border-color: rgba(163, 95, 0, 0.45);
+  background: var(--degraded-bg);
 }
 
-.status-badge.critical {
-  background: var(--critical);
+.status-badge.degraded { background: var(--degraded); }
+
+.status-badge.critical,
+.card.critical {
+  border-color: rgba(188, 44, 33, 0.45);
+  background: var(--critical-bg);
 }
 
-.status-badge.unknown {
-  background: var(--unknown);
+.status-badge.critical { background: var(--critical); }
+
+.status-badge.unknown,
+.card.unknown {
+  background: #f6f8fb;
+  border-color: rgba(107, 119, 136, 0.45);
+}
+
+.card.not-configured {
+  border-color: rgba(107, 119, 136, 0.45);
+  background: var(--neutral-bg);
+}
+
+.status-badge.not-configured {
+  background: #9aa3b3;
+}
+
+.status-strip {
+  margin-top: 14px;
+  padding: 12px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.strip-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.strip-item strong {
+  color: var(--text);
+  font-size: 14px;
+}
+
+.pipeline {
+  margin-top: 16px;
+  padding: 16px;
+}
+
+.pipeline h2 {
+  margin: 0 0 10px;
+  font-size: 20px;
+}
+
+.pipeline-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.step-card {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.step-card.warning,
+.step-card.degraded,
+.step-card.critical {
+  border-color: rgba(31, 143, 93, 0.3);
+  background: var(--healthy-bg);
+}
+
+.step-card.ok { border-color: rgba(31, 143, 93, 0.4); background: var(--healthy-bg); }
+.step-card.risk { border-color: rgba(188, 44, 33, 0.3); background: var(--critical-bg); }
+
+.pipeline-summary {
+  margin: 12px 0 0;
+  color: var(--muted);
 }
 
 .grid {
@@ -126,27 +230,28 @@ h1 {
 }
 
 .card {
-  min-height: 172px;
+  min-height: 168px;
   padding: 16px;
 }
 
 .card h3 {
   margin: 12px 0 8px;
   font-size: 20px;
-  text-transform: capitalize;
 }
 
 .card .message {
   margin: 0;
   color: var(--muted);
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.45;
 }
+
+.card.core-card { box-shadow: 0 1px 0 rgba(24, 32, 42, 0.04); }
 
 .metrics {
   display: grid;
   gap: 6px;
-  margin: 14px 0 0;
+  margin: 12px 0 0;
 }
 
 .metrics div {
@@ -193,28 +298,12 @@ h1 {
 }
 
 .action-button:hover {
-  background: #e2e8f0;
-}
-
-.card.warning {
-  border-color: rgba(161, 98, 7, 0.55);
-}
-
-.card.degraded {
-  border-color: rgba(180, 83, 9, 0.55);
-}
-
-.card.critical {
-  border-color: rgba(180, 35, 24, 0.55);
-}
-
-.card.unknown {
-  border-color: rgba(82, 96, 112, 0.55);
+  background: #e4ebf5;
 }
 
 .risk-panel {
   margin-top: 16px;
-  padding: 18px;
+  padding: 16px;
 }
 
 .risk-panel h2 {
@@ -230,12 +319,12 @@ h1 {
 }
 
 .diagnostics-summary {
-  margin: 10px 0;
+  margin: 10px 0 2px;
   color: var(--muted);
 }
 
 .diagnosis {
-  margin-top: 12px;
+  margin-top: 6px;
 }
 
 .diagnosis h3 {
@@ -264,7 +353,32 @@ code {
   font-size: 13px;
 }
 
+.diagnostics-summary-panel {
+  margin-top: 16px;
+}
+
+.diagnostics-summary-panel .diagnostics-summary {
+  font-size: 14px;
+}
+
+.diagnostics-panel .diagnosis {
+  background: #fbfcfd;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+@media (max-width: 1280px) {
+  .pipeline-steps {
+    gap: 6px;
+  }
+}
+
 @media (max-width: 900px) {
+  .status-strip {
+    grid-template-columns: 1fr;
+  }
+
   .grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -272,8 +386,8 @@ code {
 
 @media (max-width: 560px) {
   .shell {
-    width: min(100% - 20px, 1120px);
-    padding: 18px 0;
+    width: min(100% - 20px, 1320px);
+    padding: 16px 0 28px;
   }
 
   .topbar {
@@ -281,7 +395,16 @@ code {
     flex-direction: column;
   }
 
+  .overview h2 {
+    font-size: 20px;
+  }
+
   .grid {
     grid-template-columns: 1fr;
+  }
+
+  .step-card {
+    width: 100%;
+    text-align: center;
   }
 }

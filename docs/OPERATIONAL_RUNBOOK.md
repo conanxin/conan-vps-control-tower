@@ -2,6 +2,8 @@
 
 This runbook summarizes stable local-only operation on a personal VPS.
 
+Dashboard default is Simplified Chinese. API field names remain English for compatibility.
+
 ## Common Operations Cheatsheet
 
 ```bash
@@ -71,6 +73,7 @@ http://127.0.0.1:3001
 ```
 
 Do not expose the dashboard publicly.
+The default dashboard header also shows: 本地只读 · 绑定地址 · 访问方式 SSH Tunnel · 无公网暴露.
 
 ## Verify local-only behavior
 

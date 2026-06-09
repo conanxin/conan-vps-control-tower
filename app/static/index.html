@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,100 +10,150 @@
     <main class="shell">
       <header class="topbar">
         <div>
-          <p class="eyebrow">Personal VPS Proxy Health</p>
+          <p class="eyebrow">个人 VPS 代理健康控制塔</p>
           <h1>Conan VPS Control Tower</h1>
         </div>
-        <div id="last-checked" class="timestamp">Last Checked: --</div>
+        <div id="runtime-bar" class="runtime-bar">
+          本地只读 · 绑定：127.0.0.1:3001 · 访问方式：SSH Tunnel · 公网暴露：无
+        </div>
       </header>
 
       <section class="overview">
         <div>
           <span id="overall-badge" class="status-badge unknown">unknown</span>
-          <h2 id="overall-status">Overall Status</h2>
-          <p id="readable-summary">Waiting for health data...</p>
+          <h2 id="overall-status">总体状态</h2>
+          <p id="readable-summary">等待健康数据...</p>
         </div>
       </section>
 
-      <section class="grid" aria-label="Health checks">
-        <article class="card" data-check="vps_system">
-          <p class="label">VPS Status</p>
-          <h3>Unknown</h3>
-          <p class="message">Not checked yet.</p>
+      <section class="status-strip">
+        <div class="strip-item">
+          <span>运行模式</span>
+          <strong id="runtime-mode">本地只读</strong>
+        </div>
+        <div class="strip-item">
+          <span>绑定地址</span>
+          <strong id="runtime-endpoint">127.0.0.1:3001</strong>
+        </div>
+        <div class="strip-item">
+          <span>访问方式</span>
+          <strong id="runtime-access">SSH Tunnel</strong>
+        </div>
+      </section>
+
+      <section class="pipeline" aria-label="代理链路">
+        <h2>代理链路</h2>
+        <div class="pipeline-steps">
+          <div class="step-card" id="pipeline-vps">VPS 健康</div>
+          <div class="step-divider">→</div>
+          <div class="step-card" id="pipeline-proxy-core">代理核心运行</div>
+          <div class="step-divider">→</div>
+          <div class="step-card" id="pipeline-panel">3X-UI 面板可达</div>
+          <div class="step-divider">→</div>
+          <div class="step-card" id="pipeline-port">代理端口开放</div>
+        </div>
+        <p id="pipeline-summary" class="pipeline-summary">
+          正在加载代理链路状态...
+        </p>
+      </section>
+
+      <section class="grid" aria-label="健康检查卡片">
+        <article class="card core-card" data-check="vps_system">
+          <p class="label">VPS 状态</p>
+          <h3>未知</h3>
+          <p class="message">尚未检测。</p>
         </article>
-        <article class="card" data-check="proxy_core">
-          <p class="label">Proxy Core Status</p>
-          <h3>Unknown</h3>
-          <p class="message">Not checked yet.</p>
+        <article class="card core-card" data-check="proxy_core">
+          <p class="label">代理核心状态</p>
+          <h3>未知</h3>
+          <p class="message">尚未检测。</p>
         </article>
-        <article class="card" data-check="xui_panel">
-          <p class="label">3X-UI Panel Status</p>
-          <h3>Unknown</h3>
-          <p class="message">Not checked yet.</p>
+        <article class="card core-card" data-check="xui_panel">
+          <p class="label">3X-UI 面板状态</p>
+          <h3>未知</h3>
+          <p class="message">尚未检测。</p>
         </article>
-        <article class="card" data-check="proxy_ports">
-          <p class="label">Port Status</p>
-          <h3>Unknown</h3>
-          <p class="message">Not checked yet.</p>
+        <article class="card core-card" data-check="proxy_ports">
+          <p class="label">端口状态</p>
+          <h3>未知</h3>
+          <p class="message">尚未检测。</p>
         </article>
-        <article class="card" data-check="traffic">
-          <p class="label">Traffic Risk</p>
-          <h3>Unknown</h3>
-          <p class="message">Not checked yet.</p>
+
+        <article class="card risk-card" data-check="traffic">
+          <p class="label">流量风险</p>
+          <h3>未知</h3>
+          <p class="message">尚未检测。</p>
           <dl class="metrics">
-            <div><dt>Used</dt><dd data-detail="estimated_used_gb">--</dd></div>
-            <div><dt>Limit</dt><dd data-detail="monthly_limit_gb">--</dd></div>
-            <div><dt>Usage</dt><dd data-detail="usage_percent">--</dd></div>
+            <div><dt>已用</dt><dd data-detail="estimated_used_gb">--</dd></div>
+            <div><dt>上限</dt><dd data-detail="monthly_limit_gb">--</dd></div>
           </dl>
-          <p class="note">Local estimate, may differ from provider billing.</p>
-        </article>
-        <article class="card" data-check="domain_dns">
-          <p class="label">Domain / DNS</p>
-          <h3>Not configured</h3>
-          <p class="message">Not checked yet.</p>
           <dl class="metrics">
-            <div><dt>Resolved IPs</dt><dd data-detail="resolved_ip_count">--</dd></div>
-            <div><dt>Expected match</dt><dd data-detail="expected_match">--</dd></div>
+            <div><dt>使用率</dt><dd data-detail="usage_percent">--</dd></div>
+          </dl>
+          <p class="note">本地流量估算安全。服务商后台计费可能与本地估算不同。</p>
+          <p class="note">本地估算，仅供参考，可能与服务商账单不同。</p>
+        </article>
+        <article class="card risk-card" data-check="domain_dns">
+          <p class="label">域名 / DNS</p>
+          <h3>未配置</h3>
+          <p class="message">尚未检测。</p>
+          <dl class="metrics">
+            <div><dt>解析 IP 数</dt><dd data-detail="resolved_ip_count">--</dd></div>
+            <div><dt>预期匹配</dt><dd data-detail="expected_match">--</dd></div>
           </dl>
         </article>
-        <article class="card" data-check="tls_certificate">
-          <p class="label">TLS Certificate</p>
-          <h3>Not configured</h3>
-          <p class="message">Not checked yet.</p>
+        <article class="card risk-card" data-check="tls_certificate">
+          <p class="label">TLS 证书</p>
+          <h3>未配置</h3>
+          <p class="message">尚未检测。</p>
           <dl class="metrics">
-            <div><dt>Days left</dt><dd data-detail="days_remaining">--</dd></div>
-            <div><dt>Expiry</dt><dd data-detail="not_after">--</dd></div>
+            <div><dt>剩余天数</dt><dd data-detail="days_remaining">--</dd></div>
+            <div><dt>过期时间</dt><dd data-detail="not_after">--</dd></div>
           </dl>
         </article>
-        <article class="card alerting-card">
-          <p class="label">Alerting</p>
-          <h3 id="alerts-enabled">Unknown</h3>
-          <p id="alerts-message" class="message">Loading alert status...</p>
+
+        <article class="card ops-card alerting-card">
+          <p class="label">告警通知</p>
+          <h3 id="alerts-enabled">未知</h3>
+          <p id="alerts-message" class="message">正在读取告警配置...</p>
           <dl class="metrics">
-            <div><dt>Min severity</dt><dd id="alerts-min-severity">--</dd></div>
-            <div><dt>Cooldown</dt><dd id="alerts-cooldown">--</dd></div>
+            <div><dt>最低等级</dt><dd id="alerts-min-severity">--</dd></div>
+            <div><dt>冷却周期</dt><dd id="alerts-cooldown">--</dd></div>
             <div><dt>Telegram</dt><dd id="alerts-telegram">--</dd></div>
             <div><dt>Email</dt><dd id="alerts-email">--</dd></div>
-            <div><dt>Active</dt><dd id="alerts-active">--</dd></div>
-            <div><dt>Last sent</dt><dd id="alerts-last-sent">--</dd></div>
+            <div><dt>活跃告警</dt><dd id="alerts-active">--</dd></div>
+            <div><dt>上次发送</dt><dd id="alerts-last-sent">--</dd></div>
           </dl>
-          <button id="test-alert-button" class="action-button" type="button">Test Alert</button>
-          <p id="test-alert-result" class="note">Test notification is disabled until alerts are configured.</p>
+          <button id="test-alert-button" class="action-button" type="button">测试告警</button>
+          <p id="test-alert-result" class="note">告警未启用时将显示跳过。</p>
         </article>
       </section>
 
       <section class="risk-panel">
-        <h2>Risk Summary</h2>
+        <h2>活跃风险</h2>
         <ul id="risk-summary">
-          <li>No data yet.</li>
+          <li>当前没有活跃风险。</li>
         </ul>
       </section>
 
+      <section class="risk-panel">
+        <h2>未配置的可选检查</h2>
+        <ul id="optional-checks">
+          <li>域名 / DNS：未配置</li>
+          <li>TLS 证书：未配置</li>
+        </ul>
+      </section>
+
+      <section class="risk-panel diagnostics-summary-panel">
+        <h2>诊断摘要</h2>
+        <div id="diagnostics-summary" class="diagnostics-summary">正在加载诊断摘要...</div>
+      </section>
+
       <section class="risk-panel diagnostics-panel">
-        <h2>Diagnostics</h2>
-        <p class="note">Read-only commands, not executed automatically.</p>
-        <div id="diagnostics-summary" class="diagnostics-summary">Loading diagnostics...</div>
+        <h2>诊断建议</h2>
+        <p class="note">以下命令仅用于只读排查，不会自动执行。</p>
         <article id="top-diagnosis" class="diagnosis">
-          <h3>No active diagnostic issues detected.</h3>
+          <h3>未发现需要处理的诊断问题。</h3>
           <p id="diagnosis-impact">--</p>
           <p id="diagnosis-first-check">--</p>
           <p id="diagnosis-related">--</p>
@@ -111,6 +161,8 @@
           <pre><code id="diagnosis-commands">--</code></pre>
         </article>
       </section>
+
+      <p id="last-checked" class="timestamp">最后检查：--</p>
     </main>
     <script src="/static/app.js"></script>
   </body>

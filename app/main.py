@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import importlib.metadata
+import re
 from functools import lru_cache
 from pathlib import Path
 
@@ -18,13 +20,28 @@ from app.health.process_checker import check_proxy_processes, check_proxy_servic
 from app.health.system_checker import check_system
 from app.health.tls_checker import check_tls
 from app.health.traffic_checker import check_traffic
-from app.models import CheckResult, HealthResponse
+from app.models import CheckResult, HealthResponse, MetaResponse
 
 APP_DIR = Path(__file__).resolve().parent
 STATIC_DIR = APP_DIR / "static"
+ROOT_DIR = APP_DIR.parent
+PROJECT_VERSION = "0.2.0"
 
-app = FastAPI(title="Conan VPS Control Tower", version="0.1.0")
+app = FastAPI(title="Conan VPS Control Tower", version="0.2.0")
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+
+def _project_version() -> str:
+    pyproject = ROOT_DIR / "pyproject.toml"
+    if pyproject.exists():
+        content = pyproject.read_text(encoding="utf-8")
+        match = re.search(r'version\s*=\s*"([^"]+)"', content)
+        if match:
+            return match.group(1)
+    try:
+        return importlib.metadata.version("conan-vps-control-tower")
+    except importlib.metadata.PackageNotFoundError:
+        return PROJECT_VERSION
 
 
 @lru_cache(maxsize=1)
@@ -120,6 +137,20 @@ def api_alerts_evaluate() -> dict:
     config = get_config()
     health = evaluate(run_all_checks(config))
     return AlertManager(config.alerts).evaluate(health).to_dict()
+
+
+@app.get("/api/meta", response_model=MetaResponse)
+def api_meta() -> MetaResponse:
+    config = get_config()
+    return MetaResponse(
+        app_name="Conan VPS Control Tower",
+        version=_project_version(),
+        ui_language="zh-CN",
+        configured_host=config.server.host,
+        configured_port=config.server.port,
+        local_only=True,
+        access_hint="Use SSH tunnel to access the dashboard.",
+    )
 
 
 @app.get("/api/diagnostics")

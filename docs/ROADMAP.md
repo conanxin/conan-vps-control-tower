@@ -50,10 +50,18 @@
 
 ## Phase 1F: systemd Persistence and Operational Polish
 
-- Status: next recommended phase
+- Status: implemented on main
 - Validate systemd persistence on real VPS
 - Improve operational runbooks
 - Decide whether to cut a stable alpha follow-up
+
+## Phase 1F.2: Chinese Dashboard UX Polish
+
+- Status: implemented on main
+- Default Simplified Chinese dashboard
+- Proxy path overview and diagnostics summary placement
+- Active risk split from optional not-configured checks
+- Local runtime header and traffic percent formatting polish
 
 ## Phase 2: Project Control Tower
 
