@@ -63,11 +63,19 @@ Prepare `v0.2.0-alpha` after Phase 1B, 1C, 1D, 1E, and Phase 1E-Live validation.
 
 ## Tag Status
 
-Pending creation of `v0.2.0-alpha`.
+Created and pushed:
+
+```text
+v0.2.0-alpha
+```
 
 ## Release Status
 
-Pending GitHub prerelease creation.
+GitHub prerelease created:
+
+```text
+https://github.com/conanxin/conan-vps-control-tower/releases/tag/v0.2.0-alpha
+```
 
 ## Current System State
 
