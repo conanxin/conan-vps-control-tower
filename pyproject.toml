@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "conan-vps-control-tower"
-version = "0.1.0"
+version = "0.2.0"
 description = "A lightweight, read-only health dashboard for personal VPS proxy nodes."
 readme = "README.md"
 requires-python = ">=3.10"

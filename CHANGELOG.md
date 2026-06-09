@@ -2,6 +2,42 @@
 
 ## Unreleased
 
+## v0.2.0-alpha
+
+### Domain / TLS / Traffic Risk
+
+- Added optional Domain / DNS checker.
+- Added optional TLS certificate expiry checker.
+- Enhanced traffic checking with local interface baseline estimates and warning/degraded/critical thresholds.
+- Added `/api/domain`, `/api/tls`, and `/api/traffic`.
+
+### Telegram / Email Alerting
+
+- Added optional alerting configuration, disabled by default.
+- Added Telegram and Email / SMTP channels using lightweight clients.
+- Added alert severity filtering, cooldown, fingerprint dedupe, recovery notifications, and test notifications.
+- Added `/api/alerts/status`, `/api/alerts/test`, and `/api/alerts/evaluate`.
+
+### Diagnostics and Suggested Actions
+
+- Added read-only diagnostics engine and rule set.
+- Added `/api/diagnostics`.
+- Added Dashboard Diagnostics section with impact, likely first check, related modules, confidence, and read-only commands.
+
+### Local-Only Hardening
+
+- Added local-only preflight script.
+- Added redacted live VPS status collection script.
+- Added systemd local-only documentation.
+- Added real VPS validation checklist and Dashboard smoke test guide.
+
+### Real VPS Validation
+
+- Passed real VPS validation on Ubuntu 24.04 LTS with Python 3.12.3.
+- Verified temporary uvicorn on `127.0.0.1:3001`.
+- Confirmed no `0.0.0.0:3001` public bind.
+- Confirmed no 3X-UI modification, no proxy restart, no firewall change, and no public port opening.
+
 ### Phase 1E Local-Only Hardening and Real VPS Validation
 
 - Added local-only preflight script.

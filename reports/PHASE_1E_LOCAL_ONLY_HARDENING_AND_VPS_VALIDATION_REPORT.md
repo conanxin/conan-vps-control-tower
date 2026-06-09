@@ -1,12 +1,12 @@
 # Phase 1E Local-Only Hardening and VPS Validation Report
 
-## 本阶段目标
+## Stage Goal
 
-对 Conan VPS Control Tower 进行真实 VPS 上线前的 local-only 硬化与验证准备，确认 Dashboard、API、告警、诊断模块可以安全运行且不影响现有代理工具。
+Prepare Conan VPS Control Tower for real VPS use by hardening local-only assumptions and validating that Dashboard, API, alerting, and diagnostics can run safely without disrupting existing proxy tools.
 
-## 新增 / 修改文件
+## Added / Modified Files
 
-新增：
+Added:
 
 - `scripts/preflight-local-only.sh`
 - `scripts/collect-redacted-vps-status.sh`
@@ -17,7 +17,7 @@
 - `tests/test_docs_safety.py`
 - `reports/PHASE_1E_LOCAL_ONLY_HARDENING_AND_VPS_VALIDATION_REPORT.md`
 
-修改：
+Modified:
 
 - `.gitignore`
 - `README.md`
@@ -30,66 +30,58 @@
 - `docs/ALERTING.md`
 - `docs/DIAGNOSTICS.md`
 
-## 实现内容
+## Implementation Summary
 
-- 新增部署前 local-only preflight 脚本。
-- 新增真实 VPS 脱敏状态采集脚本。
-- 新增 systemd local-only 文档、真实 VPS 验证清单、Dashboard smoke test 文档。
-- 增加 local-only 配置和文档安全测试。
-- 收紧 Deployment 文档中关于 `0.0.0.0` 的表述。
+- Added local-only preflight checks.
+- Added redacted live VPS status collection.
+- Added systemd local-only documentation.
+- Added real VPS validation checklist and Dashboard smoke test guide.
+- Added local-only config and documentation safety tests.
 
-## local-only hardening review 结果
+## Local-Only Hardening Review
 
-- app 默认 host：`127.0.0.1`。
-- config.example.yaml 默认 `server.host`：`127.0.0.1`。
-- systemd service 默认：`--host 127.0.0.1 --port 3001`。
-- scripts/run-dev.sh 默认：`--host 127.0.0.1 --port 3001`。
-- README 明确 local-only。
-- ALERTING / DIAGNOSTICS / DEPLOYMENT 文档说明不需要公网暴露。
+- app default host: `127.0.0.1`.
+- `config.example.yaml` default `server.host`: `127.0.0.1`.
+- systemd service default: `--host 127.0.0.1 --port 3001`.
+- `scripts/run-dev.sh` default: `--host 127.0.0.1 --port 3001`.
+- README states local-only default.
+- ALERTING / DIAGNOSTICS / DEPLOYMENT docs state no public exposure is required.
 
-## 对现有代理工具的影响分析
+## Real VPS Validation
 
-- 是否修改 3X-UI：否。
-- 是否重启代理：否。
-- 是否改防火墙：否。
-- 是否开放公网端口：否。
-- 是否占用代理端口：否。
-- 是否自动执行诊断命令：否。
+- Executed: yes.
+- OS: Ubuntu 24.04 LTS.
+- Python: 3.12.3.
+- Project commit: `1ed4daf`.
+- Run mode: temporary uvicorn.
+- Bind: `127.0.0.1:3001`.
+- Public bind: no.
+- Health: healthy.
+- Diagnostics: all_healthy.
+- Alerts: disabled.
+- 3X-UI modified: no.
+- Proxy restarted: no.
+- Firewall changed: no.
+- Public port opened: no.
 
-## 是否执行真实 VPS 验证
+## Proxy Tool Impact Analysis
 
-未执行。
+- Modified 3X-UI: no.
+- Restarted proxy: no.
+- Changed firewall: no.
+- Opened public port: no.
+- Occupied proxy ports: no.
+- Automatically executed diagnostic commands: no.
 
-原因：当前环境未提供 `CONTROL_TOWER_VPS_HOST` / `CONTROL_TOWER_VPS_USER`，因此没有尝试 SSH。
+## Test Results
 
-## 用户手动执行步骤
-
-```bash
-mkdir -p ~/apps
-cd ~/apps
-git clone https://github.com/conanxin/conan-vps-control-tower.git
-cd conan-vps-control-tower
-git checkout main
-bash scripts/deploy-local-only.sh
-bash scripts/preflight-local-only.sh
-```
-
-启动后可执行：
-
-```bash
-bash scripts/check-local-only-status.sh
-bash scripts/collect-redacted-vps-status.sh
-```
-
-## 测试结果
-
-`python -m pytest` 已通过：
+`python -m pytest` passed:
 
 ```text
 45 passed
 ```
 
-Shell 脚本语法检查已通过：
+Shell syntax checks passed:
 
 ```text
 bash -n scripts/preflight-local-only.sh
@@ -98,12 +90,12 @@ bash -n scripts/deploy-local-only.sh
 bash -n scripts/check-local-only-status.sh
 ```
 
-## 当前系统状态
+## Current System State
 
-项目仍保持只读、local-only、低配 VPS 友好。真实 VPS 验证等待用户手动执行。
+The project remains read-only, local-only, and low-resource friendly. It has passed real VPS temporary uvicorn validation on `127.0.0.1:3001`.
 
-## 下一阶段建议
+## Next Stage Recommendation
 
-首选 Phase 1E.1：v0.2.0-alpha release preparation，如果真实 VPS 验证通过。
+Preferred: Phase 1E.1, v0.2.0-alpha release preparation.
 
-备选 Phase 2：Project Control Tower foundation，如果暂不发布。
+Alternative: Phase 2, Project Control Tower foundation.

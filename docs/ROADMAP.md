@@ -36,16 +36,24 @@
 ## Phase 1E: Local-Only Hardening and Real VPS Validation
 
 - Status: implemented on `main`
+- Live validation: passed
 - Validate diagnostics on a real VPS
 - Improve local-only safety checks
 - Prepare a possible `v0.2.0-alpha`
 
 ## Phase 1E.1: v0.2.0-alpha Release Preparation
 
-- Status: next recommended phase if real VPS validation passes
+- Status: release prepared / released
 - Prepare release notes
 - Add redacted screenshots
 - Verify CI and docs
+
+## Phase 1F: systemd Persistence and Operational Polish
+
+- Status: next recommended phase
+- Validate systemd persistence on real VPS
+- Improve operational runbooks
+- Decide whether to cut a stable alpha follow-up
 
 ## Phase 2: Project Control Tower
 
