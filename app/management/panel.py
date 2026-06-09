@@ -3,6 +3,7 @@ from __future__ import annotations
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse
 from urllib.request import Request, urlopen
+import socket
 
 from app.config import ManagementConfig
 from app.management.models import ManagementPanelStatus, disabled_status
@@ -14,23 +15,35 @@ def _is_local_http_url(url: str) -> bool:
     return parsed.scheme in {"http", "https"} and parsed.hostname in {"127.0.0.1", "localhost"}
 
 
-def _local_panel_reachable(url: str, timeout: float = 3) -> tuple[bool, str | None]:
+def _tcp_reachable(url: str, timeout: float = 3) -> bool:
+    parsed = urlparse(url)
+    if not parsed.hostname or not parsed.port:
+        return False
+    try:
+        with socket.create_connection((parsed.hostname, parsed.port), timeout=timeout):
+            return True
+    except OSError:
+        return False
+
+
+def _local_panel_reachable(url: str, timeout: float = 3) -> tuple[bool, bool, str | None]:
     if not _is_local_http_url(url):
-        return False, "panel_local_url must use localhost or 127.0.0.1"
+        return False, False, "panel_local_url must use localhost or 127.0.0.1"
 
     request = Request(url, headers={"User-Agent": "conan-vps-control-tower/management-check"})
     try:
         with urlopen(request, timeout=timeout) as response:
-            return response.status < 500, None
+            return response.status < 500, response.status < 500, None
     except HTTPError as exc:
         # 3X-UI may answer with redirects/auth-related status codes; that still proves the local entry exists.
         if exc.code < 500:
-            return True, None
-        return False, f"HTTP {exc.code}"
+            return True, True, None
+        return _tcp_reachable(url, timeout), False, f"HTTP {exc.code}"
     except URLError as exc:
-        return False, type(exc.reason).__name__ if hasattr(exc, "reason") else type(exc).__name__
+        error = type(exc.reason).__name__ if hasattr(exc, "reason") else type(exc).__name__
+        return _tcp_reachable(url, timeout), False, error
     except Exception as exc:
-        return False, type(exc).__name__
+        return _tcp_reachable(url, timeout), False, type(exc).__name__
 
 
 def check_management_panel(config: ManagementConfig) -> ManagementPanelStatus:
@@ -44,10 +57,14 @@ def check_management_panel(config: ManagementConfig) -> ManagementPanelStatus:
             config.open_in_new_tab,
         )
 
-    reachable, error = _local_panel_reachable(config.panel_local_url)
-    if reachable:
+    reachable, http_ok, error = _local_panel_reachable(config.panel_local_url)
+    if reachable and http_ok:
         status = "healthy"
         message = f"{config.panel_name}本地入口可达。"
+    elif reachable:
+        status = "warning"
+        extra = f"（HTTP 检查未完全通过：{error}）" if error else ""
+        message = f"{config.panel_name}本地端口可连接{extra}；请确认面板 URL 协议是否为 http 或 https。"
     else:
         status = "warning" if config.panel_local_url else "unknown"
         extra = f"（{error}）" if error else ""
