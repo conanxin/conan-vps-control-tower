@@ -14,6 +14,9 @@ from app.config import AppConfig, load_config
 from app.diagnostics.engine import diagnose
 from app.health.domain_checker import check_domain
 from app.health.evaluator import evaluate
+from app.history.recorder import record_health_snapshot
+from app.history.store import load_events, load_snapshots
+from app.history.summary import build_summary
 from app.health.http_checker import check_panel
 from app.health.port_checker import check_ports
 from app.health.process_checker import check_proxy_processes, check_proxy_services
@@ -85,9 +88,89 @@ def dashboard() -> FileResponse:
 def api_health() -> HealthResponse:
     config = get_config()
     health = evaluate(run_all_checks(config))
+    history_result = {"recorded": False, "reason": "history disabled", "snapshot_id": None}
+    if config.history.enabled:
+        history_result = record_health_snapshot(health, config.history)
+    health.history_recording = history_result
     if config.alerts.enabled:
         AlertManager(config.alerts).evaluate(health)
     return health
+
+
+@app.get("/api/history/summary")
+def api_history_summary() -> dict:
+    config = get_config()
+    if not config.history.enabled:
+        return {
+            "enabled": False,
+            "message": "history disabled",
+            "summary": None,
+        }
+
+    snapshots, snapshot_error = load_snapshots(config.history.data_file)
+    events, event_error = load_events(config.history.event_file)
+    summary = build_summary(
+        snapshots,
+        events,
+        window_hours=config.history.summary_window_hours,
+    )
+    payload = summary.to_dict()
+    payload["enabled"] = True
+    if snapshot_error:
+        payload["warning"] = snapshot_error
+    if event_error:
+        payload["warning"] = event_error
+    return payload
+
+
+@app.get("/api/history/recent")
+def api_history_recent(limit: int = 50) -> dict:
+    config = get_config()
+    if not config.history.enabled:
+        return {
+            "enabled": False,
+            "items": [],
+            "limit": limit,
+        }
+
+    safe_limit = max(1, min(limit, 500))
+    snapshots, snapshot_error = load_snapshots(config.history.data_file)
+    items = [item.to_dict() for item in snapshots[-safe_limit:]]
+    payload: dict[str, object] = {
+        "enabled": True,
+        "items": items,
+        "limit": safe_limit,
+        "window_hours": config.history.summary_window_hours,
+    }
+    if snapshot_error:
+        payload["warning"] = snapshot_error
+    return payload
+
+
+@app.get("/api/events")
+def api_events(limit: int = 50, severity: str | None = None) -> dict:
+    config = get_config()
+    if not config.history.enabled:
+        return {
+            "enabled": False,
+            "items": [],
+            "limit": max(1, min(limit, 500)),
+            "severity": severity,
+        }
+
+    safe_limit = max(1, min(limit, 500))
+    events, event_error = load_events(config.history.event_file)
+    items = [item.to_dict() for item in events if severity is None or item.severity == severity]
+    items = items[-safe_limit:]
+    payload: dict[str, object] = {
+        "enabled": True,
+        "items": items,
+        "limit": safe_limit,
+        "severity": severity,
+    }
+    if event_error:
+        payload["warning"] = event_error
+    return payload
 
 
 @app.get("/api/system", response_model=HealthResponse)
@@ -150,6 +233,8 @@ def api_meta() -> MetaResponse:
         configured_port=config.server.port,
         local_only=True,
         access_hint="Use SSH tunnel to access the dashboard.",
+        history_enabled=config.history.enabled,
+        event_log=config.history.enabled,
     )
 
 

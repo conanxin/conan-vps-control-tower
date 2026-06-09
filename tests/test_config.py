@@ -12,6 +12,10 @@ def test_load_config_uses_defaults_when_file_missing(tmp_path):
     assert config.tls.enabled is False
     assert config.traffic.warning_percent == 70
     assert config.traffic.interfaces == ["auto"]
+    assert config.history.enabled is True
+    assert config.history.max_snapshots == 2880
+    assert config.history.max_events == 500
+    assert config.history.summary_window_hours == 24
 
 
 def test_load_config_merges_partial_yaml(tmp_path):
@@ -62,6 +66,7 @@ traffic:
     assert config.tls.targets[0].server_name == "example.com"
     assert config.traffic.warning_percent == 60
     assert config.traffic.interfaces == ["eth0"]
+    assert config.history.enabled is True
 
 
 def test_alerts_default_disabled(tmp_path):
@@ -92,3 +97,30 @@ alerts:
 
     assert config.alerts.telegram.bot_token == "env-token"
     assert config.alerts.telegram.chat_id == "${TELEGRAM_CHAT_ID}"
+
+
+def test_load_config_supports_history(tmp_path):
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        """
+history:
+  enabled: false
+  data_file: "custom-health-history.json"
+  event_file: "custom-events.json"
+  max_snapshots: 100
+  max_events: 50
+  min_record_interval_seconds: 120
+  summary_window_hours: 12
+""",
+        encoding="utf-8",
+    )
+
+    config = load_config(config_path)
+
+    assert config.history.enabled is False
+    assert config.history.data_file == "custom-health-history.json"
+    assert config.history.event_file == "custom-events.json"
+    assert config.history.max_snapshots == 100
+    assert config.history.max_events == 50
+    assert config.history.min_record_interval_seconds == 120
+    assert config.history.summary_window_hours == 12

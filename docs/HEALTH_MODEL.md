@@ -66,3 +66,13 @@ warning, degraded, critical
 Diagnostics uses health status and severity as input, but it does not change health status. It is an explanation layer that generates likely cause, impact, suggested first check, and read-only command templates.
 
 Disabled optional checks are treated as not configured, not as diagnostic failures.
+
+## History and Event Status
+
+History is an independent local layer and does not affect real-time `overall_status`.
+
+- `snapshot`: one health sampling, generated during check cycle.
+- `event`: a status-change record (for example `healthy -> warning`, recovery).
+- `status`: health summary status used in UI only; it is derived from the selected summary window.
+
+Unknown or empty history is treated as `unknown` for summary view and does not alter existing API compatibility.

@@ -28,6 +28,8 @@ server:
     assert payload["configured_port"] == 3001
     assert payload["local_only"] is True
     assert payload["access_hint"] != ""
+    assert payload["history_enabled"] is True
+    assert payload["event_log"] is True
     assert "bot_token" not in payload
     assert "password" not in payload
     assert "chat_id" not in payload

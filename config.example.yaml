@@ -75,3 +75,12 @@ alerts:
       - "you@example.com"
     use_tls: true
     timeout_seconds: 10
+
+history:
+  enabled: true
+  data_file: "data/health_history.json"
+  event_file: "data/event_log.json"
+  max_snapshots: 2880
+  max_events: 500
+  min_record_interval_seconds: 60
+  summary_window_hours: 24

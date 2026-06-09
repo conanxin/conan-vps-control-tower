@@ -1,4 +1,4 @@
-const statusClassList = ["healthy", "warning", "degraded", "critical", "unknown", "not-configured"];
+﻿const statusClassList = ["healthy", "warning", "degraded", "critical", "unknown", "not-configured"];
 
 const statusLabel = {
   healthy: "健康",
@@ -21,8 +21,6 @@ const moduleLabels = {
   tls_certificate: "TLS 证书",
   traffic: "流量风险",
 };
-
-const optionalCheckTitle = "未配置的可选检查";
 
 function normalizeStatus(status) {
   return statusClassList.includes(status) ? status : "unknown";
@@ -79,7 +77,10 @@ function updateDetails(card, check) {
 
   if (check.name === "domain_dns") {
     const resolved = details.resolved_ips || {};
-    const resolvedCount = Object.values(resolved).reduce((count, ips) => count + (Array.isArray(ips) ? ips.length : 0), 0);
+    const resolvedCount = Object.values(resolved).reduce(
+      (count, ips) => count + (Array.isArray(ips) ? ips.length : 0),
+      0,
+    );
     const hasExpected = Array.isArray(details.expected_ips) && details.expected_ips.length > 0;
     const hasMismatch = Array.isArray(details.mismatches) && details.mismatches.length > 0;
     setDetail(card, "resolved_ip_count", check.ignored ? "未配置" : resolvedCount);
@@ -231,6 +232,7 @@ function renderRiskAndOptional(checks) {
 
   const optionalChecks = document.getElementById("optional-checks");
   if (optionalChecks) {
+    optionalChecks.setAttribute("aria-label", "未配置的可选检查");
     optionalChecks.replaceChildren();
     const optionalNames = ["domain_dns", "tls_certificate"];
     optionalNames.forEach((name) => {
@@ -350,6 +352,15 @@ function setDiagnosticsVisibility(item, dataSummary) {
   }
 }
 
+function renderDiagnosticsSummary(data) {
+  const first = Array.isArray(data.items) ? data.items[0] : null;
+  if (!first) {
+    setDiagnosticsVisibility(null, data.summary);
+    return;
+  }
+  setDiagnosticsVisibility(first, data.summary);
+}
+
 async function refreshDiagnostics() {
   try {
     const response = await fetch("/api/diagnostics", { cache: "no-store" });
@@ -365,13 +376,79 @@ async function refreshDiagnostics() {
   }
 }
 
-function renderDiagnosticsSummary(data) {
-  const first = Array.isArray(data.items) ? data.items[0] : null;
-  if (!first) {
-    setDiagnosticsVisibility(null, data.summary);
+function renderHistory(summary, events) {
+  const statusEl = document.getElementById("history-status");
+  const currentEl = document.getElementById("history-current-status");
+  const worstEl = document.getElementById("history-worst-status");
+  const ratioEl = document.getElementById("history-health-ratio");
+  const snapshotCountEl = document.getElementById("history-snapshot-count");
+  const eventCountEl = document.getElementById("history-event-count");
+  const lastProblemEl = document.getElementById("history-last-problem");
+  const lastRecoveryEl = document.getElementById("history-last-recovery");
+  const listEl = document.getElementById("history-events-list");
+  const summaryEl = document.getElementById("history-summary");
+
+  if (!summary || !summary.enabled) {
+    summaryEl.textContent = "健康历史记录已关闭。";
+    statusEl.textContent = "--";
+    currentEl.textContent = "--";
+    worstEl.textContent = "--";
+    ratioEl.textContent = "--";
+    snapshotCountEl.textContent = "0";
+    eventCountEl.textContent = "0";
+    lastProblemEl.textContent = "--";
+    lastRecoveryEl.textContent = "--";
+    listEl.replaceChildren();
+    const li = document.createElement("li");
+    li.textContent = "健康历史已关闭。";
+    listEl.appendChild(li);
     return;
   }
-  setDiagnosticsVisibility(first, data.summary);
+
+  summaryEl.textContent = summary.summary || "暂无历史摘要。";
+  statusEl.textContent = summary.status || "--";
+  currentEl.textContent = summary.latest_status || "--";
+  worstEl.textContent = summary.worst_status || "--";
+  ratioEl.textContent = typeof summary.healthy_ratio === "number" ? `${summary.healthy_ratio.toFixed(1)}%` : "--";
+  snapshotCountEl.textContent = `${summary.snapshot_count || 0}`;
+  eventCountEl.textContent = `${summary.event_count || 0}`;
+  lastProblemEl.textContent = summary.last_problem_at || "--";
+  lastRecoveryEl.textContent = summary.last_recovery_at || "--";
+
+  const visibleEvents = Array.isArray(events) ? events.slice(-5) : [];
+  listEl.replaceChildren();
+  if (visibleEvents.length === 0) {
+    const li = document.createElement("li");
+    li.textContent = "未发现最近可展示的历史事件。";
+    listEl.appendChild(li);
+    return;
+  }
+
+  visibleEvents.forEach((item) => {
+    const li = document.createElement("li");
+    const time = item.occurred_at ? new Date(item.occurred_at).toLocaleString() : "--";
+    li.textContent = `${time} ${item.title || item.message || "未命名事件"}`;
+    listEl.appendChild(li);
+  });
+}
+
+async function refreshHistory() {
+  try {
+    const [summaryResp, recentResp, eventsResp] = await Promise.all([
+      fetch("/api/history/summary", { cache: "no-store" }),
+      fetch("/api/history/recent?limit=50", { cache: "no-store" }),
+      fetch("/api/events?limit=50", { cache: "no-store" }),
+    ]);
+    if (!summaryResp.ok || !recentResp.ok || !eventsResp.ok) {
+      throw new Error(`HTTP ${summaryResp.status || recentResp.status || eventsResp.status}`);
+    }
+    const summary = await summaryResp.json();
+    const events = await eventsResp.json();
+    renderHistory(summary, events.items || []);
+  } catch (error) {
+    const summaryEl = document.getElementById("history-summary");
+    summaryEl.textContent = `历史数据暂不可用，请查看服务日志：${error.message}`;
+  }
 }
 
 async function sendTestAlert() {
@@ -415,6 +492,7 @@ async function refreshHealth() {
       checked_at: new Date().toISOString(),
       risk_summary: [`api: ${error.message}`],
       checks: [],
+      history_recording: { recorded: false, reason: error.message },
     });
   }
 }
@@ -423,7 +501,9 @@ refreshMeta();
 refreshHealth();
 refreshAlertStatus();
 refreshDiagnostics();
+refreshHistory();
 document.getElementById("test-alert-button").addEventListener("click", sendTestAlert);
 window.setInterval(refreshHealth, 30000);
 window.setInterval(refreshAlertStatus, 30000);
 window.setInterval(refreshDiagnostics, 30000);
+window.setInterval(refreshHistory, 60000);

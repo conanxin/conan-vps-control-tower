@@ -98,6 +98,16 @@ class AlertsConfig(BaseModel):
     email: EmailAlertConfig = Field(default_factory=EmailAlertConfig)
 
 
+class HistoryConfig(BaseModel):
+    enabled: bool = True
+    data_file: str = "data/health_history.json"
+    event_file: str = "data/event_log.json"
+    max_snapshots: int = 2880
+    max_events: int = 500
+    min_record_interval_seconds: int = 60
+    summary_window_hours: int = 24
+
+
 class AppConfig(BaseModel):
     server: ServerConfig = Field(default_factory=ServerConfig)
     checks: ChecksConfig = Field(default_factory=ChecksConfig)
@@ -107,6 +117,7 @@ class AppConfig(BaseModel):
     domain: DomainConfig = Field(default_factory=DomainConfig)
     tls: TLSConfig = Field(default_factory=TLSConfig)
     alerts: AlertsConfig = Field(default_factory=AlertsConfig)
+    history: HistoryConfig = Field(default_factory=HistoryConfig)
 
 
 ENV_PATTERN = re.compile(r"^\$\{([A-Za-z_][A-Za-z0-9_]*)\}$")

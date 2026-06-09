@@ -60,6 +60,14 @@ bash scripts/check-systemd-local-only.sh
 bash scripts/tower-status.sh
 ```
 
+### History / Event APIs
+
+```bash
+curl -s http://127.0.0.1:3001/api/history/summary
+curl -s http://127.0.0.1:3001/api/history/recent
+curl -s http://127.0.0.1:3001/api/events
+```
+
 ## Logs
 
 ```bash
@@ -149,3 +157,11 @@ Confirm SSH tunnel + local-only bind:
 ssh -L 3001:127.0.0.1:3001 dmit-control-tower
 ss -lntup | grep 3001
 ```
+
+## 健康历史与事件
+
+- 历史写入开启时，建议定期查看：
+  - `api/history/summary`
+  - `api/events`
+- 历史文件位于 `data/health_history.json` / `data/event_log.json`。
+- 文件异常时 Dashboard 会提示“历史数据暂不可用”，服务不受影响。

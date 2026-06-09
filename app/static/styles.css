@@ -368,6 +368,17 @@ code {
   padding: 12px;
 }
 
+.history-panel .history-summary {
+  margin: 6px 0 10px;
+  color: var(--muted);
+}
+
+.history-events ul {
+  margin: 8px 0 0;
+  padding-left: 20px;
+  color: var(--muted);
+}
+
 @media (max-width: 1280px) {
   .pipeline-steps {
     gap: 6px;

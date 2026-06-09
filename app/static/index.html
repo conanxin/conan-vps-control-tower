@@ -162,6 +162,31 @@
         </article>
       </section>
 
+      <section class="risk-panel history-panel">
+        <h2>健康历史</h2>
+        <div id="history-summary" class="history-summary">暂无历史数据。Dashboard 刷新后会自动开始记录。</div>
+        <div class="history-metrics">
+          <dl class="metrics">
+            <div><dt>最近 24 小时状态</dt><dd id="history-status">--</dd></div>
+            <div><dt>当前状态</dt><dd id="history-current-status">--</dd></div>
+            <div><dt>最差状态</dt><dd id="history-worst-status">--</dd></div>
+            <div><dt>健康比例</dt><dd id="history-health-ratio">--</dd></div>
+          </dl>
+          <dl class="metrics">
+            <div><dt>快照数量</dt><dd id="history-snapshot-count">--</dd></div>
+            <div><dt>事件数量</dt><dd id="history-event-count">--</dd></div>
+            <div><dt>最近异常</dt><dd id="history-last-problem">--</dd></div>
+            <div><dt>最近恢复</dt><dd id="history-last-recovery">--</dd></div>
+          </dl>
+        </div>
+        <div class="history-events">
+          <h3>最近事件</h3>
+          <ul id="history-events-list">
+            <li>暂无事件。</li>
+          </ul>
+        </div>
+      </section>
+
       <p id="last-checked" class="timestamp">最后检查：--</p>
     </main>
     <script src="/static/app.js"></script>

@@ -2,7 +2,7 @@
 
 A lightweight, read-only health dashboard for personal VPS proxy nodes.
 
-Conan VPS Control Tower is a local-only health observation layer for personal VPS proxy nodes. It keeps API compatibility in English and uses **Simplified Chinese** as the default dashboard language.
+Conan VPS Control Tower is a local-only health observation layer for personal VPS proxy nodes. It keeps API compatibility in English and uses Simplified Chinese as the default dashboard language.
 
 Current stage: v0.2.0-alpha ready
 
@@ -29,21 +29,34 @@ Conan VPS Control Tower is a read-only observation layer beside your proxy stack
 - It does not replace 3X-UI.
 - It does not modify proxy configuration.
 - It does not restart proxy services.
-- It does not require any firewall or Nginx/Caddy/Cloudflare Tunnel changes.
 - It defaults to `127.0.0.1:3001`.
-- Access path is local/SSH-tunnel only.
+- Access is via local tunnel path, not public port forwarding.
 
 ## What you can see
 
-- VPS 状态（资源和系统）
-- 代理核心状态
-- 3X-UI 面板状态
-- 端口状态
+- VPS 状态
+- Proxy Core 状态
+- 3X-UI Panel 状态
+- Port 状态
 - 流量风险
-- 域名 / DNS
+- Domain / DNS
 - TLS 证书
 - 告警通知
 - 诊断建议
+- 健康历史
+- 事件日志
+
+## Health History and Event Log
+
+- Recent state snapshots are recorded to `data/health_history.json`.
+- Exception-like status transitions are recorded in `data/event_log.json`.
+- Dashboard shows summary for the last 24 hours by default.
+- Summary includes healthy ratio, worst status, snapshot count, event count, last problem, and last recovery.
+
+See:
+
+- [Health History](docs/HEALTH_HISTORY.md)
+- [Event Log](docs/EVENT_LOG.md)
 
 ## Real VPS validation
 
@@ -58,24 +71,12 @@ Phase 1E-Live validation passed in de-identified form:
 - /api/diagnostics: all_healthy
 - /api/alerts/status: disabled
 - /api/meta: returned local-only runtime info
+- /api/history/summary: available when enabled
+- /api/events: available when enabled
 - 3X-UI modified: no
 - proxy restarted: no
 - firewall changed: no
 - public port opened: no
-
-## Why This Exists
-
-3X-UI is the configuration and management panel.
-
-Conan VPS Control Tower is the read-only health layer. It helps identify where to check first:
-
-- VPS health
-- proxy core
-- 3X-UI panel reachability
-- listening ports
-- DNS and TLS checks
-- local traffic estimate risk
-- alerts and diagnostics context
 
 ## Core Features
 
@@ -87,9 +88,11 @@ Conan VPS Control Tower is the read-only health layer. It helps identify where t
 - Local traffic estimate + risk thresholds
 - Optional Telegram / Email alerting
 - Read-only diagnostics and suggested checks
+- Health history and event log
 - Local-only systemd helper scripts
 
 See:
+
 - [Domain / TLS / Traffic Risk](docs/DOMAIN_TLS_TRAFFIC_RISK.md)
 - [Alerting](docs/ALERTING.md)
 - [Diagnostics](docs/DIAGNOSTICS.md)
@@ -112,6 +115,7 @@ See:
 - Does not call provider billing APIs
 - Does not execute diagnostic commands automatically
 - Does not enable alerting by default
+- Does not build project registry or project control plane
 
 ## Quick Start
 
@@ -143,16 +147,15 @@ This is an alpha project for personal VPS health control. Keep traffic local and
 
 - Phase 1A: Read-only health detection MVP
 - Phase 1B: Domain / TLS / Traffic Risk Enhancement
-- Phase 1C: Telegram and Email alerts
+- Phase 1C: Telegram / Email Alerts
 - Phase 1D: Diagnostics and Suggested Actions
 - Phase 1E: Local-only hardening and real VPS validation
 - Phase 1E.1: v0.2.0-alpha release preparation
 - Phase 1F: systemd persistence and operational polish
 - Phase 1F.2: Chinese dashboard UX polish
 - Phase 1F.3: README screenshot and demo docs
-- Phase 2A: Project Registry foundation
-- Phase 2: Project Control Tower
-- Phase 3: Information radar and Agent command library
+- Phase 1G: Health history and event log
+- This project intentionally stays focused on personal VPS / proxy health monitoring.
 
 ## License
 

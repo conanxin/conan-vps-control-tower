@@ -11,6 +11,15 @@
 - Added neutral styling for not-configured / disabled checks.
 - Added lightweight `/api/meta` for local-only runtime display.
 
+### Phase 1G Health History and Event Log
+
+- Added history recorder and event logger with local JSON persistence.
+- Added `/api/history/summary` / `/api/history/recent` / `/api/events`.
+- Added snapshot and event retention (`max_snapshots` / `max_events`).
+- Added event dedupe and recovery detection on status transitions.
+- Added dashboard Health History panel for 24h summary and recent events.
+- Added docs for history/event usage, and aligned roadmap to keep project scope limited to personal proxy monitoring.
+
 ### Phase 1F.3 README screenshot and demo docs
 
 - Added screenshot guidance for SSH-tunnel based local-only display.
