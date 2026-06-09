@@ -1,4 +1,4 @@
-# Alerting
+﻿# Alerting
 
 Phase 1C adds optional Telegram and Email / SMTP notifications. Alerting is a read-only notification layer. It does not automatically repair anything, modify proxy configuration, restart proxy services, change firewall rules, or expose the dashboard publicly.
 
@@ -32,6 +32,16 @@ Alerting can trigger for:
 - `cooldown_seconds`: prevents repeated notifications for the same alert.
 - alert fingerprint: deduplicates repeated alerts by module and status.
 - recovery notification: sends a recovery message when a previously active alert returns to healthy.
+
+## Alert configuration readiness check
+
+Phase 1H adds a read-only endpoint:
+
+- `GET /api/alerts/config-check`
+
+It returns whether alerting is enabled, each channel readiness, and missing field names.
+It also indicates whether a test notification can be executed.
+This endpoint never sends notifications and never returns `bot_token`, `chat_id`, or SMTP password values.
 
 ## Default Behavior
 
@@ -103,6 +113,12 @@ Use the Dashboard `Test Alert` button, or call:
 
 ```bash
 curl -X POST http://127.0.0.1:3001/api/alerts/test
+```
+
+`GET /api/alerts/config-check` is useful before testing alerts:
+
+```bash
+curl -s http://127.0.0.1:3001/api/alerts/config-check | python3 -m json.tool | head -80
 ```
 
 The test notification says it is not a failure.

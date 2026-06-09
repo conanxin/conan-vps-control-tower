@@ -13,6 +13,7 @@ sudo systemctl start conan-vps-control-tower
 sudo systemctl stop conan-vps-control-tower
 sudo systemctl disable conan-vps-control-tower
 bash scripts/uninstall-systemd-local-only.sh
+bash scripts/check-alert-config.sh
 ssh -L 3001:127.0.0.1:3001 dmit-control-tower
 ```
 

@@ -116,13 +116,18 @@
           <p class="label">告警通知</p>
           <h3 id="alerts-enabled">未知</h3>
           <p id="alerts-message" class="message">正在读取告警配置...</p>
+          <p id="alerts-config-message" class="note">告警配置状态读取中...</p>
           <dl class="metrics">
+            <div><dt>告警总开关</dt><dd id="alerts-config-state">--</dd></div>
             <div><dt>最低等级</dt><dd id="alerts-min-severity">--</dd></div>
             <div><dt>冷却周期</dt><dd id="alerts-cooldown">--</dd></div>
+            <div><dt>恢复通知</dt><dd id="alerts-recovery">--</dd></div>
+            <div><dt>可发送测试</dt><dd id="alerts-safe-to-test">--</dd></div>
             <div><dt>Telegram</dt><dd id="alerts-telegram">--</dd></div>
             <div><dt>Email</dt><dd id="alerts-email">--</dd></div>
             <div><dt>活跃告警</dt><dd id="alerts-active">--</dd></div>
             <div><dt>上次发送</dt><dd id="alerts-last-sent">--</dd></div>
+            <div><dt>配置状态</dt><dd id="alerts-config-state">--</dd></div>
           </dl>
           <button id="test-alert-button" class="action-button" type="button">测试告警</button>
           <p id="test-alert-result" class="note">告警未启用时将显示跳过。</p>

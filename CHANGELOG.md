@@ -1,6 +1,28 @@
-# Changelog
+﻿# Changelog`r`n## Unreleased
 
-## Unreleased
+### Phase 1H Alerting setup polish
+
+- Added non-intrusive alert config diagnostics endpoint `/api/alerts/config-check`.
+- Added dashboard readiness fields for Telegram / Email and test-availability hints.
+- Added systemd alert environment guidance and Telegram setup documentation.
+- Added safe alert test playbook and local config-check script.
+- Added alert configuration visibility to dashboard for missing fields and readiness.
+- `/api/meta` now includes `alert_config_check`.
+
+### Phase 1G Health History and Event Log
+
+- Added health snapshot recorder and event logger with local JSON persistence.
+- Added snapshot and event retention (`max_snapshots` / `max_events`).
+- Added event dedupe and recovery detection on status transitions.
+- Added dashboard Health History panel for 24h summary and recent events.
+- Added docs for history/event usage and kept project scope on personal VPS / proxy monitoring.
+
+### Phase 1F.3 README screenshot and demo docs
+
+- Added screenshot guidance for SSH-tunnel based local-only display.
+- Added README screenshot placeholder and media documentation workflow.
+- Added demo walkthrough for first-run interpretation.
+- Added README showcase note for display strategy and 30-second onboarding.
 
 ### Phase 1F.2 Dashboard UX polish
 
@@ -10,23 +32,6 @@
 - Improved traffic percent formatting for very low values.
 - Added neutral styling for not-configured / disabled checks.
 - Added lightweight `/api/meta` for local-only runtime display.
-
-### Phase 1G Health History and Event Log
-
-- Added history recorder and event logger with local JSON persistence.
-- Added `/api/history/summary` / `/api/history/recent` / `/api/events`.
-- Added snapshot and event retention (`max_snapshots` / `max_events`).
-- Added event dedupe and recovery detection on status transitions.
-- Added dashboard Health History panel for 24h summary and recent events.
-- Added docs for history/event usage, and aligned roadmap to keep project scope limited to personal proxy monitoring.
-
-### Phase 1F.3 README screenshot and demo docs
-
-- Added screenshot guidance for SSH-tunnel based local-only display.
-- Added README screenshot placeholder and media documentation workflow.
-- Added demo walkthrough for first-run interpretation.
-- Added README showcase note for display strategy and 30-second onboarding.
-- Added documentation tests for screenshot links, placeholder safety, local-only wording, and redaction rules.
 
 ### Phase 1F.1 Operational Polish
 
@@ -136,3 +141,4 @@
 - Phase 1B: Traffic, domain, TLS, and expiration reminders.
 - Phase 1C: Telegram / Email alerts.
 - Phase 1D: Diagnostic suggestions and common commands.
+

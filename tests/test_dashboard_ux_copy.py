@@ -1,4 +1,4 @@
-from pathlib import Path
+﻿from pathlib import Path
 
 
 def test_dashboard_index_contains_core_chinese_titles():
@@ -11,7 +11,7 @@ def test_dashboard_index_contains_core_chinese_titles():
     assert "端口状态" in html
     assert "流量风险" in html
     assert "告警通知" in html
-    assert "诊断摘要" in html
+    assert "诊断建议" in html
 
 
 def test_risk_sections_and_local_read_text():

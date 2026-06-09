@@ -46,6 +46,18 @@ Conan VPS Control Tower is a read-only observation layer beside your proxy stack
 - 健康历史
 - 事件日志
 
+## Alert setup polish
+
+- Added `/api/alerts/config-check` read-only checker to verify whether Telegram / Email are ready.
+- Added dashboard alert-setup status with missing-field hints and clear disabled/skipped messages.
+- Added systemd environment variable guide for keeping secrets out of Git and checking readiness.
+
+See:
+
+- [Telegram alert setup](docs/TELEGRAM_ALERT_SETUP.md)
+- [Systemd alert env guide](docs/ALERT_SYSTEMD_ENV.md)
+- [Alert test playbook](docs/ALERT_TEST_PLAYBOOK.md)
+
 ## Health History and Event Log
 
 - Recent state snapshots are recorded to `data/health_history.json`.

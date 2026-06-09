@@ -40,3 +40,4 @@ class MetaResponse(BaseModel):
     access_hint: str
     history_enabled: bool
     event_log: bool
+    alert_config_check: bool

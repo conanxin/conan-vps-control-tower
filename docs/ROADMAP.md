@@ -74,6 +74,13 @@
 - Add `/api/history/summary`, `/api/history/recent`, `/api/events`
 - Keep local JSON persistence and non-sensitive fields
 
+## Phase 1H: Alerting setup polish and Telegram guide
+
+- Status: implemented on main
+- Add alert setup readiness checker and local-only playbook
+- Add systemd environment guidance and alert config check script
+- Improve dashboard alert setup visibility for Telegram / Email readiness
+
 ## Project Direction (focused)
 
 - This project intentionally stays focused on personal VPS / proxy health monitoring.

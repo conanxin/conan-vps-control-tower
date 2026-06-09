@@ -1,4 +1,4 @@
-# Demo Walkthrough
+﻿# Demo Walkthrough
 
 ## 这是什么项目
 
@@ -66,6 +66,25 @@ http://127.0.0.1:3001
 ## 理解告警关闭
 
 默认告警关闭。关闭时按钮/提示应显示“未开启”，`/api/alerts/status` 返回 `enabled: false`。
+
+## 理解告警配置状态
+
+在 `告警通知` 区域可看到：
+
+- 告警总开关是否开启
+- Telegram / Email 是否开启
+- 每个渠道是否已就绪
+- 缺少哪些字段
+
+检查方式：
+
+```bash
+curl -s http://127.0.0.1:3001/api/alerts/config-check | python3 -m json.tool | head -120
+```
+
+如果配置未开启，页面通常会提示“告警当前已关闭，不会发送通知”。
+如果通道开启但未完整配置，页面会提示“缺少必要配置”。
+`safe_to_test` 为 `false` 表示不能直接发测试通知。
 
 ## 如何确认没有公网暴露
 

@@ -24,6 +24,7 @@ from app.health.system_checker import check_system
 from app.health.tls_checker import check_tls
 from app.health.traffic_checker import check_traffic
 from app.models import CheckResult, HealthResponse, MetaResponse
+from app.alerts.config_check import check_alert_config
 
 APP_DIR = Path(__file__).resolve().parent
 STATIC_DIR = APP_DIR / "static"
@@ -209,6 +210,38 @@ def api_alerts_status() -> dict:
     return AlertManager(config.alerts).status()
 
 
+@app.get("/api/alerts/config-check")
+def api_alerts_config_check() -> dict:
+    config = get_config()
+    try:
+        return check_alert_config(config.alerts)
+    except Exception as exc:
+        return {
+            "status": "warning",
+            "enabled": False,
+            "message": f"告警配置检查失败，已安全回退：{type(exc).__name__}",
+            "min_severity": config.alerts.min_severity,
+            "cooldown_seconds": config.alerts.cooldown_seconds,
+            "send_recovery": config.alerts.send_recovery,
+            "state_file_ready": bool(config.alerts.state_file),
+            "channels": {
+                "telegram": {
+                    "enabled": False,
+                    "ready": False,
+                    "missing_fields": [],
+                    "message": "Telegram 告警未开启。",
+                },
+                "email": {
+                    "enabled": False,
+                    "ready": False,
+                    "missing_fields": [],
+                    "message": "Email 告警未开启。",
+                },
+            },
+            "safe_to_test": False,
+        }
+
+
 @app.post("/api/alerts/test")
 def api_alerts_test() -> dict:
     config = get_config()
@@ -235,6 +268,7 @@ def api_meta() -> MetaResponse:
         access_hint="Use SSH tunnel to access the dashboard.",
         history_enabled=config.history.enabled,
         event_log=config.history.enabled,
+        alert_config_check=True,
     )
 
 

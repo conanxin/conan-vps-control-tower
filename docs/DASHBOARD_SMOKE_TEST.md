@@ -56,12 +56,20 @@ Expected:
 - `/api/meta` returns local-only runtime info and history flags.
 - `/api/history/*` returns JSON payload (or disabled/empty states when configured off).
 
+Also run:
+
+```bash
+curl -s http://127.0.0.1:3001/api/alerts/config-check | python3 -m json.tool | head -120
+curl -s http://127.0.0.1:3001/api/alerts/status | python3 -m json.tool | head -120
+```
+
 ## Alert Test
 
 Click `测试告警`:
 
 - If alerts are disabled, it should show skipped.
 - If channels are enabled and configured, a test message may be sent.
+- If Telegram/Email is enabled but incomplete, skipped reason should explain missing fields.
 
 ## Screenshot Check
 

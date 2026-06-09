@@ -288,6 +288,42 @@ function renderAlertStatus(data) {
   badge.classList.add(alertsEnabled ? "healthy" : "not-configured");
 }
 
+function renderAlertConfigCheck(data) {
+  const configMessageEl = document.getElementById("alerts-config-message");
+  const configStateEl = document.getElementById("alerts-config-state");
+  const safeToTestEl = document.getElementById("alerts-safe-to-test");
+  const recoveryEl = document.getElementById("alerts-recovery");
+  const telegramEl = document.getElementById("alerts-telegram");
+  const emailEl = document.getElementById("alerts-email");
+  const telegram = data.channels?.telegram || {};
+  const email = data.channels?.email || {};
+
+  configMessageEl.textContent = data.message || "告警配置读取失败，请稍后再试。";
+  recoveryEl.textContent = String(data.send_recovery ?? "--");
+  safeToTestEl.textContent = data.safe_to_test ? "可以" : "不可以";
+  configStateEl.textContent = data.status === "healthy" ? "就绪" : "未就绪";
+
+  if (telegramEl) {
+    if (telegram.enabled) {
+      telegramEl.textContent = telegram.ready
+        ? "已开启且配置完整"
+        : "已开启但配置不完整";
+    } else {
+      telegramEl.textContent = "未开启";
+    }
+  }
+
+  if (emailEl) {
+    if (email.enabled) {
+      emailEl.textContent = email.ready
+        ? "已开启且配置完整"
+        : "已开启但配置不完整";
+    } else {
+      emailEl.textContent = "未开启";
+    }
+  }
+}
+
 async function refreshAlertStatus() {
   try {
     const response = await fetch("/api/alerts/status", { cache: "no-store" });
@@ -457,8 +493,15 @@ async function sendTestAlert() {
   try {
     const response = await fetch("/api/alerts/test", { method: "POST" });
     const data = await response.json();
-    output.textContent = data.sent ? "测试告警已发送。" : data.message || "测试告警已跳过。";
+    if (data.sent) {
+      output.textContent = "测试告警已发送。";
+    } else if (typeof data.message === "string" && data.message.length > 0) {
+      output.textContent = `测试告警已跳过：${data.message}`;
+    } else {
+      output.textContent = "测试告警已跳过。";
+    }
     await refreshAlertStatus();
+    await refreshAlertConfigCheck();
   } catch (error) {
     output.textContent = `测试告警失败：${error.message}`;
   }
@@ -497,13 +540,35 @@ async function refreshHealth() {
   }
 }
 
+async function refreshAlertConfigCheck() {
+  try {
+    const response = await fetch("/api/alerts/config-check", { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    const data = await response.json();
+    renderAlertConfigCheck(data);
+  } catch (error) {
+    const msg = document.getElementById("alerts-config-message");
+    if (msg) {
+      msg.textContent = `告警配置校验不可用：${error.message}`;
+    }
+    const state = document.getElementById("alerts-config-state");
+    if (state) {
+      state.textContent = "未知";
+    }
+  }
+}
+
 refreshMeta();
 refreshHealth();
 refreshAlertStatus();
+refreshAlertConfigCheck();
 refreshDiagnostics();
 refreshHistory();
 document.getElementById("test-alert-button").addEventListener("click", sendTestAlert);
 window.setInterval(refreshHealth, 30000);
 window.setInterval(refreshAlertStatus, 30000);
+window.setInterval(refreshAlertConfigCheck, 60000);
 window.setInterval(refreshDiagnostics, 30000);
 window.setInterval(refreshHistory, 60000);
