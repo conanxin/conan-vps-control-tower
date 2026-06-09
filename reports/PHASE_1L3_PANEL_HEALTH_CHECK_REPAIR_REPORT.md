@@ -63,7 +63,24 @@ https://panel.conanxin.com/隐藏路径
 
 ## 远端验证结果
 
-待远端更新与重启 `conan-vps-control-tower.service` 后补充。
+已执行远端验证，只重启 `conan-vps-control-tower.service`。
+
+- `x-ui.service`: running
+- proxy core: running
+- Control Tower listener: `127.0.0.1:3001`
+- forbidden listener: no `0.0.0.0:3001`
+- current `webPort`: recorded in final validation summary; no hidden path printed
+- `webBasePath`: exists, masked only
+- repaired `proxy.panel.url`: `https://127.0.0.1:YOUR_PANEL_PORT/<hidden>/`
+- `/api/health`: `healthy`
+- `xui_panel`: `healthy`, status code `200`
+- `/api/diagnostics`: `all_healthy`
+- `/api/management`: `healthy`
+- `panel_public_display_url`: masked as `https://panel.conanxin.com/隐藏路径`
+- Cloudflare `tower` root: reachable
+- Cloudflare `panel` root: reachable through Access/redirect layer
+
+No full hidden path, token, UUID, subscription link, or panel password was printed or committed.
 
 ## 下一阶段建议
 
