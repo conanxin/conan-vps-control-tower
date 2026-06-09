@@ -79,9 +79,13 @@ curl -s http://127.0.0.1:3001/api/management
 
 Confirm:
 
-- `panel_local_url` is the local 3X-UI target, for example `http://127.0.0.1:2096`.
+- `panel_local_url` is the local 3X-UI target, for example `https://127.0.0.1:2096`.
 - `panel_public_url` is the protected public entry, for example `https://panel.conanxin.com`.
 - The response does not contain password, token, cookie, UUID, or subscription links.
+- `detected_scheme` can show `https` when the local panel port is HTTPS.
+- `recommended_local_url` may be `https://127.0.0.1:2096`.
+- HTTP failure does not always mean the panel is unavailable; HTTPS `404` can still indicate protocol reachability.
+- If 3X-UI uses a hidden path, do not commit that path to the repository.
 
 ## Logs
 
@@ -125,7 +129,7 @@ Confirm targets:
 
 ```text
 tower target: http://127.0.0.1:3001
-panel target: http://127.0.0.1:YOUR_3XUI_PANEL_PORT
+panel target: https://127.0.0.1:YOUR_3XUI_PANEL_PORT
 ```
 
 Check readiness:

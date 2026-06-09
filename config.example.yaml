@@ -88,7 +88,7 @@ history:
 management:
   enabled: true
   panel_name: "3X-UI 面板"
-  panel_local_url: "http://127.0.0.1:2096"
+  panel_local_url: "https://127.0.0.1:2096"
   panel_public_url: "https://panel.conanxin.com"
   access_note: "建议通过 Cloudflare Access + 3X-UI 登录双层保护访问。"
   open_in_new_tab: true

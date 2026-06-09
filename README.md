@@ -77,7 +77,7 @@ SSH Tunnel remains the recommended default access path. If you want to check the
 Recommended split:
 
 - `tower.example.com` -> Conan VPS Control Tower at `http://127.0.0.1:3001`
-- `panel.example.com` -> 3X-UI panel at `http://127.0.0.1:YOUR_3XUI_PANEL_PORT`
+- `panel.example.com` -> 3X-UI panel at `https://127.0.0.1:YOUR_3XUI_PANEL_PORT`
 
 Keep these hostnames separate from your proxy main domain. Do not expose port `3001` publicly, and do not use Caddy/Nginx to take over VPS `80/443` for this project.
 

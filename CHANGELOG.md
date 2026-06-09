@@ -16,6 +16,14 @@
 - Added docs explaining the Control Tower / 3X-UI responsibility boundary.
 - Kept 3X-UI configuration, credentials, cookies, and write APIs untouched.
 
+### Phase 1L.1 Panel Protocol Detection Polish
+
+- Added HTTPS fallback detection for local 3X-UI panel ports.
+- Added `detected_scheme`, `recommended_local_url`, `protocol_warning`, and `tcp_reachable` to `/api/management`.
+- Updated default local panel target to `https://127.0.0.1:2096`.
+- Updated Cloudflare Tunnel template to use HTTPS for the 3X-UI panel origin.
+- Added Dashboard protocol warning for mismatched local panel protocol.
+
 ### Phase 1H Alerting setup polish
 
 - Added non-intrusive alert config diagnostics endpoint `/api/alerts/config-check`.

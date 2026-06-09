@@ -223,6 +223,10 @@ def api_management() -> dict:
             "readonly_note": config.management.readonly_note,
             "open_in_new_tab": config.management.open_in_new_tab,
             "checked_at": "",
+            "detected_scheme": "unknown",
+            "recommended_local_url": config.management.panel_local_url,
+            "protocol_warning": False,
+            "tcp_reachable": False,
         }
 
 

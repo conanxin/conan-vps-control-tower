@@ -25,6 +25,10 @@ management:
     assert payload["enabled"] is False
     assert payload["panel_local_url"] == "http://127.0.0.1:2096"
     assert payload["panel_public_url"] == "https://panel.conanxin.com"
+    assert "detected_scheme" in payload
+    assert "recommended_local_url" in payload
+    assert "protocol_warning" in payload
+    assert "tcp_reachable" in payload
     assert "password" not in str(payload).lower()
     assert "token" not in str(payload).lower()
     assert "cookie" not in str(payload).lower()

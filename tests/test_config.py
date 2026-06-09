@@ -17,7 +17,7 @@ def test_load_config_uses_defaults_when_file_missing(tmp_path):
     assert config.history.max_events == 500
     assert config.history.summary_window_hours == 24
     assert config.management.enabled is True
-    assert config.management.panel_local_url == "http://127.0.0.1:2096"
+    assert config.management.panel_local_url == "https://127.0.0.1:2096"
     assert config.management.panel_public_url == "https://panel.conanxin.com"
 
 

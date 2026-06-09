@@ -50,6 +50,16 @@ tower.conanxin.com -> Control Tower
 panel.conanxin.com -> 3X-UI
 ```
 
+For local target detection, port `2096` may need HTTPS:
+
+```text
+https://127.0.0.1:2096
+```
+
+HTTP failure does not always mean the panel is unavailable. HTTPS returning `404` can still prove the protocol is reachable while the root path is not the login path.
+
+If 3X-UI uses a hidden path, do not commit that path to this repository.
+
 Recommended protection:
 
 ```text

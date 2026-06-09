@@ -38,5 +38,5 @@ def test_domain_access_scripts_show_safe_targets():
     text = (ROOT / "scripts" / "discover-panel-and-tower-local.sh").read_text(encoding="utf-8")
 
     assert "tower target: http://127.0.0.1:3001" in text
-    assert "panel target: http://127.0.0.1:" in text
+    assert "panel target: https://127.0.0.1:" in text
     assert "0.0.0.0:3001" in text

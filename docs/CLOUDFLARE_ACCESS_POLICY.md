@@ -59,7 +59,7 @@ The origin services should remain:
 
 ```text
 http://127.0.0.1:3001
-http://127.0.0.1:YOUR_3XUI_PANEL_PORT
+https://127.0.0.1:YOUR_3XUI_PANEL_PORT
 ```
 
 No public VPS port is required. No firewall change is required. No proxy service restart is required.

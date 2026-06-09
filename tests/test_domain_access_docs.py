@@ -18,7 +18,9 @@ def test_domain_access_docs_exist_and_describe_access_model():
     assert "tower.example.com" in text
     assert "panel.example.com" in text
     assert "http://127.0.0.1:3001" in text
-    assert "http://127.0.0.1:YOUR_3XUI_PANEL_PORT" in text
+    assert "https://127.0.0.1:YOUR_3XUI_PANEL_PORT" in text
+    assert "HTTPS returning `404`" in text or "HTTPS probe returns `404`" in text
+    assert "hidden path" in text
     assert "Do not mix" in text or "Do not mix these with your proxy main domain" in text
     assert "No public VPS port is required" in policy_text
 

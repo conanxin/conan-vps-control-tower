@@ -66,9 +66,13 @@ curl -s http://127.0.0.1:3001/api/management | python3 -m json.tool
 Expected:
 
 - `panel_public_url` points to the configured panel domain.
+- `detected_scheme` and `recommended_local_url` are present.
+- If `protocol_warning=true`, the Dashboard shows the yellow protocol warning.
 - No `password`, `token`, or `cookie` appears.
 - Dashboard contains no iframe for 3X-UI.
 - Button opens the configured `panel_public_url`.
+
+If HTTPS returns `404`, treat it as protocol reachable. It may mean the root path is not the 3X-UI login path. Do not commit hidden paths.
 
 Also run:
 

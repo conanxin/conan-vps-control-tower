@@ -9,7 +9,10 @@ def test_dashboard_contains_management_entry_copy():
 
     assert "管理入口" in html
     assert "进入 3X-UI 面板" in html
+    assert "本地协议检测" in html
+    assert "推荐本地入口" in html
     assert "Control Tower 不读取或修改 3X-UI 配置" in html
+    assert "当前配置的面板协议可能不匹配" in html
     assert "<iframe" not in html.lower()
 
 
@@ -18,5 +21,8 @@ def test_dashboard_management_js_uses_api_and_does_not_iframe():
 
     assert "/api/management" in js
     assert "panel_public_url" in js
+    assert "detected_scheme" in js
+    assert "recommended_local_url" in js
+    assert "protocol_warning" in js
     assert "如需修改代理配置，可通过“管理入口”进入 3X-UI 面板" in js
     assert "iframe" not in js.lower()

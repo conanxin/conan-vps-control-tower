@@ -14,7 +14,8 @@ def test_cloudflare_tunnel_template_exists_and_maps_local_services():
     assert "tower.example.com" in text
     assert "panel.example.com" in text
     assert "http://127.0.0.1:3001" in text
-    assert "http://127.0.0.1:YOUR_3XUI_PANEL_PORT" in text
+    assert "https://127.0.0.1:YOUR_3XUI_PANEL_PORT" in text
+    assert "origin TLS verification" in text
     assert "YOUR_TUNNEL_ID" in text
     assert "http_status:404" in text
 

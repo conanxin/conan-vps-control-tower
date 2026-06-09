@@ -272,11 +272,22 @@ function renderManagement(data) {
   document.getElementById("management-message").textContent = data.message || "管理入口状态暂不可用。";
   document.getElementById("management-panel-name").textContent = data.panel_name || "3X-UI 面板";
   document.getElementById("management-local-url").textContent = data.panel_local_url || "--";
+  document.getElementById("management-detected-scheme").textContent = data.detected_scheme || "--";
+  document.getElementById("management-recommended-url").textContent = data.recommended_local_url || "--";
   document.getElementById("management-public-url").textContent = publicUrl || "未配置";
   document.getElementById("management-access-note").textContent =
     data.access_note || "建议通过 Cloudflare Access + 3X-UI 登录双层保护访问。";
   document.getElementById("management-readonly-note").textContent =
     data.readonly_note || "Control Tower 不读取或修改 3X-UI 配置。";
+
+  const warningEl = document.getElementById("management-protocol-warning");
+  if (warningEl) {
+    warningEl.hidden = !data.protocol_warning;
+    warningEl.textContent =
+      "当前配置的面板协议可能不匹配。绑定 panel.conanxin.com 前，建议使用 "
+      + (data.recommended_local_url || "https://127.0.0.1:2096")
+      + " 作为 Tunnel target。";
+  }
 
   if (publicUrl) {
     button.href = publicUrl;
@@ -306,6 +317,10 @@ async function refreshManagement() {
       message: `管理入口不可用：${error.message}`,
       panel_name: "3X-UI 面板",
       panel_local_url: "--",
+      detected_scheme: "unknown",
+      recommended_local_url: "--",
+      protocol_warning: false,
+      tcp_reachable: false,
       panel_public_url: "",
       access_note: "建议通过 Cloudflare Access + 3X-UI 登录双层保护访问。",
       readonly_note: "Control Tower 不读取或修改 3X-UI 配置。",

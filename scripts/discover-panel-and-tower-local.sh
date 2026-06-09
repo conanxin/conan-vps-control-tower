@@ -46,9 +46,9 @@ PANEL_PORT="$(printf '%s\n' "${PANEL_LINES}" \
   | head -n 1 || true)"
 
 if [ -n "${PANEL_PORT}" ]; then
-  echo "panel target: http://127.0.0.1:${PANEL_PORT}"
+  echo "panel target: https://127.0.0.1:${PANEL_PORT}"
 else
-  echo "panel target: http://127.0.0.1:YOUR_3XUI_PANEL_PORT"
+  echo "panel target: https://127.0.0.1:YOUR_3XUI_PANEL_PORT"
 fi
 echo
 

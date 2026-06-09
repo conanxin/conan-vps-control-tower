@@ -111,7 +111,7 @@ class HistoryConfig(BaseModel):
 class ManagementConfig(BaseModel):
     enabled: bool = True
     panel_name: str = "3X-UI 面板"
-    panel_local_url: str = "http://127.0.0.1:2096"
+    panel_local_url: str = "https://127.0.0.1:2096"
     panel_public_url: str = "https://panel.conanxin.com"
     access_note: str = "建议通过 Cloudflare Access + 3X-UI 登录双层保护访问。"
     open_in_new_tab: bool = True

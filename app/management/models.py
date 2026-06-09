@@ -18,6 +18,10 @@ class ManagementPanelStatus:
     readonly_note: str
     open_in_new_tab: bool
     checked_at: str
+    detected_scheme: str = "unknown"
+    recommended_local_url: str = ""
+    protocol_warning: bool = False
+    tcp_reachable: bool = False
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -43,4 +47,8 @@ def disabled_status(
         readonly_note=readonly_note,
         open_in_new_tab=open_in_new_tab,
         checked_at=utc_now_iso(),
+        detected_scheme="disabled",
+        recommended_local_url=panel_local_url,
+        protocol_warning=False,
+        tcp_reachable=False,
     )

@@ -27,7 +27,7 @@ Use separate subdomains:
 
 ```text
 tower.example.com -> http://127.0.0.1:3001
-panel.example.com -> http://127.0.0.1:YOUR_3XUI_PANEL_PORT
+panel.example.com -> https://127.0.0.1:YOUR_3XUI_PANEL_PORT
 ```
 
 Do not mix these with your proxy main domain. Keep health access and proxy traffic clearly separated.
@@ -69,8 +69,12 @@ Cloudflare Access should challenge first. After that, the user still needs to lo
 The local target should be:
 
 ```text
-http://127.0.0.1:YOUR_3XUI_PANEL_PORT
+https://127.0.0.1:YOUR_3XUI_PANEL_PORT
 ```
+
+Port `2096` may be HTTPS locally. HTTP failure does not always mean the panel is unavailable. If an HTTPS probe returns `404`, the HTTPS protocol is still reachable; the root path may simply not be the login entry.
+
+If 3X-UI uses a hidden path, do not commit that path to the repository. `panel.conanxin.com` may need the hidden path in the browser after Cloudflare Access.
 
 After Cloudflare Tunnel and Cloudflare Access are configured, the Dashboard `管理入口` button can point to:
 
@@ -79,6 +83,8 @@ https://panel.conanxin.com
 ```
 
 Control Tower still does not iframe 3X-UI, automatically log in, or call any 3X-UI write API.
+
+For details, see [Panel Protocol Detection](PANEL_PROTOCOL_DETECTION.md).
 
 ## Safety properties
 

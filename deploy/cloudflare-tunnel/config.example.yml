@@ -5,5 +5,6 @@ ingress:
   - hostname: tower.example.com
     service: http://127.0.0.1:3001
   - hostname: panel.example.com
-    service: http://127.0.0.1:YOUR_3XUI_PANEL_PORT
+    # If 3X-UI uses a self-signed local certificate, Cloudflare Tunnel may need origin TLS verification disabled or the matching origin TLS option set in Zero Trust.
+    service: https://127.0.0.1:YOUR_3XUI_PANEL_PORT
   - service: http_status:404
