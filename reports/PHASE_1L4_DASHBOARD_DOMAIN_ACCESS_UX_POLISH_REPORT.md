@@ -72,7 +72,23 @@ Dashboard 当前明确展示：
 
 ## 远端验证结果
 
-待提交并推送后执行远端验证。预期只重启 `conan-vps-control-tower.service`，不触碰 3X-UI、代理核心或防火墙。
+已执行远端验证：
+
+- GitHub main 已拉取到 VPS。
+- 仅重启 `conan-vps-control-tower.service`。
+- service 状态：active / enabled。
+- 监听地址：`127.0.0.1:3001`。
+- 未发现：`0.0.0.0:3001`。
+- `/api/health`：healthy。
+- `/api/diagnostics`：all_healthy。
+- `/api/management`：healthy。
+- `/api/management.panel_public_display_url`：`panel.conanxin.com / 已配置隐藏路径`。
+- `/api/meta.external_access_mode`：Cloudflare Access + Tunnel。
+- `/api/meta.access_protection`：Cloudflare Access。
+- `https://tower.conanxin.com`：HTTP 302。
+- `https://panel.conanxin.com`：HTTP 302。
+
+远端私有 `config.yaml` 中部分中文说明字段存在编码乱码，但 Dashboard 不依赖这些字段显示中文说明，前端使用固定中文 fallback。未输出真实隐藏路径。
 
 ## 下一阶段建议
 
