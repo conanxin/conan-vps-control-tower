@@ -2,11 +2,12 @@
 
 const statusLabel = {
   healthy: "健康",
-  warning: "警告",
-  degraded: "降级",
+  warning: "关注",
+  degraded: "异常",
   critical: "严重",
   unknown: "未知",
   "not-configured": "未配置",
+  medium: "中等",
 };
 
 const moduleLabels = {
@@ -54,8 +55,6 @@ const messageZhFallback = {
   "Local traffic estimate is within the configured limit": "本地流量估算在配置上限内",
   "Local interface traffic statistics are not available": "本地接口流量统计不可用",
   "Unable to read local traffic estimate": "本地流量估算读取失败",
-  "No active diagnostic issues detected": "未发现需要处理的诊断问题。",
-  "No active diagnostic issues detected.": "未发现需要处理的诊断问题。",
   "3X-UI panel is abnormal but proxy may still work": "3X-UI 面板异常，但代理可能仍可用",
   "Multiple critical modules detected": "多个关键模块同时异常",
   "Proxy core process risk": "代理核心进程存在风险",
@@ -113,6 +112,10 @@ function translateMessage(text) {
   if (!normalized) {
     return "请等待下一次巡检结果。";
   }
+  const lower = normalized.toLowerCase();
+  if (lower.startsWith("no active") && lower.includes("diagnostic")) {
+    return "当前未发现需要处理的问题。继续保持观察即可。";
+  }
   if (normalized === "No risks detected from current checks.") {
     return "当前无可见风险。";
   }
@@ -133,6 +136,18 @@ function translateMessage(text) {
     if (normalized.includes(en)) {
       return zh;
     }
+  }
+  if (normalized.startsWith("Medium:")) {
+    return normalized.replace(/^Medium:/i, "中等：");
+  }
+  if (normalized.startsWith("Warning:")) {
+    return normalized.replace(/^Warning:/i, "关注：");
+  }
+  if (normalized.startsWith("Degraded:")) {
+    return normalized.replace(/^Degraded:/i, "异常：");
+  }
+  if (normalized.startsWith("Critical:")) {
+    return normalized.replace(/^Critical:/i, "严重：");
   }
   return normalized;
 }
@@ -531,15 +546,15 @@ function renderDiagnostics(data) {
   const commands = el("diagnosis-commands");
   const healthNote = el("diagnosis-health-note");
 
-  if (!item) {
-    setText(summary, "暂无诊断问题。");
+  if (!item || item.diagnosis_id === "all_healthy") {
+    setText(summary, "当前未发现需要处理的问题。继续保持观察即可。");
     setText(title, "当前无优先诊断");
     setText(impact, "当前系统状态较稳。");
     setText(firstCheck, "如有异常，优先确认代理核心与端口状态。");
     setText(related, "相关模块：-");
     setText(confidence, "置信度：高");
     setText(commands, "当前无需执行命令。");
-    setText(healthNote, "可按优先级核对后再确认是否需要重启。");
+    setText(healthNote, "继续保持观察即可。");
     return;
   }
 
@@ -565,7 +580,11 @@ function renderDiagnostics(data) {
   const relatedModules = (item.related_modules || []).join("、") || "-";
   const confidenceText = item.confidence || "中";
 
-  setText(summary, `${translateMessage(payload.summary || "诊断摘要：")} ${translateMessage(item.title || "")}`);
+  if (item.diagnosis_id === "all_healthy") {
+    setText(summary, "当前未发现需要处理的问题。继续保持观察即可。");
+  } else {
+    setText(summary, `${translateMessage(payload.summary || "诊断摘要：")} ${translateMessage(item.title || "")}`);
+  }
   setText(title, `${translateMessage(item.title || "诊断提示")}（${toDisplayStatus(item.status || "unknown")}）`);
   setText(impact, `影响：${translateMessage(impactText)}`);
   setText(firstCheck, `建议第一检查：${translateMessage(firstCheckText)}`);

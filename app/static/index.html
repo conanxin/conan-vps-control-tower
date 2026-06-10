@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Conan VPS Control Tower</title>
-    <link rel="stylesheet" href="/static/styles.css" />
+    <link rel="stylesheet" href="/static/styles.css?v=1m1-2" />
   </head>
   <body>
     <main class="shell">
@@ -13,43 +13,43 @@
           <h1>Conan VPS Control Tower</h1>
           <p class="eyebrow">个人 VPS 代理健康控制塔</p>
         </div>
-        <div class="topbar-meta" aria-label="运行状态">
+        <div class="topbar-meta" aria-label="运行信息">
           <span>外部入口：<strong id="runtime-public-entry">tower.conanxin.com</strong></span>
-          <span>保护方式：<strong id="runtime-access-protection">Cloudflare Access / Tunnel</strong></span>
+          <span>保护方式：<strong id="runtime-access-protection">Cloudflare Access</strong></span>
           <span>本地只读：<strong id="runtime-endpoint">127.0.0.1:3001</strong></span>
           <span>公网直连：<strong id="runtime-public-bind">无</strong></span>
         </div>
       </header>
 
-      <section id="hero" class="hero hero-unknown" aria-label="首屏总览">
+      <section id="hero" class="hero hero-unknown" aria-label="总体状态">
         <div class="hero-main">
           <span id="overall-badge" class="status-badge unknown">未知</span>
-          <h2 id="overall-status">总体状态：加载中…</h2>
-          <p id="readable-summary">正在加载健康摘要…</p>
-          <div class="hero-chips" aria-label="关键状态">
+          <h2 id="overall-status">总体状态：健康</h2>
+          <p id="readable-summary">检测中...</p>
+          <div class="hero-chips" aria-label="状态标签">
             <span class="chip">本地只读</span>
             <span class="chip">Cloudflare Access</span>
-            <span id="chip-panel" class="chip">3X-UI 检查中</span>
-            <span id="chip-ports" class="chip">代理端口检查中</span>
+            <span id="chip-panel" class="chip">3X-UI 可达</span>
+            <span id="chip-ports" class="chip">代理端口开放</span>
           </div>
         </div>
         <div class="hero-side">
           <p id="runtime-bar">运行模式：本地只读 · 绑定地址：127.0.0.1:3001 · 外部入口：tower.conanxin.com · 访问保护：Cloudflare Access · 公网直连：无</p>
-          <p>管理面板：<strong id="runtime-management-entry">panel.conanxin.com / 已配置隐藏路径</strong> <span class="tag">已脱敏</span></p>
+          <p>管理入口：<strong id="runtime-management-entry">panel.conanxin.com / 已配置隐藏路径</strong> <span id="runtime-management-mask" class="tag">公开入口已脱敏显示</span></p>
         </div>
       </section>
 
       <section class="quick-actions" aria-label="快速操作">
         <button id="management-open-button" class="action-button primary-action" type="button">进入 3X-UI 面板</button>
-        <a class="action-button secondary-action" href="#diagnostics-summary-panel">查看诊断</a>
+        <a class="action-button secondary-action" href="#top-diagnosis">查看诊断建议</a>
         <a class="action-button secondary-action" href="#recent-events-panel">查看最近事件</a>
-        <p id="management-disabled-note" class="action-note">按钮会打开完整配置地址；界面仅显示脱敏入口。未配置公开入口时按钮不可用。</p>
+        <p id="management-disabled-note" class="action-note">未配置公开入口或按钮不可用时请检查 panel_public_url 配置。</p>
       </section>
 
       <section class="pipeline" aria-label="代理链路">
         <div class="section-heading">
           <h2>代理链路</h2>
-          <p id="pipeline-summary">正在计算代理链路状态…</p>
+          <p id="pipeline-summary">检测中...</p>
         </div>
         <div class="pipeline-steps">
           <div class="step-card" id="pipeline-vps">VPS 健康</div>
@@ -66,59 +66,58 @@
         <article class="card core-card" data-check="vps_system">
           <p class="label">VPS</p>
           <h3>--</h3>
-          <p class="message">加载中…</p>
+          <p class="message">加载中...</p>
           <dl class="metrics"></dl>
         </article>
         <article class="card core-card" data-check="proxy_core">
           <p class="label">代理核心</p>
           <h3>--</h3>
-          <p class="message">加载中…</p>
+          <p class="message">加载中...</p>
           <dl class="metrics"></dl>
         </article>
         <article class="card core-card" data-check="xui_panel">
           <p class="label">3X-UI 面板</p>
           <h3>--</h3>
-          <p class="message">加载中…</p>
+          <p class="message">加载中...</p>
           <dl class="metrics"></dl>
         </article>
         <article class="card core-card" data-check="proxy_ports">
           <p class="label">端口</p>
           <h3>--</h3>
-          <p class="message">加载中…</p>
+          <p class="message">加载中...</p>
           <dl class="metrics"></dl>
         </article>
       </section>
 
-        <article id="management-entry-card" class="management-card management-entry-card">
+      <article id="management-entry-card" class="management-card management-entry-card" aria-label="管理入口">
         <div class="section-heading">
           <div>
-            <p class="label">管理入口：3X-UI 面板</p>
-            <h2>健康监测看这里，配置修改进 3X-UI</h2>
+            <h2>管理入口：3X-UI 面板</h2>
           </div>
           <span id="management-status" class="status-pill unknown">未知</span>
         </div>
         <div class="management-grid">
           <div><span>当前状态</span><strong id="management-current-state">--</strong></div>
-          <div><span>公开入口</span><strong id="management-public-entry" class="url-value">panel.conanxin.com / 已配置隐藏路径</strong><small id="management-public-mask" class="tag">公开入口已脱敏显示 · 已脱敏</small></div>
+          <div><span>公开入口</span><strong id="management-public-entry" class="url-value">panel.conanxin.com / 已配置隐藏路径</strong><small id="management-public-mask" class="tag">公开入口已脱敏显示</small></div>
           <div><span>本地入口</span><strong id="management-local-entry">--</strong></div>
           <div><span>推荐本地入口</span><strong id="management-recommended-url">--</strong></div>
-          <div><span>保护方式</span><strong id="management-access-note">Cloudflare Access + 3X-UI 登录</strong></div>
-          <div><span>职责边界</span><strong id="management-readonly-note">Control Tower 不读取或修改 3X-UI 配置。3X-UI 负责配置管理</strong></div>
+          <div><span>保护方式</span><strong id="management-access-note">建议通过 Cloudflare Access + 3X-UI 登录双层保护访问。</strong></div>
+          <div><span>职责边界</span><strong id="management-readonly-note">Control Tower 不读取或修改 3X-UI 配置。</strong></div>
         </div>
-        <p id="management-message" class="message">正在检查管理入口可达性…</p>
-        <p id="management-protocol-warning" class="note protocol-warning" hidden>检测到协议可能不匹配。</p>
+        <p id="management-message" class="message">加载中...</p>
+        <p id="management-protocol-warning" class="note protocol-warning" hidden>检测到面板协议可能不匹配，建议检查 Tunnel target。</p>
       </article>
 
       <section class="traffic-section" aria-label="流量概览">
         <div class="section-heading">
           <h2>流量概览</h2>
-          <p>本地估算，仅供参考，可能与服务商账单不同。</p>
+          <p>本地流量估算仅供参考，可能与服务商账单存在差异。</p>
         </div>
         <article class="traffic-card" data-check="traffic">
           <div>
             <p class="label">流量风险</p>
             <h3>--</h3>
-            <p class="message">加载中…</p>
+            <p class="message">加载中...</p>
           </div>
           <div class="traffic-metrics">
             <div><span>已用流量</span><strong data-detail="estimated_used_gb">--</strong></div>
@@ -131,72 +130,73 @@
 
       <section class="secondary-info" aria-label="次级信息区">
         <article id="diagnostics-summary-panel" class="summary-panel">
-            <p class="label">活跃风险 / 诊断摘要</p>
-            <p class="label">诊断建议</p>
-          <h2 id="diagnostics-summary">当前未发现需要处理的问题。继续保持观察即可。暂无诊断问题。</h2>
+          <p class="label">可选检查 / 诊断摘要</p>
+          <h2 id="diagnostics-summary">当前未发现需要处理的问题。继续保持观察即可。</h2>
           <ul id="risk-summary"><li>当前没有活跃风险。</li></ul>
         </article>
 
-        <details open>
-          <summary>可选检查 / 未配置项</summary>
-          <div class="details-grid">
+      <details>
+        <summary>可选检查与补充说明（默认收起）</summary>
+        <div class="details-grid">
             <article class="mini-card" data-check="domain_dns">
               <p class="label">域名 / DNS</p>
               <h3>--</h3>
-              <p class="message">加载中…</p>
+              <p class="message">加载中...</p>
               <dl class="metrics">
                 <div><dt>解析 IP 数</dt><dd data-detail="resolved_ip_count">--</dd></div>
-                <div><dt>期望匹配</dt><dd data-detail="expected_match">--</dd></div>
+                <div><dt>预期匹配</dt><dd data-detail="expected_match">--</dd></div>
               </dl>
             </article>
             <article class="mini-card" data-check="tls_certificate">
               <p class="label">TLS 证书</p>
               <h3>--</h3>
-              <p class="message">加载中…</p>
+              <p class="message">加载中...</p>
               <dl class="metrics">
                 <div><dt>剩余天数</dt><dd data-detail="days_remaining">--</dd></div>
                 <div><dt>到期时间</dt><dd data-detail="not_after">--</dd></div>
               </dl>
             </article>
-          </div>
-          <ul id="optional-checks" class="neutral-list"></ul>
-        </details>
+        </div>
+        <ul id="optional-checks" class="neutral-list">
+          <li>未配置检查项：域名/DNS 与 TLS 仅在启用后生效。</li>
+        </ul>
+      </details>
 
         <details>
-          <summary>告警通知</summary>
+          <summary>告警配置状态</summary>
           <article class="mini-card alerting-card">
             <p class="label">告警通知</p>
             <h3 id="alerts-enabled">--</h3>
-            <p id="alerts-message" class="message">告警状态加载中…</p>
-            <p id="alerts-config-message" class="note">告警配置状态读取中…</p>
+            <p id="alerts-message" class="message">加载中...</p>
+            <p id="alerts-config-message" class="note">告警设置状态读取中...</p>
             <dl class="metrics">
-              <div><dt>配置状态</dt><dd id="alerts-config-state">--</dd></div>
+              <div><dt>告警状态</dt><dd id="alerts-config-state">--</dd></div>
               <div><dt>最小等级</dt><dd id="alerts-min-severity">--</dd></div>
               <div><dt>冷却时间</dt><dd id="alerts-cooldown">--</dd></div>
               <div><dt>Telegram</dt><dd id="alerts-telegram">--</dd></div>
               <div><dt>Email</dt><dd id="alerts-email">--</dd></div>
-              <div><dt>活跃告警</dt><dd id="alerts-active">--</dd></div>
-              <div><dt>最后发送</dt><dd id="alerts-last-sent">--</dd></div>
+              <div><dt>活动告警</dt><dd id="alerts-active">--</dd></div>
+              <div><dt>最近发送</dt><dd id="alerts-last-sent">--</dd></div>
               <div><dt>恢复通知</dt><dd id="alerts-recovery">--</dd></div>
-              <div><dt>可测试状态</dt><dd id="alerts-safe-to-test">--</dd></div>
+              <div><dt>测试按钮</dt><dd id="alerts-safe-to-test">--</dd></div>
             </dl>
             <button id="test-alert-button" class="action-button secondary-action" type="button">测试告警</button>
-            <p id="test-alert-result" class="note">可用“测试告警”验证通知链路，不代表真实故障。</p>
+            <p id="test-alert-result" class="note">测试结果可帮助判断告警链路。</p>
           </article>
         </details>
 
         <details>
           <summary>健康历史</summary>
           <article class="mini-card history-panel">
-            <p id="history-status" class="timestamp">当前状态：加载中…</p>
-            <p id="history-window-status" class="timestamp">最近 24 小时：加载中…</p>
-            <div id="history-summary" class="history-summary">历史数据加载中…</div>
+            <p id="history-status" class="timestamp">当前状态：--</p>
+            <p id="history-window-status" class="timestamp">最近 24 小时：--</p>
+            <div id="history-summary" class="history-summary">健康历史数据加载中...</div>
             <dl class="metrics">
               <div><dt>当前状态</dt><dd id="history-current-status">--</dd></div>
-              <div><dt>最差历史状态</dt><dd id="history-worst-status">--</dd></div>
-              <div><dt>快照数</dt><dd id="history-snapshot-count">--</dd></div>
-              <div><dt>告警数</dt><dd id="history-event-count">--</dd></div>
+              <div><dt>最差状态</dt><dd id="history-worst-status">--</dd></div>
               <div><dt>健康比例</dt><dd id="history-health-ratio">--</dd></div>
+              <div><dt>快照数量</dt><dd id="history-snapshot-count">--</dd></div>
+              <div><dt>事件数量</dt><dd id="history-event-count">--</dd></div>
               <div><dt>最近异常</dt><dd id="history-last-problem">--</dd></div>
               <div><dt>最近恢复</dt><dd id="history-last-recovery">--</dd></div>
             </dl>
@@ -206,19 +206,19 @@
         <details id="recent-events-panel">
           <summary>最近事件</summary>
           <ul id="history-events-list" class="event-list">
-            <li>暂无历史事件</li>
+            <li>暂无历史事件。</li>
           </ul>
         </details>
 
         <details id="diagnostics-detail-panel">
           <summary>诊断详情</summary>
           <article id="top-diagnosis" class="diagnosis">
-            <h3>当前无优先诊断</h3>
+            <h3>暂无诊断问题。</h3>
             <p id="diagnosis-impact">当前系统状态较稳。</p>
             <p id="diagnosis-first-check">如有异常，优先确认代理核心与端口状态。</p>
             <p id="diagnosis-related">相关模块：-</p>
             <p id="diagnosis-confidence">置信度：高</p>
-            <p id="diagnosis-health-note" class="note">可按优先级核对后再确认是否需要重启。</p>
+            <p id="diagnosis-health-note" class="note">继续保持观察即可。</p>
             <pre><code id="diagnosis-commands">当前无需执行命令。</code></pre>
           </article>
         </details>
@@ -227,6 +227,8 @@
       <p id="last-checked" class="timestamp footer-time">最后检查：--</p>
     </main>
 
-    <script src="/static/app.js"></script>
+    <script src="/static/app.js?v=1m1-2"></script>
   </body>
-</html>
+</html>
+
+
