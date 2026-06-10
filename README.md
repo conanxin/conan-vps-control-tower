@@ -22,9 +22,8 @@ Current alpha: **v0.2.1-alpha**
 - Protection: Cloudflare Access + Tunnel
 
 ## Screenshot / 界面预览
-## Screenshot / 界面预览
 
-当前版本为发布候选版，请先用遮蔽图：
+Screenshot pending: capture masked dashboard only; never include hidden 3X-UI paths or secrets.
   - `docs/media/dashboard-zh-local-only-v0.2.placeholder.md`
 - If available: `docs/media/dashboard-v0.2.1-alpha.masked.png`
 - Screenshot policy: only masked 3X-UI entry (`panel.conanxin.com / 已配置隐藏路径`), no hidden path, no tokens/secrets.
