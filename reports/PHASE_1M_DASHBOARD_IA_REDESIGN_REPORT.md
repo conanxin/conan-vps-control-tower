@@ -67,11 +67,26 @@
 
 ## 远端验证结果
 
-等待提交并推送后执行。预期仅重启 `conan-vps-control-tower.service`，不触碰 3X-UI、代理核心或防火墙。
+已执行远端验证，仅重启 `conan-vps-control-tower.service`，未触碰 3X-UI、代理核心或防火墙。
+
+- service 状态：active / enabled
+- Control Tower 监听：`127.0.0.1:3001`
+- 是否发现 `0.0.0.0:3001`：否
+- `/api/health`：healthy
+- `/api/management`：healthy
+- `/api/management.panel_public_display_url`：`panel.conanxin.com / 已配置隐藏路径`
+- `/api/management.panel_public_url`：真实完整地址存在，但报告中脱敏为 `https://panel.conanxin.com/隐藏路径`
+- `/api/meta.external_access_mode`：Cloudflare Access + Tunnel
+- `https://tower.conanxin.com`：HTTP 302
+- `https://panel.conanxin.com`：HTTP 302
+- 是否修改 3X-UI：否
+- 是否重启代理：否
+- 是否改防火墙：否
+- 是否开放公网端口：否
 
 ## 当前状态
 
-Phase 1M 本地实现和测试已完成，等待远端验证后记录最终结果。
+Phase 1M 本地实现、测试、提交、推送和远端验证均已完成。
 
 ## 下一阶段建议
 
