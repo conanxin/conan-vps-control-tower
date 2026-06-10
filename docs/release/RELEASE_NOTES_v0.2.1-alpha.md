@@ -44,4 +44,8 @@ Cloudflare-protected Chinese VPS proxy health dashboard with a masked 3X-UI mana
 
 ## Release status
 
-Prepared only. Do not create tag or GitHub release during this phase.
+Release status: Published as v0.2.1-alpha.
+
+Release type: prerelease / alpha.
+
+Masked dashboard screenshot is pending and will be added later.

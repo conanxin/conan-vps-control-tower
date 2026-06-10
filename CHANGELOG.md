@@ -1,5 +1,15 @@
 ﻿# Changelog
 
+## v0.2.1-alpha - 2026-06-10 (alpha, prerelease)
+
+- Cloudflare Access / Tunnel protected Dashboard
+- redesigned Chinese dashboard
+- masked 3X-UI management entry
+- runtime management CTA hotfix
+- acceptance pack and release notes
+- no direct public bind (127.0.0.1:3001)
+- read-only boundary
+
 ## Unreleased
 
 ### Phase 1M Dashboard IA Redesign and Visual System Polish
@@ -80,7 +90,6 @@
 - Added `docs/ACCEPTANCE_PACK_v0.2.1-alpha.md` and `docs/release/RELEASE_NOTES_v0.2.1-alpha.md`.
 - Added masked screenshot workflow guidance in media docs.
 - Completed public readiness notes for dashboard access, API verification, and non-disclosure checks.
-- Confirmed this phase is release prep only (no tag/release created).
 
 ### Phase 1H Alerting setup polish
 
@@ -223,4 +232,5 @@
 - Phase 1B: Traffic, domain, TLS, and expiration reminders.
 - Phase 1C: Telegram / Email alerts.
 - Phase 1D: Diagnostic suggestions and common commands.
+
 

@@ -4,11 +4,11 @@ A lightweight, read-only health dashboard for personal VPS proxy nodes.
 
 Conan VPS Control Tower is a local-only health observation layer for personal VPS proxy nodes. It keeps API compatibility in English and uses Simplified Chinese as the default dashboard language.
 
-Current stage: **v0.2.1-alpha candidate**
+Current alpha: **v0.2.1-alpha**
 
 ## Status
 
-- Project stage: **v0.2.1-alpha candidate**
+- Project stage: **v0.2.1-alpha**
 - Runtime mode: **local-only by default**
 - Default bind: `127.0.0.1:3001`
 - Target users: personal VPS / proxy node users
@@ -22,9 +22,9 @@ Current stage: **v0.2.1-alpha candidate**
 - Protection: Cloudflare Access + Tunnel
 
 ## Screenshot / 界面预览
-## Screenshot / 鐣岄潰棰勮
+## Screenshot / 界面预览
 
-- 目前处于候选阶段，截图若未更新可先使用占位说明：
+当前版本为发布候选版，请先用遮蔽图：
   - `docs/media/dashboard-zh-local-only-v0.2.placeholder.md`
 - If available: `docs/media/dashboard-v0.2.1-alpha.masked.png`
 - Screenshot policy: only masked 3X-UI entry (`panel.conanxin.com / 已配置隐藏路径`), no hidden path, no tokens/secrets.
@@ -55,9 +55,9 @@ The homepage is organized as a compact operations console:
 
 ## Phase 1N acceptance prep status
 
-- `v0.2.1-alpha candidate: Cloudflare Access protected Dashboard with masked 3X-UI entry.`
+- `Current alpha: v0.2.1-alpha: Cloudflare Access protected Dashboard with masked 3X-UI entry.`
 - Acceptance pack, release-note draft, and boundary-focused docs prepared.
-- No new tag/release is created in this phase.
+- Release phase: v0.2.1-alpha is published as a pre-release in GitHub.
 
 ## Why local-only?
 
@@ -228,7 +228,7 @@ https://tower.conanxin.com
 
 ## Alpha Notice
 
-This is an alpha candidate for personal VPS health control. Keep traffic local and prefer managed Cloudflare Access + Tunnel for mobile-friendly access.
+This is the v0.2.1-alpha pre-release for personal VPS health control. Keep traffic local and prefer managed Cloudflare Access + Tunnel for mobile-friendly access.
 
 ## Roadmap
 
