@@ -180,6 +180,21 @@ The service itself must still listen only on:
 
 The Dashboard may show `panel.conanxin.com / 已配置隐藏路径` for the management panel. This is intentionally masked. The full hidden path should remain only in the private VPS `config.yaml` and should not appear in screenshots, reports, or GitHub commits.
 
+## Dashboard IA quick check
+
+After UI upgrades, confirm the Dashboard still has this order:
+
+1. Header with external entry, Cloudflare Access / Tunnel, local-only bind, and no public direct bind.
+2. Hero overall status.
+3. Quick actions.
+4. Proxy path.
+5. Core status cards.
+6. Wide 3X-UI management entry.
+7. Traffic overview.
+8. Details sections for optional checks, alerts, health history, recent events, and diagnostics.
+
+The `进入 3X-UI 面板` button should open the configured full `panel_public_url`, while visible text remains masked.
+
 ## Upgrade
 
 ```bash

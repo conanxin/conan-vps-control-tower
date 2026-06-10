@@ -106,6 +106,14 @@
 - Keep the full hidden path private while the visible UI shows `panel.conanxin.com / 已配置隐藏路径`
 - Improve Chinese status text and Health History wording for current vs historical status
 
+## Phase 1M: Dashboard IA Redesign and Visual System Polish
+
+- Status: implemented on main
+- Rebuild homepage IA around Hero, quick actions, proxy path, core health, management entry, traffic overview, and details sections
+- Fix 3X-UI CTA behavior to open the real private `panel_public_url`
+- Keep hidden paths masked in visible UI
+- Improve status colors, spacing, card density, and mobile readability
+
 ## Project Direction (focused)
 
 - This project intentionally stays focused on personal VPS / proxy health monitoring.
@@ -113,5 +121,5 @@
 
 ## Next
 
-- Phase 1M: Cloudflare Access operational polish and masked screenshot capture
+- Phase 1N: Masked screenshot capture and README visual refresh
 - Phase 1I: Real screenshot and v0.2.1-alpha

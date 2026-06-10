@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+### Phase 1M Dashboard IA Redesign and Visual System Polish
+
+- Rebuilt the Dashboard homepage information architecture around Hero overview, quick actions, proxy path, core health cards, management entry, traffic overview, and secondary details.
+- Changed the 3X-UI management CTA to open the real `panel_public_url` with `window.open(..., "_blank", "noopener,noreferrer")`.
+- Kept visible panel URLs masked as `panel.conanxin.com / 已配置隐藏路径`.
+- Reduced large green card backgrounds and moved health styling toward badges, borders, and status accents.
+- Added details/accordion sections for optional checks, alerts, health history, recent events, and diagnostics detail.
+- Improved Chinese copy and Health History wording so current status and historical incidents are clearly separated.
+- Added Dashboard IA tests for layout, masking, CTA behavior, DOM guards, and visual system classes.
+
 ### Phase 1L.4 Dashboard Domain Access UX Polish
 
 - Updated Dashboard runtime copy for `tower.conanxin.com` behind Cloudflare Access + Tunnel.

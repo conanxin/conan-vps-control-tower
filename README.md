@@ -15,6 +15,20 @@ Current stage: v0.2.0-alpha ready
 - Real VPS validated: yes
 - Domain access validated: `tower.conanxin.com` through Cloudflare Access + Tunnel
 
+## Dashboard IA Redesign
+
+The homepage is now organized as a compact daily operations console:
+
+- Hero overview with overall status, summary, and key chips.
+- Quick actions for `进入 3X-UI 面板`, diagnostics, and recent events.
+- Proxy path: VPS -> proxy core -> 3X-UI panel -> proxy port.
+- Core health cards for VPS, proxy core, 3X-UI panel, and ports.
+- A wide 3X-UI management entry card with masked public URL display.
+- Traffic overview with local estimate and usage percentage.
+- Secondary details for optional checks, alerts, health history, recent events, and diagnostic commands.
+
+The UI remains Simplified Chinese by default. API field names remain English for compatibility.
+
 ## Domain Access UX
 
 The Dashboard now treats Cloudflare Access + Tunnel as the primary external access path:
@@ -48,9 +62,9 @@ Conan VPS Control Tower is a read-only observation layer beside your proxy stack
 ## What you can see
 
 - VPS 状态
-- Proxy Core 状态
-- 3X-UI Panel 状态
-- Port 状态
+- 代理核心状态
+- 3X-UI 面板状态
+- 端口状态
 - 流量风险
 - Domain / DNS
 - TLS 证书

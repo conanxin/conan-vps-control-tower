@@ -1,8 +1,16 @@
 # Dashboard Smoke Test
 
-After install or upgrade, run this checklist in the local 127.0.0.1 tunnel view.
+Use this checklist after local deployment, Cloudflare Tunnel updates, or Dashboard UI changes.
 
-## Open Dashboard
+## Access
+
+Preferred domain access:
+
+```text
+https://tower.conanxin.com
+```
+
+Fallback SSH tunnel:
 
 ```bash
 ssh -L 3001:127.0.0.1:3001 dmit-control-tower
@@ -14,51 +22,57 @@ Then open:
 http://127.0.0.1:3001
 ```
 
-## Domain Access UI Check
+## First Screen
 
-When using Cloudflare Access + Tunnel, confirm the Dashboard shows:
+Confirm the first screen contains:
 
-- 总体状态
+- Product name: Conan VPS Control Tower
+- Subtitle: 个人 VPS 代理健康控制塔
 - 外部入口：`tower.conanxin.com`
-- 访问保护：Cloudflare Access
+- 保护方式：Cloudflare Access / Tunnel
+- 本地只读：`127.0.0.1:3001`
 - 公网直连：无
+- Hero 总体状态
+- 快速操作：进入 3X-UI 面板、查看诊断、查看最近事件
 - 代理链路
+- 核心状态卡：VPS、代理核心、3X-UI 面板、端口
+
+## Management Entry
+
+Confirm:
+
 - 管理入口：3X-UI 面板
 - 公开入口：`panel.conanxin.com / 已配置隐藏路径`
-- 已脱敏标记
-- VPS 状态、代理核心、3X-UI 面板、端口、流量风险、告警通知、诊断建议、健康历史
+- 已脱敏
+- 本地入口：HTTPS + local address
+- 保护方式：Cloudflare Access + 3X-UI 登录
+- 职责边界：Control Tower 不读取或修改 3X-UI 配置
+- Button: `进入 3X-UI 面板`
 
-The visible Dashboard must not show the real 3X-UI hidden path. The button may still open the full configured `panel_public_url`.
+The visible Dashboard must not show the real 3X-UI hidden path. The button may open the full private `panel_public_url`.
 
-## Check Visibility
+## Secondary Details
 
-- Overall Status
-- Proxy Path
-- Diagnostics Summary
-- VPS Status
-- Proxy Core Status
-- 3X-UI Panel Status
-- Port Status
-- Traffic Risk
-- Domain / DNS
-- TLS Certificate
-- Alerting
-- 管理入口
-- Diagnostics
+Confirm details/accordion sections exist:
+
+- 可选检查
+- 告警通知
 - 健康历史
+- 最近事件
+- 诊断详情
 
-## Status Interpretation
+When healthy, the diagnostic summary should say:
 
-- Healthy: no visible blocker.
-- Warning/Degraded/Critical: follow diagnostics + affected card and suggested first check.
-- If `未配置` appears, it should only be a note, not a failure card.
+```text
+当前未发现需要处理的问题。继续保持观察即可。
+```
 
 ## API Smoke Check
 
 ```bash
 curl -s http://127.0.0.1:3001/api/health | python3 -m json.tool | head -120
 curl -s http://127.0.0.1:3001/api/diagnostics | python3 -m json.tool | head -120
-curl -s http://127.0.0.1:3001/api/alerts/status | python3 -m json.tool | head -120
+curl -s http://127.0.0.1:3001/api/management | python3 -m json.tool | head -120
 curl -s http://127.0.0.1:3001/api/meta | python3 -m json.tool
 curl -s http://127.0.0.1:3001/api/history/summary | python3 -m json.tool | head -120
 curl -s http://127.0.0.1:3001/api/history/recent | python3 -m json.tool | head -120
@@ -67,54 +81,14 @@ curl -s http://127.0.0.1:3001/api/events | python3 -m json.tool | head -120
 
 Expected:
 
-- `/api/health` returns JSON.
-- `/api/diagnostics` returns summary + items.
-- `/api/alerts/status` returns `enabled: false` unless configured.
-- `/api/meta` returns local-only runtime info and history flags.
-- `/api/history/*` returns JSON payload (or disabled/empty states when configured off).
+- `/api/health` returns healthy when the node is healthy.
+- `/api/diagnostics` returns all_healthy when no issues exist.
+- `/api/management` returns healthy and masks `panel_public_display_url`.
+- `/api/meta` returns `external_access_mode: Cloudflare Access + Tunnel`.
+- `/api/history/summary` and `/api/history/recent` return health history without secrets.
+- `/api/events` returns recent health events without secrets.
+- No token, password, cookie, UUID, subscription link, or real hidden path is shown in visible UI.
 
-Management entry:
+## Safety
 
-```bash
-curl -s http://127.0.0.1:3001/api/management | python3 -m json.tool
-```
-
-Expected:
-
-- `panel_public_url` points to the configured panel domain.
-- `detected_scheme` and `recommended_local_url` are present.
-- If `protocol_warning=true`, the Dashboard shows the yellow protocol warning.
-- No `password`, `token`, or `cookie` appears.
-- Dashboard contains no iframe for 3X-UI.
-- Button opens the configured `panel_public_url`.
-- If `panel_public_url` contains a hidden path, Dashboard displays `panel_public_display_url` such as `https://panel.conanxin.com/隐藏路径`.
-- The visible Dashboard text should not reveal the real hidden path.
-
-If HTTPS returns `404`, treat it as protocol reachable. It may mean the root path is not the 3X-UI login path. Do not commit hidden paths.
-
-Panel health repair check:
-
-- If `xui_panel` is abnormal after a 3X-UI upgrade but proxy core and proxy ports are healthy, do not restart the proxy first.
-- Confirm the current panel port and hidden path with read-only checks.
-- The Dashboard diagnostics should not show `YOUR_PANEL_PORT`; it should either show the confirmed port or ask the user to confirm the 3X-UI panel port.
-- Health check details should show masked URLs such as `https://127.0.0.1:YOUR_PANEL_PORT/<hidden>/`, not the real hidden path.
-
-Also run:
-
-```bash
-curl -s http://127.0.0.1:3001/api/alerts/config-check | python3 -m json.tool | head -120
-curl -s http://127.0.0.1:3001/api/alerts/status | python3 -m json.tool | head -120
-```
-
-## Alert Test
-
-Click `测试告警`:
-
-- If alerts are disabled, it should show skipped.
-- If channels are enabled and configured, a test message may be sent.
-- If Telegram/Email is enabled but incomplete, skipped reason should explain missing fields.
-
-## Screenshot Check
-
-- Do not include real IPs, real domains, tokens, UUIDs, subscription links, or panel passwords.
-- Crop browser chrome; keep only dashboard content.
+This smoke test does not modify 3X-UI, restart proxy services, change firewall rules, open public ports, or bind Control Tower to `0.0.0.0`.

@@ -83,6 +83,19 @@ When Cloudflare Tunnel and Cloudflare Access are active, the Dashboard should pr
 
 The full hidden path can stay in the private VPS `config.yaml` as `management.panel_public_url`, but visible Dashboard text must use `panel_public_display_url` or an equivalent masked value. Do not show the real hidden path in screenshots, reports, issues, or docs.
 
+## Phase 1M Dashboard placement
+
+The management entry is now a dedicated wide card near the top of the Dashboard, after the proxy path and before secondary details. It is intentionally more prominent than optional checks because it is the natural action after reading health state.
+
+The card still keeps the same boundary:
+
+- Button uses the full private `panel_public_url`.
+- Visible text uses `panel_public_display_url`.
+- No iframe.
+- No automatic login.
+- No 3X-UI write API calls.
+- No password, cookie, token, UUID, or subscription link storage.
+
 ## Health check URL and hidden path
 
 The management entry and the health checker have different jobs:

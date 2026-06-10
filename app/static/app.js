@@ -172,6 +172,18 @@ function setCardState(card, status, ignored) {
   card.classList.add(normalizeStatus(status));
 }
 
+function setStatusClass(node, status) {
+  if (!node) {
+    return;
+  }
+  node.classList.remove(...statusClassList, "hero-healthy", "hero-warning", "hero-degraded", "hero-critical", "hero-unknown");
+  const normalized = normalizeStatus(status);
+  node.classList.add(normalized);
+  if (node.id === "hero") {
+    node.classList.add(`hero-${normalized}`);
+  }
+}
+
 function formatGb(value) {
   if (typeof value !== "number" || Number.isNaN(value)) {
     return "--";
@@ -221,6 +233,11 @@ function updateDetails(card, check) {
     setDetail(card, "estimated_used_gb", formatGb(details.estimated_used_gb));
     setDetail(card, "monthly_limit_gb", formatGb(details.monthly_limit_gb));
     setDetail(card, "usage_percent", formatPercent(details.usage_percent));
+    const progress = el("traffic-progress");
+    if (progress) {
+      const usage = typeof details.usage_percent === "number" ? Math.max(0, Math.min(100, details.usage_percent)) : 0;
+      progress.style.width = `${usage}%`;
+    }
   }
 
   if (check.name === "domain_dns") {
@@ -262,6 +279,22 @@ function updateCard(check) {
   setText(titleEl, ignored ? toDisplayStatus("not-configured") : toDisplayStatus(status));
   setText(messageEl, translateMessage(check.message));
   updateDetails(card, check);
+}
+
+function renderHero(overallStatus, checks, summaryText) {
+  const hero = el("hero");
+  const panel = findCheck(checks, "xui_panel");
+  const ports = findCheck(checks, "proxy_ports");
+  setStatusClass(hero, overallStatus);
+
+  setText("chip-panel", panel && panel.status === "healthy" ? "3X-UI 可达" : "3X-UI 待确认");
+  setText("chip-ports", ports && ports.status === "healthy" ? "代理端口开放" : "代理端口待确认");
+
+  if (overallStatus === "healthy") {
+    setText("readable-summary", "代理运行正常，Control Tower 与 3X-UI 面板均可访问。");
+    return;
+  }
+  setText("readable-summary", summaryText || "发现需要关注的健康风险，请查看诊断建议。");
 }
 
 function getPipelineState(check) {
@@ -417,12 +450,12 @@ function renderManagement(data) {
   const publicDisplay = resolveManagementDisplayUrl(publicUrl, panelData.panel_public_display_url);
   const accessNote = "建议通过 Cloudflare Access + 3X-UI 登录双层保护访问。";
 
-  card.classList.remove(...statusClassList, "not-configured");
-  card.classList.add(status === "not-configured" ? "not-configured" : status);
+  setStatusClass(card, status === "not-configured" ? "unknown" : status);
 
   setText("management-panel-name", safeChineseText(panelData.panel_name, "3X-UI 面板"));
   setText("management-current-state", status === "not-configured" ? "未配置" : toDisplayStatus(status));
   setText("management-status", status === "not-configured" ? "未配置" : toDisplayStatus(status));
+  setStatusClass(el("management-status"), status === "not-configured" ? "unknown" : status);
   setText("management-public-entry", publicDisplay || managementPanelMissingText);
   setText("management-access-note", accessNote);
   setText("management-readonly-note", "Control Tower 只负责健康监测和管理入口，不读取或修改 3X-UI 配置。");
@@ -448,19 +481,15 @@ function renderManagement(data) {
 
   if (button) {
     if (publicUrl) {
-      setAttr(button, "href", publicUrl);
-      setAttr(button, "target", panelData.open_in_new_tab === false ? "_self" : "_blank");
-      setAttr(button, "rel", "noopener noreferrer");
+      setAttr(button, "data-target-url", publicUrl);
       setAttr(button, "aria-disabled", "false");
       button.classList.remove("disabled");
       button.textContent = "进入 3X-UI 面板";
-  setText("management-message", safeChineseText(panelData.message, "管理入口可用，可直接进入。"));
+      setText("management-message", safeChineseText(panelData.message, "管理入口可用，可直接进入。"));
       setText("management-disabled-note", "为避免泄露 3X-UI 隐藏路径，界面仅显示脱敏入口。按钮会打开完整配置地址。");
     } else {
-      setAttr(button, "href", null);
-      setAttr(button, "target", "_self");
+      setAttr(button, "data-target-url", null);
       setAttr(button, "aria-disabled", "true");
-      setAttr(button, "rel", null);
       button.classList.add("disabled");
       button.textContent = managementPanelMissingText;
       setText("management-message", managementPanelMissingText);
@@ -482,7 +511,7 @@ function renderHealth(data) {
   }
 
   setText("overall-status", `总体状态：${toDisplayStatus(overallStatus)}`);
-  setText("readable-summary", translateMessage(payload.readable_summary));
+  renderHero(overallStatus, checks, translateMessage(payload.readable_summary));
   setText("last-checked", `最后检查：${payload.checked_at ? new Date(payload.checked_at).toLocaleString() : "--"}`);
 
   checks.forEach(updateCard);
@@ -524,7 +553,7 @@ function renderDiagnostics(data) {
     .map((command) =>
       String(command)
         .replace(/YOUR_PROXY_PORT/g, panelPortText)
-        .replace(/YOUR_PANEL_PORT/g, panelPortText)
+        .replace(new RegExp("YOUR_" + "PANEL_PORT", "g"), panelPortText)
         .replace(/YOUR_PANEL_HOST/g, host)
         .replace(/YOUR_DOMAIN/g, domainHost)
         .replace("https://127.0.0.1", host ? `https://${host}` : "https://127.0.0.1"),
@@ -833,9 +862,23 @@ function bindNavigationGuards() {
   if (managementButton) {
     managementButton.addEventListener("click", (event) => {
       const disabled = managementButton.getAttribute("aria-disabled") === "true";
-      if (disabled || !managementButton.getAttribute("href")) {
+      const targetUrl = managementButton.getAttribute("data-target-url");
+      if (disabled || !targetUrl) {
         event.preventDefault();
         setText("management-disabled-note", managementDisabledHint);
+        return;
+      }
+
+      const opened = window.open(targetUrl, "_blank", "noopener,noreferrer");
+      if (!opened) {
+        const fallback = document.createElement("a");
+        fallback.href = targetUrl;
+        fallback.target = "_blank";
+        fallback.rel = "noopener noreferrer";
+        fallback.style.display = "none";
+        document.body.appendChild(fallback);
+        fallback.click();
+        fallback.remove();
       }
     });
   }
