@@ -29,7 +29,7 @@ def public_display_url(url: str) -> str:
     parsed = urlparse(url)
     if not parsed.scheme or not parsed.netloc:
         return ""
-    base = parsed.scheme + "://" + parsed.netloc
+    base = parsed.netloc
     has_hidden = bool(parsed.path and parsed.path not in {"", "/"}) or bool(parsed.query or parsed.fragment)
     if not has_hidden:
         return base

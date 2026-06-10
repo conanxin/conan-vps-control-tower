@@ -137,6 +137,18 @@ function translateMessage(text) {
   return normalized;
 }
 
+function hasMojibake(text) {
+  const value = String(text || "");
+  return value.includes("\u003f\u003f");
+}
+
+function safeChineseText(value, fallback) {
+  if (!value || hasMojibake(value)) {
+    return fallback;
+  }
+  return value;
+}
+
 function setDetail(card, key, value) {
   if (!card) {
     return;
@@ -408,7 +420,7 @@ function renderManagement(data) {
   card.classList.remove(...statusClassList, "not-configured");
   card.classList.add(status === "not-configured" ? "not-configured" : status);
 
-  setText("management-panel-name", panelData.panel_name || "3X-UI 面板");
+  setText("management-panel-name", safeChineseText(panelData.panel_name, "3X-UI 面板"));
   setText("management-current-state", status === "not-configured" ? "未配置" : toDisplayStatus(status));
   setText("management-status", status === "not-configured" ? "未配置" : toDisplayStatus(status));
   setText("management-public-entry", publicDisplay || managementPanelMissingText);
@@ -442,7 +454,7 @@ function renderManagement(data) {
       setAttr(button, "aria-disabled", "false");
       button.classList.remove("disabled");
       button.textContent = "进入 3X-UI 面板";
-      setText("management-message", panelData.message || "管理入口可用，可直接进入。");
+  setText("management-message", safeChineseText(panelData.message, "管理入口可用，可直接进入。"));
       setText("management-disabled-note", "为避免泄露 3X-UI 隐藏路径，界面仅显示脱敏入口。按钮会打开完整配置地址。");
     } else {
       setAttr(button, "href", null);
