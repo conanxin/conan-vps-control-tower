@@ -231,27 +231,61 @@ https://tower.conanxin.com
 This is the v0.2.1-alpha pre-release for personal VPS health control. Keep traffic local and prefer managed Cloudflare Access + Tunnel for mobile-friendly access.
 
 ## Roadmap
+### Current baseline
 
-- Phase 1A: Read-only health detection MVP
-- Phase 1B: Domain / TLS / Traffic Risk
-- Phase 1C: Telegram / Email Alerts
-- Phase 1D: Diagnostics and Suggested Actions
-- Phase 1E: Local-only hardening and real VPS validation
-- Phase 1E.1: v0.2.0-alpha release preparation
-- Phase 1F: systemd persistence and operational polish
-- Phase 1F.2: Chinese dashboard UX polish
-- Phase 1F.3: README screenshot and demo docs
-- Phase 1G: Health history and event log
-- Phase 1K: Domain access via Cloudflare Tunnel
-- Phase 1L: Unified Management Entry
-- Phase 1L.1: Panel protocol detection
-- Phase 1L.2: Management entry URL masking
-- Phase 1L.3: Panel health check repair and diagnostics polish
-- Phase 1L.4: Dashboard domain access UI polish
-- Phase 1M: Dashboard IA redesign and visual polish
-- Phase 1M.1: Dashboard runtime hotfix and CTA repair
-- Phase 1M.2: Browser verification and GitHub closure
-- Phase 1N: Acceptance pack and masked screenshot preparation
+- Current baseline: **v0.2.1-alpha**
+- A read-only, Cloudflare-protected health dashboard for a personal VPS proxy stack.
+- Focus: local-only observations + domain-protected access + unified operational UX.
+- Core boundary:
+  - Control Tower remains the health + diagnostic layer.
+  - 3X-UI remains the configuration layer.
+
+### Near-term: v0.2.x maintenance line
+
+- Keep stability and maintain compatibility for:
+  - Read-only monitoring checks (VPS / proxy core / 3X-UI / ports / traffic / history / alerts status)
+  - Domain / TLS / DNS check reliability
+  - Management entry stability (masking, CTA behavior, and health status consistency)
+  - Documentation refresh and operation sanity checks
+- Keep local-only safety model:
+  - bind `127.0.0.1:3001`
+  - no public bind of `3001`
+  - no 3X-UI config mutation
+- No feature expansion beyond proxy health observations during this line.
+
+### Mid-term: v0.3.x operational polish
+
+- Minor operational usability work only, including:
+  - stronger long-term troubleshooting readability
+  - clearer event/historical summaries
+  - cleaner status grouping for optional checks vs active risks
+  - documentation and acceptance polish for deployment handoff
+- Still no proxy automation, no provider billing integration, no universal control-plane features.
+
+### Longer-term possibilities
+
+- Optional UX refinements if adoption grows.
+- Future hardening of alert configuration and observability scripts for different deployment patterns.
+- Additional language/format improvements for first-response playbooks.
+- Better support docs for multi-device operators, while staying self-managed and local-first.
+
+### Non-goals
+
+- Does not replace or merge 3X-UI.
+- Does not edit 3X-UI config.
+- Does not restart proxy core/services.
+- Does not modify firewall rules.
+- Does not expose `3001` directly to internet.
+- Does not store secrets or hidden paths in UI or repository.
+- Does not become a general project-management platform.
+
+### Design principles
+
+- Personal VPS / proxy health first.
+- Read-only by default.
+- Security by minimizing exposure: local bind + Cloudflare Access + Tunnel.
+- Minimal runtime footprint and compatibility-first implementation.
+- Transparent status + diagnosis wording in Chinese UI, English-safe API fields.
 
 ## License
 
