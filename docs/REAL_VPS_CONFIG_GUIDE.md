@@ -1,4 +1,4 @@
-# Real VPS Config Guide
+﻿# Real VPS Config Guide
 
 This guide explains how to configure `config.yaml` on a real VPS.
 
@@ -213,7 +213,8 @@ Diagnostics displays read-only command templates. Replace placeholders locally b
 
 - `SERVICE_NAME`: your local service name, such as a 3X-UI or proxy service.
 - `YOUR_PROXY_PORT`: your proxy inbound port.
-- `YOUR_PANEL_PORT`: your local 3X-UI panel port.
+- `YOUR_3XUI_PANEL_PORT`: your local 3X-UI panel port.
 - `YOUR_DOMAIN`: the domain you want to check.
 
 Do not paste real domains, IPs, tokens, UUIDs, passwords, or subscription links into public reports.
+

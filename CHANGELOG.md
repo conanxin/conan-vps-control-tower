@@ -62,6 +62,26 @@
 - Added long URL overflow protection in the Dashboard management card.
 - Updated docs to keep 3X-UI hidden paths out of GitHub.
 
+### Phase 1M.1 Dashboard Runtime Hotfix and CTA Repair
+
+- Fixed frontend runtime guards to avoid null-safe DOM errors (e.g. `classList` / `closest` chain usage).
+- Repaired management entry CTA to always use real `panel_public_url` with `_blank` window open.
+- Fixed English diagnostic fallback duplication and replaced with Chinese status copy.
+- Normalized default landing summary and collapsed non-essential diagnostic blocks on healthy state.
+
+### Phase 1M.2 Browser verification and GitHub closure
+
+- Finalized local-only/Cloudflare validation closure.
+- Confirmed repository/test health and remote service status for dashboard closure.
+- Confirmed no new functional changes since Phase 1M/1M.1 and prepared for acceptance handoff.
+
+### Phase 1N Acceptance pack and masked screenshot preparation
+
+- Added `docs/ACCEPTANCE_PACK_v0.2.1-alpha.md` and `docs/release/RELEASE_NOTES_v0.2.1-alpha.md`.
+- Added masked screenshot workflow guidance in media docs.
+- Completed public readiness notes for dashboard access, API verification, and non-disclosure checks.
+- Confirmed this phase is release prep only (no tag/release created).
+
 ### Phase 1H Alerting setup polish
 
 - Added non-intrusive alert config diagnostics endpoint `/api/alerts/config-check`.

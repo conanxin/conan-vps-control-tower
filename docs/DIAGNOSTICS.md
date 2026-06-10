@@ -1,4 +1,4 @@
-# Diagnostics and Suggested Actions
+﻿# Diagnostics and Suggested Actions
 
 Diagnostics is a read-only explanation layer. It does not automatically repair anything, replace 3X-UI, replace human judgment, modify proxy configuration, restart services, change firewall rules, or execute commands.
 
@@ -70,7 +70,7 @@ Allowed examples:
 - `cat /proc/net/dev`
 - `ip addr show`
 
-Command templates use placeholders such as `YOUR_PANEL_PORT`, `YOUR_DOMAIN`, `YOUR_PROXY_PORT`, and `SERVICE_NAME`.
+Command templates use placeholders such as `YOUR_3XUI_PANEL_PORT`, `YOUR_DOMAIN`, `YOUR_PROXY_PORT`, and `SERVICE_NAME`.
 
 ## Disallowed Commands
 
@@ -88,3 +88,4 @@ Diagnostics must not suggest:
 Commands are shown as text only. Conan VPS Control Tower does not execute them.
 
 Real VPS validation should use `scripts/preflight-local-only.sh` and `scripts/collect-redacted-vps-status.sh` for local-only checks and redacted summaries.
+

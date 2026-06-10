@@ -1,4 +1,4 @@
-# Panel Protocol Detection
+﻿# Panel Protocol Detection
 
 Phase 1L.1 improves local 3X-UI panel protocol detection.
 
@@ -72,7 +72,7 @@ If the hidden path is required, configure only the private VPS `config.yaml`, fo
 ```yaml
 proxy:
   panel:
-    url: "https://127.0.0.1:YOUR_PANEL_PORT/<hidden>/"
+    url: "https://127.0.0.1:YOUR_3XUI_PANEL_PORT/<hidden>/"
 ```
 
 Do not commit the real hidden path to GitHub.
@@ -98,3 +98,4 @@ Protocol detection is read-only:
 - no write API calls
 - no proxy config changes
 - no service restarts
+

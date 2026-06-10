@@ -1,4 +1,4 @@
-# Dashboard Smoke Test
+﻿# Dashboard Smoke Test
 
 Use this checklist after local deployment, Cloudflare Tunnel updates, or Dashboard UI changes.
 
@@ -22,52 +22,46 @@ Then open:
 http://127.0.0.1:3001
 ```
 
-## First Screen
+## First screen
 
-Confirm the first screen contains:
+Confirm first screen contains:
 
-- Product name: Conan VPS Control Tower
-- Subtitle: 个人 VPS 代理健康控制塔
-- 外部入口：`tower.conanxin.com`
-- 保护方式：Cloudflare Access / Tunnel
-- 本地只读：`127.0.0.1:3001`
-- 公网直连：无
-- Hero 总体状态
-- 快速操作：进入 3X-UI 面板、查看诊断、查看最近事件
-- 代理链路
-- 核心状态卡：VPS、代理核心、3X-UI 面板、端口
+- Product name: `Conan VPS Control Tower`
+- Subtitle: `个人 VPS 代理健康控制塔`
+- 外部入口: `tower.conanxin.com`
+- 访问保护: `Cloudflare Access / Tunnel`
+- 本地只读: `127.0.0.1:3001`
+- 公网直连: `无`
+- Hero status (one-line summary)
+- Quick actions: `进入 3X-UI 面板`, `查看诊断`, `查看最近事件`
+- Proxy path: VPS -> 代理核心 -> 3X-UI -> 端口
+- Core cards for VPS / 代理核心 / 3X-UI 面板 / 端口
 
 ## Management Entry
 
 Confirm:
 
-- 管理入口：3X-UI 面板
-- 公开入口：`panel.conanxin.com / 已配置隐藏路径`
-- 已脱敏
-- 本地入口：HTTPS + local address
-- 保护方式：Cloudflare Access + 3X-UI 登录
-- 职责边界：Control Tower 不读取或修改 3X-UI 配置
-- Button: `进入 3X-UI 面板`
+- 标题: `管理入口：3X-UI 面板`
+- 公开入口显示: `panel.conanxin.com / 已配置隐藏路径`
+- 说明显示 `已脱敏`
+- 保护方式: `Cloudflare Access + 3X-UI 登录`
+- Button text: `进入 3X-UI 面板`
+- Button jump target uses full `panel_public_url` from `/api/management`
+- Dashboard visible text does not include raw hidden path.
 
-The visible Dashboard must not show the real 3X-UI hidden path. The button may open the full private `panel_public_url`.
+## Secondary details
 
-## Secondary Details
-
-Confirm details/accordion sections exist:
-
-- 可选检查
-- 告警通知
-- 健康历史
-- 最近事件
-- 诊断详情
-
-When healthy, the diagnostic summary should say:
+- Active diagnostic summary shown on healthy state:
 
 ```text
 当前未发现需要处理的问题。继续保持观察即可。
 ```
 
-## API Smoke Check
+- Optional checks and details should be in collapsible areas.
+- 健康历史 shows summary and recent trend, not raw raw raw history overflow.
+- 最近事件默认展示最多 5 条。
+
+## API smoke check
 
 ```bash
 curl -s http://127.0.0.1:3001/api/health | python3 -m json.tool | head -120
@@ -77,18 +71,30 @@ curl -s http://127.0.0.1:3001/api/meta | python3 -m json.tool
 curl -s http://127.0.0.1:3001/api/history/summary | python3 -m json.tool | head -120
 curl -s http://127.0.0.1:3001/api/history/recent | python3 -m json.tool | head -120
 curl -s http://127.0.0.1:3001/api/events | python3 -m json.tool | head -120
+curl -s http://127.0.0.1:3001/api/alerts/config-check | python3 -m json.tool | head -120
 ```
 
 Expected:
 
-- `/api/health` returns healthy when the node is healthy.
-- `/api/diagnostics` returns all_healthy when no issues exist.
-- `/api/management` returns healthy and masks `panel_public_display_url`.
-- `/api/meta` returns `external_access_mode: Cloudflare Access + Tunnel`.
-- `/api/history/summary` and `/api/history/recent` return health history without secrets.
-- `/api/events` returns recent health events without secrets.
-- No token, password, cookie, UUID, subscription link, or real hidden path is shown in visible UI.
+- `/api/health` returns healthy for normal state.
+- `/api/management` returns healthy and includes `panel_public_display_url`.
+- `/api/meta` returns external access fields (`external_access_mode: Cloudflare Access + Tunnel`).
+- `/api/meta` `panel_public_url` remains for action, display uses masked value.
+- `/api/diagnostics` summary uses Chinese and avoids exposing internal panel port placeholders in the UI.
 
-## Safety
+## app.js / styles versioned references
 
-This smoke test does not modify 3X-UI, restart proxy services, change firewall rules, open public ports, or bind Control Tower to `0.0.0.0`.
+- Ensure browser references include version query for cache-safe refresh:
+
+```text
+styles.css?v=...
+app.js?v=...
+```
+
+## Safety checks
+
+- No token / password / cookie / UUID / subscription link in visible UI.
+- Do not expose `panel.conanxin.com/<hidden-path>` in UI text.
+- 3X-UI config unchanged.
+- No proxy/service restart.
+- No firewall modification.

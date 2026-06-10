@@ -114,6 +114,26 @@
 - Keep hidden paths masked in visible UI
 - Improve status colors, spacing, card density, and mobile readability
 
+## Phase 1M.1: Dashboard Runtime Hotfix and CTA Repair
+
+- Status: implemented on main
+- Fix frontend runtime null-safe DOM errors and CTA fallback behavior.
+- Keep diagnostics messaging and management entry robust under partial checks.
+- Keep dashboard visible behavior compatible with Cloudflare domain access.
+
+## Phase 1M.2: Browser verification and GitHub closure
+
+- Status: implemented on main
+- Confirm local and remote verification steps and keep branch clean for release prep.
+- Keep no feature expansion; only validation and closure polishing.
+
+## Phase 1N: Acceptance pack and masked screenshot preparation
+
+- Status: implemented on main
+- Add acceptance pack docs, release-note draft, and safe media workflow.
+- Keep Cloudflare domain access and management entry masking as part of final packaging.
+- Prepared as release-prep boundary; no tag/release created yet.
+
 ## Project Direction (focused)
 
 - This project intentionally stays focused on personal VPS / proxy health monitoring.
