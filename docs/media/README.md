@@ -20,4 +20,13 @@ For `dashboard-v0.2.1-alpha.masked.png` (if provided):
 - Do not expose raw hidden path values.
 - De-identify long/public URLs to `panel.conanxin.com / 已配置隐藏路径` and `tower.conanxin.com` only.
 
-If a masked screenshot is not available, keep the README reference in a placeholder state and avoid publishing unvetted captures.
+If a masked screenshot is available, keep it at:
+
+- `docs/media/dashboard-v0.2.1-alpha.masked.png`
+
+Current status:
+
+- `dashboard-v0.2.1-alpha.masked.png` is present for README preview.
+- The screenshot is masked for public review (hidden paths and sensitive values are redacted).
+
+If a masked screenshot is not available, keep the README in placeholder mode and avoid publishing unvetted captures.

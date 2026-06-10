@@ -48,4 +48,4 @@ Release status: Published as v0.2.1-alpha.
 
 Release type: prerelease / alpha.
 
-Masked dashboard screenshot is pending and will be added later.
+Masked dashboard screenshot added after release publication.

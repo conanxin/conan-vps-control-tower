@@ -23,9 +23,10 @@ Current alpha: **v0.2.1-alpha**
 
 ## Screenshot / 界面预览
 
-Screenshot pending: capture masked dashboard only; never include hidden 3X-UI paths or secrets.
-  - `docs/media/dashboard-zh-local-only-v0.2.placeholder.md`
-- If available: `docs/media/dashboard-v0.2.1-alpha.masked.png`
+Dashboard screenshot is intentionally masked to avoid exposing the 3X-UI hidden path or any sensitive operational details.
+
+- `docs/media/dashboard-v0.2.1-alpha.masked.png`
+  (masked view showing `panel.conanxin.com / 已配置隐藏路径`)
 - Screenshot policy: only masked 3X-UI entry (`panel.conanxin.com / 已配置隐藏路径`), no hidden path, no tokens/secrets.
 A quick SSH fallback is still supported for local-only setup:
 `ssh -L 3001:127.0.0.1:3001 YOUR_VPS_HOST`

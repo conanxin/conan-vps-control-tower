@@ -70,6 +70,6 @@ Conan VPS Control Tower v0.2.1-alpha acceptance candidate
 
 ## Screenshot status
 
-- No masked screenshot file has been committed in this repository yet.
-- If available, use `docs/media/dashboard-v0.2.1-alpha.masked.png`.
-- If not available, keep this phase ready-to-publish with manual capture guidance only.
+- Masked dashboard screenshot added after release publication:
+  - `docs/media/dashboard-v0.2.1-alpha.masked.png`
+- The screenshot is masked and only exposes `panel.conanxin.com / 已配置隐藏路径`.
