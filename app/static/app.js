@@ -3,7 +3,7 @@
 const statusLabel = {
   healthy: "健康",
   warning: "警告",
-  degraded: "警告",
+  degraded: "降级",
   critical: "严重",
   unknown: "未知",
   "not-configured": "未配置",
@@ -56,6 +56,14 @@ const messageZhFallback = {
   "Unable to read local traffic estimate": "本地流量估算读取失败",
   "No active diagnostic issues detected": "未发现需要处理的诊断问题。",
   "No active diagnostic issues detected.": "未发现需要处理的诊断问题。",
+  "3X-UI panel is abnormal but proxy may still work": "3X-UI 面板异常，但代理可能仍可用",
+  "Multiple critical modules detected": "多个关键模块同时异常",
+  "Proxy core process risk": "代理核心进程存在风险",
+  "Proxy port is not fully listening": "代理端口未完全监听",
+  "Domain resolution failed": "域名解析失败",
+  "Domain resolved to unexpected address": "域名解析到了非预期地址",
+  "TLS check failed": "TLS 检查失败",
+  "Local traffic estimate is near limit": "本地流量估算接近上限",
   "No visible risks from current checks.": "当前无可见风险。",
   "No active risks": "当前没有活跃风险。",
 };
@@ -351,9 +359,8 @@ function parsePublicDisplay(url) {
   }
   try {
     const parsed = new URL(url);
-    const base = `${parsed.protocol}://${parsed.host}`;
     const hasHidden = Boolean(parsed.pathname && parsed.pathname !== "/") || Boolean(parsed.search || parsed.hash);
-    return hasHidden ? `${base} / 已配置隐藏路径` : base;
+    return hasHidden ? `${parsed.host} / 已配置隐藏路径` : parsed.host;
   } catch {
     return url;
   }
@@ -396,7 +403,7 @@ function renderManagement(data) {
   const status = panelData.enabled === false ? "not-configured" : normalizeStatus(panelData.status);
   const publicUrl = typeof panelData.panel_public_url === "string" ? panelData.panel_public_url.trim() : "";
   const publicDisplay = resolveManagementDisplayUrl(publicUrl, panelData.panel_public_display_url);
-  const accessNote = panelData.access_note || "建议通过 Cloudflare Access / Tunnel 访问管理入口。";
+  const accessNote = "建议通过 Cloudflare Access + 3X-UI 登录双层保护访问。";
 
   card.classList.remove(...statusClassList, "not-configured");
   card.classList.add(status === "not-configured" ? "not-configured" : status);
@@ -406,7 +413,7 @@ function renderManagement(data) {
   setText("management-status", status === "not-configured" ? "未配置" : toDisplayStatus(status));
   setText("management-public-entry", publicDisplay || managementPanelMissingText);
   setText("management-access-note", accessNote);
-  setText("management-readonly-note", panelData.readonly_note || "Control Tower 不读取或修改 3X-UI 配置。");
+  setText("management-readonly-note", "Control Tower 只负责健康监测和管理入口，不读取或修改 3X-UI 配置。");
   setText("runtime-management-entry", publicDisplay || managementPanelMissingText);
 
   const localEndpoint = panelData.recommended_local_url || panelData.panel_local_url || "";
@@ -436,7 +443,7 @@ function renderManagement(data) {
       button.classList.remove("disabled");
       button.textContent = "进入 3X-UI 面板";
       setText("management-message", panelData.message || "管理入口可用，可直接进入。");
-      setText("management-disabled-note", "公开入口可直接在新标签页打开。");
+      setText("management-disabled-note", "为避免泄露 3X-UI 隐藏路径，界面仅显示脱敏入口。按钮会打开完整配置地址。");
     } else {
       setAttr(button, "href", null);
       setAttr(button, "target", "_self");
@@ -517,10 +524,10 @@ function renderDiagnostics(data) {
   const relatedModules = (item.related_modules || []).join("、") || "-";
   const confidenceText = item.confidence || "中";
 
-  setText(summary, `${payload.summary || "诊断摘要："} ${item.title || ""}`);
-  setText(title, `${item.title || "诊断提示"}（${toDisplayStatus(item.status || "unknown")}）`);
-  setText(impact, `影响：${impactText}`);
-  setText(firstCheck, `建议第一检查：${firstCheckText}`);
+  setText(summary, `${translateMessage(payload.summary || "诊断摘要：")} ${translateMessage(item.title || "")}`);
+  setText(title, `${translateMessage(item.title || "诊断提示")}（${toDisplayStatus(item.status || "unknown")}）`);
+  setText(impact, `影响：${translateMessage(impactText)}`);
+  setText(firstCheck, `建议第一检查：${translateMessage(firstCheckText)}`);
   setText(related, `相关模块：${relatedModules}`);
   setText(confidence, `置信度：${confidenceText}`);
   setText(commands, `${readOnlyDiagnosticsNotice}\n${commandText || "未提供只读诊断命令。"}`);
@@ -582,9 +589,11 @@ function renderHistory(summary, events) {
   setText(lastRecovery, snapshot.last_recovery_at || "--");
 
   const summaryText =
-    currentDisplay === "健康"
-      ? `当前状态健康，24 小时内${warningLabel}，并已恢复。`
-      : `当前状态${currentDisplay}，24 小时内${warningLabel}。`;
+    currentDisplay === "健康" && warningCount > 0
+      ? "当前状态健康；最近 24 小时曾出现告警，当前已恢复。"
+      : currentDisplay === "健康"
+        ? "当前状态健康；最近 24 小时未发现活跃异常。"
+        : `当前状态${currentDisplay}；最近 24 小时${warningLabel}。`;
   setText(historySummary, summaryText);
 
   const recentEvents = Array.isArray(events) ? events.slice(-5) : [];
@@ -646,10 +655,13 @@ function renderMeta(meta) {
   const host = payload.configured_host || "127.0.0.1";
   const port = payload.configured_port || 3001;
   const publicEntry = String(payload.public_entry || "tower.conanxin.com").replace(/^https?:\/\//, "");
-  const accessProtection = payload.access_protection || "Cloudflare Access / Tunnel";
-  const accessMode = payload.external_access_mode || "Cloudflare Access / Tunnel";
+  const accessProtection = payload.access_protection || "Cloudflare Access";
+  const accessMode = payload.external_access_mode || "Cloudflare Access + Tunnel";
 
-  setText("runtime-bar", `本地只读 · 绑定 ${host}:${port} · 保护方式 ${accessMode} · 外部入口 ${publicEntry}`);
+  setText(
+    "runtime-bar",
+    `运行模式：本地只读 · 绑定地址：${host}:${port} · 外部入口：${publicEntry} · 访问保护：${accessProtection} · 公网直连：${payload.direct_public_bind ? "有" : "无"}`,
+  );
   setText("runtime-public-entry", publicEntry);
   setText("runtime-access-protection", accessProtection);
   setText("runtime-management-entry", resolveManagementDisplayUrl(currentManagement?.panel_public_url, currentManagement?.panel_public_display_url) || managementPanelMissingText);
@@ -663,8 +675,8 @@ const defaultMeta = {
   configured_port: 3001,
   public_entry: "tower.conanxin.com",
   direct_public_bind: false,
-  external_access_mode: "Cloudflare Access / Tunnel",
-  access_protection: "Cloudflare Access / Tunnel",
+  external_access_mode: "Cloudflare Access + Tunnel",
+  access_protection: "Cloudflare Access",
 };
 
 let currentManagement = {};
@@ -708,8 +720,8 @@ async function refreshManagement() {
       protocol_warning: false,
       tcp_reachable: false,
       open_in_new_tab: true,
-      access_note: "建议通过 Cloudflare Access / Tunnel 访问管理入口。",
-      readonly_note: "Control Tower 不读取或修改 3X-UI 配置。",
+      access_note: "建议通过 Cloudflare Access + 3X-UI 登录双层保护访问。",
+      readonly_note: "Control Tower 只负责健康监测和管理入口，不读取或修改 3X-UI 配置。",
       show_local_target: true,
     };
     renderManagement(currentManagement);
@@ -827,7 +839,7 @@ function renderManagementReadOnlyHint() {
   if (!maskNote) {
     return;
   }
-  maskNote.textContent = "Control Tower 不读取或修改 3X-UI 配置。";
+  maskNote.textContent = "Control Tower 只负责健康监测和管理入口，不读取或修改 3X-UI 配置。";
 }
 
 function renderExternalAccessInfo() {

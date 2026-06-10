@@ -44,6 +44,7 @@ def panel_commands(check: CheckResult | None) -> list[str]:
         f"ss -lntup | grep -E ':{port}\\b' || true",
     ]
 
+
 READ_ONLY_COMMANDS = [
     check_services_command,
     check_proxy_processes_command,

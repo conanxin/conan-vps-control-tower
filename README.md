@@ -13,6 +13,19 @@ Current stage: v0.2.0-alpha ready
 - Default bind: `127.0.0.1:3001`
 - Target users: personal VPS / proxy node users
 - Real VPS validated: yes
+- Domain access validated: `tower.conanxin.com` through Cloudflare Access + Tunnel
+
+## Domain Access UX
+
+The Dashboard now treats Cloudflare Access + Tunnel as the primary external access path:
+
+- Control Tower: `tower.conanxin.com`
+- 3X-UI panel: `panel.conanxin.com / 已配置隐藏路径`
+- Service bind: `127.0.0.1:3001`
+- Direct public bind: no
+- Protection: Cloudflare Access
+
+The visible Dashboard masks the 3X-UI hidden path. The `进入 3X-UI 面板` button can still use the full private `panel_public_url` configured only on the VPS.
 
 ## Screenshot / 界面预览
 

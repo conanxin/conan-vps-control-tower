@@ -26,6 +26,14 @@ ssh -L 3001:127.0.0.1:3001 dmit-control-tower
 http://127.0.0.1:3001
 ```
 
+如果已启用 Cloudflare Access + Tunnel，也可以直接打开：
+
+```text
+https://tower.conanxin.com
+```
+
+此时 Dashboard 顶部应显示“外部入口：tower.conanxin.com”“访问保护：Cloudflare Access”“公网直连：无”。公网直连为“无”表示本项目仍只监听 `127.0.0.1:3001`。
+
 ## 第一屏怎么看
 
 1. 顶部 `总体状态`：整体健康等级。
@@ -88,12 +96,13 @@ curl -s http://127.0.0.1:3001/api/alerts/config-check | python3 -m json.tool | h
 
 ## 从 Dashboard 进入 3X-UI
 
-`管理入口` 区块提供 `进入 3X-UI 面板` 按钮。
+`管理入口：3X-UI 面板` 区块提供 `进入 3X-UI 面板` 按钮。
 
 - Control Tower 负责看状态、风险、诊断和告警。
 - 3X-UI 负责修改代理配置。
 - 点击按钮会打开 `panel_public_url`，例如 `https://panel.conanxin.com`。
 - Control Tower 不 iframe 嵌入 3X-UI，不自动登录，不保存 3X-UI 密码。
+- 如果 3X-UI 使用隐藏路径，Dashboard 只显示 `panel.conanxin.com / 已配置隐藏路径`，按钮仍使用私有配置中的完整 URL。
 
 ## 如何确认没有公网暴露
 

@@ -14,6 +14,22 @@ Then open:
 http://127.0.0.1:3001
 ```
 
+## Domain Access UI Check
+
+When using Cloudflare Access + Tunnel, confirm the Dashboard shows:
+
+- 总体状态
+- 外部入口：`tower.conanxin.com`
+- 访问保护：Cloudflare Access
+- 公网直连：无
+- 代理链路
+- 管理入口：3X-UI 面板
+- 公开入口：`panel.conanxin.com / 已配置隐藏路径`
+- 已脱敏标记
+- VPS 状态、代理核心、3X-UI 面板、端口、流量风险、告警通知、诊断建议、健康历史
+
+The visible Dashboard must not show the real 3X-UI hidden path. The button may still open the full configured `panel_public_url`.
+
 ## Check Visibility
 
 - Overall Status

@@ -164,6 +164,22 @@ bash scripts/check-domain-access-readiness.sh
 
 Confirm `80/443` are only shown for awareness and are not modified by these scripts. Do not expose `3001` directly, and do not mix `tower.example.com` / `panel.example.com` with the proxy main domain.
 
+## Domain access operating state
+
+When Cloudflare Access + Tunnel is configured, the normal browser entry is:
+
+```text
+https://tower.conanxin.com
+```
+
+The service itself must still listen only on:
+
+```text
+127.0.0.1:3001
+```
+
+The Dashboard may show `panel.conanxin.com / 已配置隐藏路径` for the management panel. This is intentionally masked. The full hidden path should remain only in the private VPS `config.yaml` and should not appear in screenshots, reports, or GitHub commits.
+
 ## Upgrade
 
 ```bash

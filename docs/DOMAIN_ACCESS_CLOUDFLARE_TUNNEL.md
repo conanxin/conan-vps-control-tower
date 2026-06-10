@@ -135,3 +135,14 @@ bash scripts/discover-panel-and-tower-local.sh
 ```
 
 It only reads local process/listener information and prints suggested targets. It does not install `cloudflared`, create a tunnel, change firewall rules, or restart services.
+
+## Current domain-access Dashboard wording
+
+After `tower.conanxin.com` is protected by Cloudflare Access and routed through Cloudflare Tunnel, the Dashboard should show:
+
+- 运行模式：本地只读
+- 外部入口：`tower.conanxin.com`
+- 访问保护：Cloudflare Access
+- 公网直连：无
+
+The 3X-UI panel entry should be shown as `panel.conanxin.com / 已配置隐藏路径`. The real hidden path is used only by the button target from private VPS config and must not be committed to GitHub.

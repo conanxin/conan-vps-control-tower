@@ -72,6 +72,17 @@ https://panel.conanxin.com/隐藏路径
 
 The `进入 3X-UI 面板` button still uses the full `panel_public_url` so the entry remains usable. The masked display value is only for UI presentation.
 
+## Domain access UX polish
+
+When Cloudflare Tunnel and Cloudflare Access are active, the Dashboard should present the management entry as a domain-access console rather than a local debug page:
+
+- Control Tower entry: `tower.conanxin.com`
+- Panel entry display: `panel.conanxin.com / 已配置隐藏路径`
+- Access protection: Cloudflare Access + 3X-UI login
+- Direct public bind: none
+
+The full hidden path can stay in the private VPS `config.yaml` as `management.panel_public_url`, but visible Dashboard text must use `panel_public_display_url` or an equivalent masked value. Do not show the real hidden path in screenshots, reports, issues, or docs.
+
 ## Health check URL and hidden path
 
 The management entry and the health checker have different jobs:

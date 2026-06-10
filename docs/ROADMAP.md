@@ -98,6 +98,14 @@
 - Keep Control Tower as health/diagnosis layer and 3X-UI as configuration layer
 - Do not iframe 3X-UI, store credentials, or call 3X-UI write APIs
 
+## Phase 1L.4: Dashboard Domain Access UX Polish
+
+- Status: implemented on main
+- Polish Dashboard copy for `tower.conanxin.com` through Cloudflare Access + Tunnel
+- Rework the 3X-UI management entry as a masked domain-access card
+- Keep the full hidden path private while the visible UI shows `panel.conanxin.com / 已配置隐藏路径`
+- Improve Chinese status text and Health History wording for current vs historical status
+
 ## Project Direction (focused)
 
 - This project intentionally stays focused on personal VPS / proxy health monitoring.
@@ -105,6 +113,5 @@
 
 ## Next
 
+- Phase 1M: Cloudflare Access operational polish and masked screenshot capture
 - Phase 1I: Real screenshot and v0.2.1-alpha
-- Phase 1K-Live: Configure Cloudflare Tunnel with user-provided domain
-- Phase 1L-Live: Verify unified management entry with Cloudflare Access domain

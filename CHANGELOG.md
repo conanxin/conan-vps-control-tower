@@ -1,4 +1,15 @@
-﻿# Changelog`r`n## Unreleased
+﻿# Changelog
+
+## Unreleased
+
+### Phase 1L.4 Dashboard Domain Access UX Polish
+
+- Updated Dashboard runtime copy for `tower.conanxin.com` behind Cloudflare Access + Tunnel.
+- Reworked the 3X-UI management entry as a wider domain-access card with masked hidden-path display.
+- Kept the management button using the full private `panel_public_url` while visible text only shows a desensitized entry.
+- Added Chinese message mappings for remaining health and diagnostics copy.
+- Improved Health History wording so current healthy status is not confused with previous critical history.
+- Added domain-access UX tests for Cloudflare copy, hidden-path masking, and safe `/api/meta` fields.
 
 ### Phase 1L.3 Panel Health Check Repair and Diagnostics Polish
 
